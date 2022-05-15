@@ -3,3 +3,77 @@ databaseChangeLog:
       id: 1
       author: Tonypsilon
       changes:
+  - changeSet:
+      id: 2
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: season
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stage
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 3
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: boolean
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: authorities
+            columns:
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: authority
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: ix_auth_username
+            tableName: authorities
+            unique: true
+            columns:
+              - column:
+                  name: username
+              - column:
+                  name: authority
+        - addForeignKeyConstraint:
+            constraintName: fk_authority_username
+            baseTableName: authorities
+            baseColumnNames: username
+            referencedTableName: users
+            referencedColumnNames: username
