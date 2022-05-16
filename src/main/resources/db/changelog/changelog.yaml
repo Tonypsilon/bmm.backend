@@ -77,3 +77,11 @@ databaseChangeLog:
             baseColumnNames: username
             referencedTableName: users
             referencedColumnNames: username
+  - changeSet:
+      id: 4
+      author: Tonypsilon
+      changes:
+        - addAutoIncrement:
+            tableName: season
+            columnName: id
+            columnDataType: int

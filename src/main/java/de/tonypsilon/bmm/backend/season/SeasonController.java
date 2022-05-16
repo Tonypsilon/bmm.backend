@@ -2,9 +2,8 @@ package de.tonypsilon.bmm.backend.season;
 
 import de.tonypsilon.bmm.backend.security.Roles;
 import jakarta.annotation.security.RolesAllowed;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,9 +16,9 @@ public class SeasonController {
         this.seasonService = seasonService;
     }
 
-    @GetMapping(value = "/season/allNonArchived")
-    public List<String> getAllNonArchivedSeasonNames() {
-        return seasonService.getAllNonArchivedSeasonNames();
+    @GetMapping(value = "/season/allNonArchived", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SeasonNamesResponse getAllNonArchivedSeasonNames() {
+        return new SeasonNamesResponse(seasonService.getAllNonArchivedSeasonNames());
     }
 
     @GetMapping(value = "/administration/season/allNonArchived")
@@ -27,9 +26,9 @@ public class SeasonController {
         return seasonService.getAllNonArchivedSeasonNames();
     }
 
-    //@RolesAllowed(Roles.ADMIN)
+    @RolesAllowed(Roles.ADMIN)
     @PostMapping(value = "/administration/season/create")
-    public String createSeason(String seasonName) {
+    public String createSeason(@RequestBody String seasonName) {
         return seasonService.createSeason(seasonName);
     }
 

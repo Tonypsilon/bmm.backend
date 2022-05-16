@@ -8,5 +8,6 @@ public class NameBlankException extends BmmException {
 
     public NameBlankException(String message) {
         super(message);
+        System.out.println("oh no, name blank");
     }
 }

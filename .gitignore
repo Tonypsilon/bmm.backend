@@ -22,3 +22,5 @@ target/
 ### properties ###
 database.properties
 !database.properties.sample
+cors.properties
+!cors.properties.sample
