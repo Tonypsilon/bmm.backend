@@ -1,6 +1,5 @@
 package de.tonypsilon.bmm.backend.security;
 
-import jakarta.servlet.ServletException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

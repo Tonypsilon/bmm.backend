@@ -21,11 +21,6 @@ public class SeasonController {
         return new SeasonNamesResponse(seasonService.getAllNonArchivedSeasonNames());
     }
 
-    @GetMapping(value = "/administration/season/allNonArchived")
-    public List<String> getAllNonArchivedSeasonNamesProtected() {
-        return seasonService.getAllNonArchivedSeasonNames();
-    }
-
     @RolesAllowed(Roles.ADMIN)
     @PostMapping(value = "/administration/season/create")
     public String createSeason(@RequestBody String seasonName) {
