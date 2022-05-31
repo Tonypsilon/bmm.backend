@@ -29,7 +29,7 @@ public class SeasonService {
         if(seasonName == null || seasonName.isBlank()) {
             throw new NameBlankException("Der Name der Saison darf nicht leer sein!");
         }
-        if(seasonRepository.existsByName(seasonName)) {
+        if(Boolean.TRUE.equals(seasonRepository.existsByName(seasonName))) {
             throw new AlreadyExistsException("Saison mit diesem Namen existiert bereits!");
         }
         Season season = new Season();

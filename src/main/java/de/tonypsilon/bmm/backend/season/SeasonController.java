@@ -5,8 +5,6 @@ import jakarta.annotation.security.RolesAllowed;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 public class SeasonController {
 
@@ -22,9 +20,11 @@ public class SeasonController {
     }
 
     @RolesAllowed(Roles.ADMIN)
-    @PostMapping(value = "/administration/season/create")
-    public String createSeason(@RequestBody String seasonName) {
-        return seasonService.createSeason(seasonName);
+    @PostMapping(value = "/administration/season/create",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public SeasonName createSeason(@RequestBody SeasonName seasonName) {
+        return new SeasonName(seasonService.createSeason(seasonName.seasonName()));
     }
 
 }
