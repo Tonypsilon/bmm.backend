@@ -1,7 +1,10 @@
-package de.tonypsilon.bmm.backend.season;
+package de.tonypsilon.bmm.backend.season.service;
 
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.NameBlankException;
+import de.tonypsilon.bmm.backend.season.data.Season;
+import de.tonypsilon.bmm.backend.season.data.SeasonData;
+import de.tonypsilon.bmm.backend.season.data.SeasonRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +28,7 @@ public class SeasonService {
     }
 
     @Transactional
-    public String createSeason(String seasonName) {
+    public SeasonData createSeason(String seasonName) {
         if(seasonName == null || seasonName.isBlank()) {
             throw new NameBlankException("Der Name der Saison darf nicht leer sein!");
         }
@@ -36,6 +39,14 @@ public class SeasonService {
         season.setName(seasonName);
         season.setStage(SeasonStage.PREPARATION);
         seasonRepository.save(season);
-        return seasonRepository.getByName(seasonName).getName();
+        return seasonToSeasonData(seasonRepository.getByName(seasonName));
+    }
+
+    public SeasonData getSeasonByName(String seasonName) {
+        return seasonToSeasonData(seasonRepository.getByName(seasonName));
+    }
+
+    private SeasonData seasonToSeasonData(Season season) {
+        return new SeasonData(season.getId(), season.getName(), season.getStage());
     }
 }

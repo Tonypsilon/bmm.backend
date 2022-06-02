@@ -1,4 +1,4 @@
-package de.tonypsilon.bmm.backend.season;
+package de.tonypsilon.bmm.backend.season.facade;
 
 import java.util.List;
 

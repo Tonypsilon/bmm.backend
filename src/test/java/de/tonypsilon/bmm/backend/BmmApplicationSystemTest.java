@@ -1,17 +1,17 @@
 package de.tonypsilon.bmm.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.tonypsilon.bmm.backend.season.SeasonName;
-import de.tonypsilon.bmm.backend.season.SeasonNamesResponse;
+import de.tonypsilon.bmm.backend.season.facade.SeasonApiData;
+import de.tonypsilon.bmm.backend.season.facade.SeasonName;
+import de.tonypsilon.bmm.backend.season.facade.SeasonNamesResponse;
+import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.Roles;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -42,15 +42,14 @@ class BmmApplicationSystemTest {
     @WithMockUser(authorities = Roles.ADMIN)
     void bmmSmokeTest() throws Exception {
         // Step 1: Create a season
-        this.mockMvc.perform(post("/administration/season/create")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        this.mockMvc.perform(post("/seasons")
                         .with(csrf())
-                        .content(objectMapper.writeValueAsString(new SeasonName("testSeason"))))
+                        .param("seasonName", "testSeason"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(new SeasonName("testSeason"))));
+                .andExpect(content().json(objectMapper.writeValueAsString(new SeasonApiData("testSeason", SeasonStage.PREPARATION))));
 
         // Step 2: Get the season
-        this.mockMvc.perform(get("/season/allNonArchived"))
+        this.mockMvc.perform(get("/seasons/names/non-archived"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(new SeasonNamesResponse(List.of("testSeason")))));
 

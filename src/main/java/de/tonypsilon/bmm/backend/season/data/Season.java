@@ -1,5 +1,6 @@
-package de.tonypsilon.bmm.backend.season;
+package de.tonypsilon.bmm.backend.season.data;
 
+import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import jakarta.persistence.*;
 import org.springframework.lang.NonNull;
 

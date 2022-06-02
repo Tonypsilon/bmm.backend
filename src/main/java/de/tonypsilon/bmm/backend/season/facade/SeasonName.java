@@ -1,4 +1,4 @@
-package de.tonypsilon.bmm.backend.season;
+package de.tonypsilon.bmm.backend.season.facade;
 
 /**
  * Container objects like this for simple Strings are
