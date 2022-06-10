@@ -40,7 +40,7 @@ public class SecurityConfiguration {
                 .cors()
                 .and().httpBasic()
                 .and().authorizeRequests()
-                .antMatchers("/", "/season/**", "/division/**").permitAll()
+                .antMatchers("/", "/seasons/**", "/divisions/**").permitAll()
                 .and().authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
@@ -55,7 +55,6 @@ public class SecurityConfiguration {
     }
 
     private SecurityContextLogoutHandler securityContextLogoutHandler() {
-        System.out.println("I AM LOGGING OUT!");
         SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
         securityContextLogoutHandler.setClearAuthentication(true);
         securityContextLogoutHandler.setInvalidateHttpSession(true);

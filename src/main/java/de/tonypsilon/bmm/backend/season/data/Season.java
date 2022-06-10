@@ -15,6 +15,7 @@ public class Season {
     private String name;
 
     @Column(unique = false, nullable = false)
+    @Enumerated(EnumType.STRING)
     private SeasonStage stage;
 
     @NonNull

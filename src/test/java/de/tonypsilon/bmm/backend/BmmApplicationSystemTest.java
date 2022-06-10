@@ -1,15 +1,14 @@
 package de.tonypsilon.bmm.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.tonypsilon.bmm.backend.season.facade.SeasonApiData;
-import de.tonypsilon.bmm.backend.season.facade.SeasonName;
-import de.tonypsilon.bmm.backend.season.facade.SeasonNamesResponse;
+import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.Roles;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,15 +42,14 @@ class BmmApplicationSystemTest {
     void bmmSmokeTest() throws Exception {
         // Step 1: Create a season
         this.mockMvc.perform(post("/seasons")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .with(csrf())
-                        .param("seasonName", "testSeason"))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(new SeasonApiData("testSeason", SeasonStage.PREPARATION))));
+                        .content(objectMapper.writeValueAsString(new SeasonCreationData("test"))))
+                .andExpect(status().isCreated());
 
         // Step 2: Get the season
-        this.mockMvc.perform(get("/seasons/names/non-archived"))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(new SeasonNamesResponse(List.of("testSeason")))));
+        this.mockMvc.perform(get("/seasons/non-archived"))
+                .andExpect(status().isOk());
 
     }
 

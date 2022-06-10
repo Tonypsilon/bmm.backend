@@ -1,6 +1,7 @@
 package de.tonypsilon.bmm.backend.security;
 
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +14,11 @@ import java.util.Collections;
 public class LoginController {
 
     @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-    public AuthenticationResponse user(Principal user) {
-        return new AuthenticationResponse(user.getName(),
+    public ResponseEntity<AuthenticationResponse> user(Principal user) {
+        return ResponseEntity.ok(new AuthenticationResponse(user.getName(),
                 SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList(),
                 Collections.emptyList(),
-                Collections.emptyList());
+                Collections.emptyList()));
     }
 
     @GetMapping(value = "/administration/logout")
