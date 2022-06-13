@@ -2,6 +2,7 @@ package de.tonypsilon.bmm.backend.season.facade;
 
 import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
+import de.tonypsilon.bmm.backend.season.data.SeasonStageChangeData;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.security.Roles;
 import jakarta.annotation.security.RolesAllowed;
@@ -57,5 +58,15 @@ public class SeasonController {
                 .status(HttpStatus.CREATED)
                 .body(seasonService.createSeason(seasonCreationData.getBody().seasonName()));
     }
+
+    @RolesAllowed({Roles.ADMIN, Roles.SEASON_ADMIN})
+    @PatchMapping(value = "/seasons/{seasonName}",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SeasonData> changeSeasonState(RequestEntity<SeasonStageChangeData> patchedSeason) {
+        return ResponseEntity
+                .ok(seasonService.updateSeasonStage(patchedSeason.getBody()));
+    }
+
 
 }
