@@ -1,8 +1,8 @@
 package de.tonypsilon.bmm.backend;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.tonypsilon.bmm.backend.exception.ErrorData;
 import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.data.SeasonStageChangeData;
@@ -89,6 +89,16 @@ class BmmApplicationSystemTest {
         actualSeason = getSeasonsResult.iterator().next();
         assertEquals("test", actualSeason.name());
         assertEquals(SeasonStage.ARCHIVED, actualSeason.stage());
+
+        // Step 5: Test an error case: Try to get a season that does not exist.
+        MockHttpServletResponse getSeasonThatDoesNotExistResponse = this.mockMvc.perform(get("/seasons/non-archived/non-existent"))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse();
+        ErrorData getSeasonThatDoesNotExistErrorData = objectMapper.readValue(getSeasonThatDoesNotExistResponse.getContentAsString(), ErrorData.class);
+        assertEquals("Nichtarchivierte Saison mit dem Namen non-existent existiert nicht!",
+                getSeasonThatDoesNotExistErrorData.message());
+
+
     }
 
 }
