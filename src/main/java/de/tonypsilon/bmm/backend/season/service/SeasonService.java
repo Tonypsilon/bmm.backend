@@ -87,7 +87,7 @@ public class SeasonService {
             seasonRepository.save(seasonToBeUpdated);
             return seasonToSeasonData(seasonRepository.getByName(seasonStageChangeData.seasonName()));
         } else {
-            throw new BadPatchDataException("Eine Saison im Status %s kann nicht in Status %s geändert werden"
+            throw new BadPatchDataException("Eine Saison im Status %s kann nicht in Status %s geändert werden!"
                     .formatted(seasonToBeUpdated.getStage(), seasonStageChangeData.stage()));
         }
     }

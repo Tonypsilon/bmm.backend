@@ -1,11 +1,13 @@
 package de.tonypsilon.bmm.backend.season.service;
 
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
+import de.tonypsilon.bmm.backend.exception.BadPatchDataException;
 import de.tonypsilon.bmm.backend.exception.NameBlankException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.season.data.Season;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.data.SeasonRepository;
+import de.tonypsilon.bmm.backend.season.data.SeasonStageChangeData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -138,5 +140,34 @@ class SeasonServiceTest {
         Collection<SeasonData> actual = seasonService.getAllArchivedSeasons();
         assertEquals(1, actual.size());
         assertTrue(actual.containsAll(List.of(seasonArchivedData)));
+    }
+
+    @Test
+    void testValidSeasonStageUpdate() {
+        when(seasonRepository.findByName("Saison-Running")).thenReturn(Optional.of(seasonRunning));
+        when(seasonRepository.getByName("Saison-Running")).thenReturn(seasonRunning);
+        SeasonData actual = seasonService.updateSeasonStage(new SeasonStageChangeData("Saison-Running", SeasonStage.COMPLETED));
+        assertEquals("Saison-Running", actual.name());
+        assertEquals(SeasonStage.COMPLETED, actual.stage());
+        verify(seasonRepository, times(1)).save(
+                argThat(season -> season.getName().equals("Saison-Running")
+                        && season.getStage().equals(SeasonStage.COMPLETED)));
+    }
+
+    @Test
+    void testInvalidSeasonStageUpdate() {
+        when(seasonRepository.findByName("Saison-Running")).thenReturn(Optional.of(seasonRunning));
+        BadPatchDataException actualException = assertThrows(BadPatchDataException.class,
+                () -> seasonService.updateSeasonStage(new SeasonStageChangeData("Saison-Running", SeasonStage.PREPARATION)));
+        assertEquals("Eine Saison im Status RUNNING kann nicht in Status PREPARATION geändert werden!",
+                actualException.getMessage());
+    }
+
+    @Test
+    void testUpdateSeasonStageWhereSeasonDoesNotExist() {
+        when(seasonRepository.findByName("foo")).thenReturn(Optional.empty());
+        NotFoundException actualException = assertThrows(NotFoundException.class,
+                () -> seasonService.updateSeasonStage(new SeasonStageChangeData("foo", SeasonStage.COMPLETED)));
+        assertEquals("Saison mit dem Namen foo existiert nicht!", actualException.getMessage());
     }
 }
