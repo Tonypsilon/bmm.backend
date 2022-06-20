@@ -85,3 +85,52 @@ databaseChangeLog:
             tableName: season
             columnName: id
             columnDataType: int
+  - changeSet:
+      id: 5
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: seasonadmin
+            columns:
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: season_name
+                  type: varchar(128)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+        - createTable:
+            tableName: clubadmin
+            columns:
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: club_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+        - createTable:
+            tableName: teamadmin
+            columns:
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: team_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false

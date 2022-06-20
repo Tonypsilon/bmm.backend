@@ -1,0 +1,15 @@
+package de.tonypsilon.bmm.backend.security.rnr.data;
+
+import java.io.Serializable;
+
+public record SeasonAdminKey(String username, String seasonName) implements Serializable {
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getSeasonName() {
+        return seasonName;
+    }
+
+}
