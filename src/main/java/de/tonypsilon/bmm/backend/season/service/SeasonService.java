@@ -4,11 +4,8 @@ import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadPatchDataException;
 import de.tonypsilon.bmm.backend.exception.NameBlankException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
-import de.tonypsilon.bmm.backend.season.data.Season;
-import de.tonypsilon.bmm.backend.season.data.SeasonData;
-import de.tonypsilon.bmm.backend.season.data.SeasonRepository;
-import de.tonypsilon.bmm.backend.season.data.SeasonStageChangeData;
-import org.springframework.http.RequestEntity;
+import de.tonypsilon.bmm.backend.season.data.*;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,18 +35,18 @@ public class SeasonService {
     }
 
     @Transactional
-    public SeasonData createSeason(String seasonName) {
-        if(seasonName == null || seasonName.isBlank()) {
+    public SeasonData createSeason(@NonNull SeasonCreationData seasonCreationData) {
+        if(seasonCreationData.name() == null || seasonCreationData.name().isBlank()) {
             throw new NameBlankException("Der Name der Saison darf nicht leer sein!");
         }
-        if(Boolean.TRUE.equals(seasonRepository.existsByName(seasonName))) {
-            throw new AlreadyExistsException("Saison mit dem Namen %s existiert bereits!".formatted(seasonName));
+        if(Boolean.TRUE.equals(seasonRepository.existsByName(seasonCreationData.name()))) {
+            throw new AlreadyExistsException("Saison mit dem Namen %s existiert bereits!".formatted(seasonCreationData.name()));
         }
         Season season = new Season();
-        season.setName(seasonName);
+        season.setName(seasonCreationData.name());
         season.setStage(SeasonStage.REGISTRATION);
         seasonRepository.save(season);
-        return seasonToSeasonData(seasonRepository.getByName(seasonName));
+        return seasonToSeasonData(seasonRepository.getByName(seasonCreationData.name()));
     }
 
     public SeasonData getNonArchivedSeasonByName(String seasonName) {
@@ -92,7 +89,7 @@ public class SeasonService {
         }
     }
 
-    private SeasonData seasonToSeasonData(Season season) {
+    private SeasonData seasonToSeasonData(@NonNull Season season) {
         return new SeasonData(season.getId(), season.getName(), season.getStage());
     }
 

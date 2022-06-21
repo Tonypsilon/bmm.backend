@@ -4,10 +4,7 @@ import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadPatchDataException;
 import de.tonypsilon.bmm.backend.exception.NameBlankException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
-import de.tonypsilon.bmm.backend.season.data.Season;
-import de.tonypsilon.bmm.backend.season.data.SeasonData;
-import de.tonypsilon.bmm.backend.season.data.SeasonRepository;
-import de.tonypsilon.bmm.backend.season.data.SeasonStageChangeData;
+import de.tonypsilon.bmm.backend.season.data.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -62,7 +59,7 @@ class SeasonServiceTest {
     void testCreateSeasonOk() {
         when(seasonRepository.existsByName("Saison-Registration")).thenReturn(Boolean.FALSE);
         when(seasonRepository.getByName("Saison-Registration")).thenReturn(seasonRegistration);
-        SeasonData actual = seasonService.createSeason("Saison-Registration");
+        SeasonData actual = seasonService.createSeason(new SeasonCreationData("Saison-Registration"));
         assertEquals(seasonRegistrationData, actual);
         verify(seasonRepository, times(1)).save(
                 argThat(season -> season.getName().equals("Saison-Registration")
@@ -73,17 +70,17 @@ class SeasonServiceTest {
     void testCreateSeasonWhereSeasonNameAlreadyExists() {
         when(seasonRepository.existsByName("name")).thenReturn(Boolean.TRUE);
         AlreadyExistsException exception = assertThrows(AlreadyExistsException.class,
-                () -> seasonService.createSeason("name"));
+                () -> seasonService.createSeason(new SeasonCreationData("name")));
         assertEquals("Saison mit dem Namen name existiert bereits!", exception.getMessage());
     }
 
     @Test
     void testCreateSeasonWithEmptyName() {
         NameBlankException exceptionNameBlank = assertThrows(NameBlankException.class,
-                () -> seasonService.createSeason(""));
+                () -> seasonService.createSeason(new SeasonCreationData("")));
         assertEquals("Der Name der Saison darf nicht leer sein!", exceptionNameBlank.getMessage());
         NameBlankException exceptionNameNull = assertThrows(NameBlankException.class,
-                () -> seasonService.createSeason(null));
+                () -> seasonService.createSeason(new SeasonCreationData(null)));
         assertEquals("Der Name der Saison darf nicht leer sein!", exceptionNameNull.getMessage());
     }
 

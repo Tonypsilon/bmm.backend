@@ -19,7 +19,7 @@ public class SeasonController {
 
     private final SeasonService seasonService;
 
-    public SeasonController(SeasonService seasonService) {
+    public SeasonController(final SeasonService seasonService) {
         this.seasonService = seasonService;
     }
 
@@ -53,19 +53,19 @@ public class SeasonController {
     @PostMapping(value = "/seasons",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SeasonData> createSeason(RequestEntity<SeasonCreationData> seasonCreationData) {
+    public ResponseEntity<SeasonData> createSeason(RequestEntity<SeasonCreationData> seasonCreationDataRequestEntity) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(seasonService.createSeason(seasonCreationData.getBody().seasonName()));
+                .body(seasonService.createSeason(seasonCreationDataRequestEntity.getBody()));
     }
 
     @RolesAllowed({Roles.ADMIN, Roles.SEASON_ADMIN})
     @PatchMapping(value = "/seasons/{seasonName}",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SeasonData> changeSeasonState(RequestEntity<SeasonStageChangeData> patchedSeason) {
+    public ResponseEntity<SeasonData> changeSeasonState(RequestEntity<SeasonStageChangeData> patchedSeasonRequestEntity) {
         return ResponseEntity
-                .ok(seasonService.updateSeasonStage(patchedSeason.getBody()));
+                .ok(seasonService.updateSeasonStage(patchedSeasonRequestEntity.getBody()));
     }
 
 
