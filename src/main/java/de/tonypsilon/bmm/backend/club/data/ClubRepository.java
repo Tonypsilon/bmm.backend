@@ -11,4 +11,6 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     public Boolean existsByZps(Integer zps);
 
     public Club getByName(String name);
+
+    public Club getById(Long id);
 }
