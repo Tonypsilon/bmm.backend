@@ -121,6 +121,42 @@ class SeasonServiceTest {
     }
 
     @Test
+    void testGetNonArchivedSeasonByIdOk() {
+        when(seasonRepository.findById(1L)).thenReturn(Optional.of(seasonPreparation));
+        assertEquals(seasonPreparationData, seasonService.getNonArchivedSeasonById(1L));
+    }
+
+    @Test
+    void testGetNonArchivedSeasonByIdThatDoesNotExistOrIsArchived() {
+        when(seasonRepository.findById(5L)).thenReturn(Optional.of(seasonArchived));
+        NotFoundException exceptionArchived = assertThrows(NotFoundException.class,
+                () -> seasonService.getNonArchivedSeasonById(5L));
+        assertEquals("Nichtarchivierte Saison mit der ID 5 existiert nicht!", exceptionArchived.getMessage());
+        when(seasonRepository.findById(-1L)).thenReturn(Optional.empty());
+        NotFoundException exceptionNonExistent = assertThrows(NotFoundException.class,
+                () -> seasonService.getNonArchivedSeasonById(-1L));
+        assertEquals("Nichtarchivierte Saison mit der ID -1 existiert nicht!", exceptionNonExistent.getMessage());
+    }
+
+    @Test
+    void testGetArchivedSeasonByIdOk() {
+        when(seasonRepository.findById(5L)).thenReturn(Optional.of(seasonArchived));
+        assertEquals(seasonArchivedData, seasonService.getArchivedSeasonById(5L));
+    }
+
+    @Test
+    void testGetArchivedSeasonByIdThatDoesNotExistOrIsNonArchived() {
+        when(seasonRepository.findById(2L)).thenReturn(Optional.of(seasonPreparation));
+        NotFoundException exceptionNonArchived = assertThrows(NotFoundException.class,
+                () -> seasonService.getArchivedSeasonById(2L));
+        assertEquals("Archivierte Saison mit der ID 2 existiert nicht!", exceptionNonArchived.getMessage());
+        when(seasonRepository.findById(-1L)).thenReturn(Optional.empty());
+        NotFoundException exceptionNonExistent = assertThrows(NotFoundException.class,
+                () -> seasonService.getArchivedSeasonById(-1L));
+        assertEquals("Archivierte Saison mit der ID -1 existiert nicht!", exceptionNonExistent.getMessage());
+    }
+
+    @Test
     void testGetAllNonArchivedSeasons() {
         when(seasonRepository.findAll()).thenReturn(
                 List.of(seasonRegistration, seasonPreparation, seasonRunning, seasonCompleted, seasonArchived));

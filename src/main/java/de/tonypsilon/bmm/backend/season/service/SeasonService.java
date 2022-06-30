@@ -59,6 +59,16 @@ public class SeasonService {
                 .orElseThrow(() -> new NotFoundException("Archivierte Saison mit dem Namen %s existiert nicht!".formatted(seasonName))));
     }
 
+    public SeasonData getNonArchivedSeasonById(Long seasonId) {
+        return seasonToSeasonData(seasonRepository.findById(seasonId).filter(season -> !season.getStage().equals(SeasonStage.ARCHIVED))
+                .orElseThrow(() -> new NotFoundException("Nichtarchivierte Saison mit der ID %d existiert nicht!".formatted(seasonId))));
+    }
+
+    public SeasonData getArchivedSeasonById(Long seasonId) {
+        return seasonToSeasonData(seasonRepository.findById(seasonId).filter(season -> season.getStage().equals(SeasonStage.ARCHIVED))
+                .orElseThrow(() -> new NotFoundException("Archivierte Saison mit der ID %d existiert nicht!".formatted(seasonId))));
+    }
+
     public Collection<SeasonData> getAllNonArchivedSeasons() {
         return seasonRepository.findAll()
                 .stream()
