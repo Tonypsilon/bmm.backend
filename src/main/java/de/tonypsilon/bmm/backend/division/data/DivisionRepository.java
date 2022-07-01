@@ -10,4 +10,6 @@ import java.util.List;
 public interface DivisionRepository extends JpaRepository<Division, Long> {
 
     public Collection<Division> findBySeasonIdIn(List<Long> seasonIds);
+
+    public Collection<Division> findBySeasonId(Long seasonId);
 }
