@@ -40,7 +40,7 @@ public class ClubService {
         checkThatClubWithIdExists(patchedClubData.id());
         Club clubToBePatched = clubRepository.getById(patchedClubData.id());
         if(! clubToBePatched.getZps().equals(patchedClubData.zps())) {
-            throw new BadPatchDataException("Die id und zps des Clubs stimmen nicht überein!");
+            throw new BadDataException("Die id und zps des Clubs stimmen nicht überein!");
         }
         clubToBePatched.setName(patchedClubData.name());
         clubToBePatched.setActive(patchedClubData.active());

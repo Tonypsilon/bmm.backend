@@ -1,7 +1,7 @@
 package de.tonypsilon.bmm.backend.season.service;
 
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
-import de.tonypsilon.bmm.backend.exception.BadPatchDataException;
+import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NameBlankException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.season.data.*;
@@ -190,7 +190,7 @@ class SeasonServiceTest {
     @Test
     void testInvalidSeasonStageUpdate() {
         when(seasonRepository.findByName("Saison-Running")).thenReturn(Optional.of(seasonRunning));
-        BadPatchDataException actualException = assertThrows(BadPatchDataException.class,
+        BadDataException actualException = assertThrows(BadDataException.class,
                 () -> seasonService.updateSeasonStage(new SeasonStageChangeData("Saison-Running", SeasonStage.PREPARATION)));
         assertEquals("Eine Saison im Status RUNNING kann nicht in Status PREPARATION geändert werden!",
                 actualException.getMessage());

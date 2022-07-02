@@ -7,6 +7,9 @@ import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
 import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.division.data.DivisionRepository;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
+import de.tonypsilon.bmm.backend.exception.BadDataException;
+import de.tonypsilon.bmm.backend.exception.BmmException;
+import de.tonypsilon.bmm.backend.exception.NameBlankException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +38,12 @@ public class DivisionService {
 
     @Transactional
     public DivisionData createDivision(DivisionCreationData divisionCreationData) {
+        if(divisionCreationData.name() == null || divisionCreationData.name().isBlank()) {
+            throw new NameBlankException("Der Name der Staffel darf nicht leer sein!");
+        }
+        if (divisionCreationData.seasonId() == null) {
+            throw new BadDataException("Zur Erstellung einer Staffel muss eine Saison gegeben sein!");
+        }
         if (divisionRepository.existsBySeasonIdAndName(divisionCreationData.seasonId(), divisionCreationData.name())) {
             throw new AlreadyExistsException("Staffel mit Namen %s für Saison mit ID %d existiert bereits!"
                     .formatted(divisionCreationData.name(), divisionCreationData.seasonId()));

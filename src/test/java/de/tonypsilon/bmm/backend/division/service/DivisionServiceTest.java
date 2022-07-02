@@ -1,19 +1,109 @@
 package de.tonypsilon.bmm.backend.division.service;
 
+import com.google.common.collect.SortedSetMultimap;
+import de.tonypsilon.bmm.backend.division.data.Division;
+import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
+import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.division.data.DivisionRepository;
+import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
+import de.tonypsilon.bmm.backend.exception.BadDataException;
+import de.tonypsilon.bmm.backend.exception.NameBlankException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.Iterator;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 class DivisionServiceTest {
 
     private final DivisionRepository divisionRepository = mock(DivisionRepository.class);
     private DivisionService divisionService;
+    private Division landesliga, stadtligaA, stadtLigaB, divisionOfOtherSeason;
+    private DivisionData landesligaData, stadtligaAData, stadtLigaBData, divisionOfOtherSeasonData;
 
     @BeforeEach
     private void setUp() {
         this.divisionService = new DivisionService(divisionRepository);
+        this.landesligaData = new DivisionData(1L, "Landesliga", 1, 8, 1L);
+        this.stadtligaAData = new DivisionData(2L, "Stadtliga A", 2, 8, 1L);
+        this.stadtLigaBData = new DivisionData(3L, "Stadtliga B", 2, 8, 1L);
+        this.divisionOfOtherSeasonData = new DivisionData(4L, "Landesliga", 1, 8, 2L);
+        this.landesliga = new Division();
+        this.landesliga.setId(1L);
+        this.landesliga.setName("Landesliga");
+        this.landesliga.setLevel(1);
+        this.landesliga.setNumberOfBoards(8);
+        this.landesliga.setSeasonId(1L);
+        this.stadtligaA = new Division();
+        this.stadtligaA.setId(2L);
+        this.stadtligaA.setName("Stadtliga A");
+        this.stadtligaA.setLevel(2);
+        this.stadtligaA.setNumberOfBoards(8);
+        this.stadtligaA.setSeasonId(1L);
+        this.stadtLigaB = new Division();
+        this.stadtLigaB.setId(3L);
+        this.stadtLigaB.setName("Stadtliga B");
+        this.stadtLigaB.setLevel(2);
+        this.stadtLigaB.setNumberOfBoards(8);
+        this.stadtLigaB.setSeasonId(1L);
+        this.divisionOfOtherSeason = new Division();
+        this.divisionOfOtherSeason.setId(4L);
+        this.divisionOfOtherSeason.setName("Landesliga");
+        this.divisionOfOtherSeason.setLevel(1);
+        this.divisionOfOtherSeason.setNumberOfBoards(8);
+        this.divisionOfOtherSeason.setSeasonId(2L);
+    }
+
+    @Test
+    void testGetAllDivisionsOfSeasonByLevel() {
+        when(divisionRepository.findBySeasonId(1L)).thenReturn(List.of(
+           landesliga, stadtligaA, stadtLigaB));
+        SortedSetMultimap actual = divisionService.getAllDivisionsOfSeasonByLevel(1L);
+        assertEquals(3, actual.size());
+
+        assertEquals(1, actual.get(1).size());
+        Iterator<DivisionData> level1Actual = actual.get(1).iterator();
+        assertEquals(landesligaData, level1Actual.next());
+        assertFalse(level1Actual.hasNext());
+
+        assertEquals(2, actual.get(2).size());
+        Iterator<DivisionData> level2Actual = actual.get(2).iterator();
+        assertEquals(stadtligaAData, level2Actual.next());
+        assertEquals(stadtLigaBData, level2Actual.next());
+        assertFalse(level2Actual.hasNext());
+    }
+
+    @Test
+    void testCreateDivisionOk() {
+        when(divisionRepository.existsBySeasonIdAndName(1L, "Landesliga")).thenReturn(Boolean.FALSE);
+        when(divisionRepository.getBySeasonIdAndName(1L, "Landesliga")).thenReturn(landesliga);
+        DivisionData actual = divisionService.createDivision(new DivisionCreationData("Landesliga", 1, 8, 1L));
+        assertEquals(actual, landesligaData);
+        verify(divisionRepository, times(1)).save(
+                argThat(division -> division.getName().equals("Landesliga")
+                && division.getLevel().equals(1)
+                && division.getNumberOfBoards().equals(8)
+                && division.getSeasonId().equals(1L)));
+    }
+
+    @Test
+    void testCreateDivisionNotOk() {
+        NameBlankException nameBlankException = assertThrows(NameBlankException.class,
+                () -> divisionService.createDivision(new DivisionCreationData("",1,8,1L)));
+        assertEquals("Der Name der Staffel darf nicht leer sein!", nameBlankException.getMessage());
+        NameBlankException nameNullException = assertThrows(NameBlankException.class,
+                () -> divisionService.createDivision(new DivisionCreationData(null,1,8,1L)));
+        assertEquals("Der Name der Staffel darf nicht leer sein!", nameNullException.getMessage());
+        BadDataException seasonNullException = assertThrows(BadDataException.class,
+                () -> divisionService.createDivision(new DivisionCreationData("Landesliga", 1, 8 ,null)));
+        assertEquals("Zur Erstellung einer Staffel muss eine Saison gegeben sein!", seasonNullException.getMessage());
+        when(divisionRepository.existsBySeasonIdAndName(1L, "Landesliga")).thenReturn(Boolean.TRUE);
+        AlreadyExistsException alreadyExistsException = assertThrows(AlreadyExistsException.class,
+                () -> divisionService.createDivision(new DivisionCreationData("Landesliga", 1, 8, 1L)));
+        assertEquals("Staffel mit Namen Landesliga für Saison mit ID 1 existiert bereits!", alreadyExistsException.getMessage());
     }
 
 }

@@ -1,7 +1,7 @@
 package de.tonypsilon.bmm.backend.season.service;
 
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
-import de.tonypsilon.bmm.backend.exception.BadPatchDataException;
+import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NameBlankException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.season.data.*;
@@ -94,7 +94,7 @@ public class SeasonService {
             seasonRepository.save(seasonToBeUpdated);
             return seasonToSeasonData(seasonRepository.getByName(seasonStageChangeData.seasonName()));
         } else {
-            throw new BadPatchDataException("Eine Saison im Status %s kann nicht in Status %s geändert werden!"
+            throw new BadDataException("Eine Saison im Status %s kann nicht in Status %s geändert werden!"
                     .formatted(seasonToBeUpdated.getStage(), seasonStageChangeData.stage()));
         }
     }
