@@ -48,6 +48,7 @@ public class ClubService {
         return clubToClubData(clubRepository.getById(patchedClubData.id()));
     }
 
+    @NonNull
     private ClubData clubToClubData(@NonNull Club club) {
         return new ClubData(club.getId(), club.getName(), club.getZps(), club.getActive());
     }
