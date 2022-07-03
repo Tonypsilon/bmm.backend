@@ -10,6 +10,6 @@ public class SeasonAdmin {
     private String username;
 
     @Id
-    @Column(name = "season_name")
-    private String seasonName;
+    @Column(name = "season_id")
+    private Long seasonId;
 }

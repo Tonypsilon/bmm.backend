@@ -164,3 +164,16 @@ databaseChangeLog:
                   type: boolean
                   constraints:
                     nullable: false
+  - changeSet:
+      id: 7
+      author: Tonypsilon
+      changes:
+        - modifyDataType:
+            tableName: seasonadmin
+            columnName: season_name
+            newDataType: int
+        - renameColumn:
+            tableName: seasonadmin
+            oldColumnName: season_name
+            newColumnName: season_id
+            columnDataType: int
