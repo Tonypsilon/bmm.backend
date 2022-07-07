@@ -7,6 +7,7 @@ import de.tonypsilon.bmm.backend.club.data.ClubRepository;
 import de.tonypsilon.bmm.backend.exception.*;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
@@ -36,6 +37,7 @@ public class ClubService {
         return clubToClubData(clubRepository.getByName(clubCreationData.name()));
     }
 
+    @Transactional
     public ClubData patchClub(@NonNull ClubData patchedClubData) {
         checkThatClubWithIdExists(patchedClubData.id());
         Club clubToBePatched = clubRepository.getById(patchedClubData.id());
@@ -46,6 +48,10 @@ public class ClubService {
         clubToBePatched.setActive(patchedClubData.active());
         clubRepository.save(clubToBePatched);
         return clubToClubData(clubRepository.getById(patchedClubData.id()));
+    }
+
+    public Boolean clubExistsById(Long clubId) {
+        return clubRepository.existsById(clubId);
     }
 
     @NonNull
@@ -82,4 +88,5 @@ public class ClubService {
             throw new MissingDataException("Club muss Eigenschaft zps besitzen!");
         }
     }
+
 }

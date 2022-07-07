@@ -99,6 +99,10 @@ public class SeasonService {
         }
     }
 
+    public Boolean seasonExistsById(Long seasonId) {
+        return seasonRepository.existsById(seasonId);
+    }
+
     @NonNull
     private SeasonData seasonToSeasonData(@NonNull Season season) {
         return new SeasonData(season.getId(), season.getName(), season.getStage());
