@@ -177,3 +177,34 @@ databaseChangeLog:
             oldColumnName: season_name
             newColumnName: season_id
             columnDataType: int
+  - changeSet:
+      id: 8
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: team
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: season_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: club_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: number
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false

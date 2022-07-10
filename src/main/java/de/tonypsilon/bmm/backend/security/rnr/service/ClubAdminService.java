@@ -27,22 +27,23 @@ public class ClubAdminService {
     }
 
     @Transactional
-    public ClubAdminData createClubAdmin(Long clubId, String username) {
-        if(!userDetailsManager.userExists(username)) {
-            throw new NotFoundException("Es gibt keinen Benutzer mit dem Namen %s!".formatted(username));
+    public ClubAdminData createClubAdmin(ClubAdminData clubAdminCreateData) {
+        if(!userDetailsManager.userExists(clubAdminCreateData.username())) {
+            throw new NotFoundException("Es gibt keinen Benutzer mit dem Namen %s!".formatted(clubAdminCreateData.username()));
         }
-        if(!clubService.clubExistsById(clubId)) {
-            throw new NotFoundException("Es gibt keinen Club mit der ID %d!".formatted(clubId));
+        if(!clubService.clubExistsById(clubAdminCreateData.clubId())) {
+            throw new NotFoundException("Es gibt keinen Club mit der ID %d!".formatted(clubAdminCreateData.clubId()));
         }
-        if(clubAdminRepository.existsByClubIdAndUsername(clubId, username)) {
+        if(clubAdminRepository.existsByClubIdAndUsername(clubAdminCreateData.clubId(), clubAdminCreateData.username())) {
             throw new AlreadyExistsException("Benutzer %s ist bereits Administrator für den Club mit ID %d"
-                    .formatted(username, clubId));
+                    .formatted(clubAdminCreateData.username(), clubAdminCreateData.clubId()));
         }
         ClubAdmin clubAdmin = new ClubAdmin();
-        clubAdmin.setClubId(clubId);
-        clubAdmin.setUsername(username);
+        clubAdmin.setClubId(clubAdminCreateData.clubId());
+        clubAdmin.setUsername(clubAdminCreateData.username());
         clubAdminRepository.save(clubAdmin);
-        return clubAdminToClubAdminData(clubAdminRepository.getByClubIdAndUsername(clubId, username));
+        return clubAdminToClubAdminData(
+                clubAdminRepository.getByClubIdAndUsername(clubAdminCreateData.clubId(), clubAdminCreateData.username()));
     }
 
     public Boolean isClubAdmin(Long clubId, String username) {

@@ -27,22 +27,23 @@ public class SeasonAdminService {
     }
 
     @Transactional
-    public SeasonAdminData createSeasonAdmin(Long seasonId, String username) {
-        if(!userDetailsManager.userExists(username)) {
-            throw new NotFoundException("Es gibt keinen Benutzer mit dem Namen %s!".formatted(username));
+    public SeasonAdminData createSeasonAdmin(SeasonAdminData seasonAdminCreateData) {
+        if(!userDetailsManager.userExists(seasonAdminCreateData.username())) {
+            throw new NotFoundException("Es gibt keinen Benutzer mit dem Namen %s!".formatted(seasonAdminCreateData.username()));
         }
-        if(!seasonService.seasonExistsById(seasonId)) {
-            throw new NotFoundException("Es gibt keine Saison mit der ID %d!".formatted(seasonId));
+        if(!seasonService.seasonExistsById(seasonAdminCreateData.seasonId())) {
+            throw new NotFoundException("Es gibt keine Saison mit der ID %d!".formatted(seasonAdminCreateData.seasonId()));
         }
-        if (seasonAdminRepository.existsBySeasonIdAndUsername(seasonId, username)) {
+        if (seasonAdminRepository.existsBySeasonIdAndUsername(seasonAdminCreateData.seasonId(), seasonAdminCreateData.username())) {
             throw new AlreadyExistsException("Benutzer %s ist bereits Administrator für die Saison mit ID %d!"
-                    .formatted(username, seasonId));
+                    .formatted(seasonAdminCreateData.username(), seasonAdminCreateData.seasonId()));
         }
         SeasonAdmin seasonAdmin = new SeasonAdmin();
-        seasonAdmin.setSeasonId(seasonId);
-        seasonAdmin.setUsername(username);
+        seasonAdmin.setSeasonId(seasonAdminCreateData.seasonId());
+        seasonAdmin.setUsername(seasonAdminCreateData.username());
         seasonAdminRepository.save(seasonAdmin);
-        return seasonAdminToSeasonAdminData(seasonAdminRepository.getBySeasonIdAndUsername(seasonId,username));
+        return seasonAdminToSeasonAdminData(
+                seasonAdminRepository.getBySeasonIdAndUsername(seasonAdminCreateData.seasonId(), seasonAdminCreateData.username()));
     }
 
     public Boolean isSeasonAdmin(Long seasonId, String username) {
