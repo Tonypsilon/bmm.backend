@@ -57,7 +57,7 @@ class BmmApplicationSystemTest {
         assertEquals(SeasonStage.REGISTRATION, postSeasonResult.stage());
 
         // Step 2: Get the season
-        MockHttpServletResponse getSeasonsResponse = this.mockMvc.perform(get("/seasons/non-archived"))
+        MockHttpServletResponse getSeasonsResponse = this.mockMvc.perform(get("/seasons"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
         Collection<SeasonData> getSeasonsResult = objectMapper.readValue(getSeasonsResponse.getContentAsString(), new TypeReference<Collection<SeasonData>>() {
@@ -80,7 +80,7 @@ class BmmApplicationSystemTest {
         assertEquals(SeasonStage.ARCHIVED, patchSeasonResult.stage());
 
         // Step 4: Get the season again, this time as archived
-        getSeasonsResponse = this.mockMvc.perform(get("/seasons/archived"))
+        getSeasonsResponse = this.mockMvc.perform(get("/seasons"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
         getSeasonsResult = objectMapper.readValue(getSeasonsResponse.getContentAsString(), new TypeReference<Collection<SeasonData>>() {
@@ -91,11 +91,11 @@ class BmmApplicationSystemTest {
         assertEquals(SeasonStage.ARCHIVED, actualSeason.stage());
 
         // Step 5: Test an error case: Try to get a season that does not exist.
-        MockHttpServletResponse getSeasonThatDoesNotExistResponse = this.mockMvc.perform(get("/seasons/non-archived/non-existent"))
+        MockHttpServletResponse getSeasonThatDoesNotExistResponse = this.mockMvc.perform(get("/seasons/non-existent"))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse();
         ErrorData getSeasonThatDoesNotExistErrorData = objectMapper.readValue(getSeasonThatDoesNotExistResponse.getContentAsString(), ErrorData.class);
-        assertEquals("Nichtarchivierte Saison mit dem Namen non-existent existiert nicht!",
+        assertEquals("Saison mit dem Namen non-existent existiert nicht!",
                 getSeasonThatDoesNotExistErrorData.message());
 
 

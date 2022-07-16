@@ -28,19 +28,10 @@ public class DivisionController {
         this.seasonService = seasonService;
     }
 
-    @GetMapping(value = "/divisions/non-archived/{seasonName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/divisions/{seasonName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SortedSetMultimap<Integer, DivisionData>> getAllDivisionsOfNonArchivedSeasonByLevel(
             @PathVariable String seasonName) {
-        Long seasonId = seasonService.getNonArchivedSeasonByName(seasonName).id();
-        return ResponseEntity.ok(
-                divisionService.getAllDivisionsOfSeasonByLevel(seasonId)
-        );
-    }
-
-    @GetMapping(value = "/divisions/archived/{seasonName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SortedSetMultimap<Integer, DivisionData>> getAllDivisionsOfArchivedSeasonByLevel(
-            @PathVariable String seasonName) {
-        Long seasonId = seasonService.getArchivedSeasonByName(seasonName).id();
+        Long seasonId = seasonService.getSeasonByName(seasonName).id();
         return ResponseEntity.ok(
                 divisionService.getAllDivisionsOfSeasonByLevel(seasonId)
         );

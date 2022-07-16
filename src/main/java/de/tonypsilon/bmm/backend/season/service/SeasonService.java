@@ -49,38 +49,19 @@ public class SeasonService {
         return seasonToSeasonData(seasonRepository.getByName(seasonCreationData.name()));
     }
 
-    public SeasonData getNonArchivedSeasonByName(String seasonName) {
-        return seasonToSeasonData(seasonRepository.findByName(seasonName).filter(season -> !season.getStage().equals(SeasonStage.ARCHIVED))
-                .orElseThrow(() -> new NotFoundException("Nichtarchivierte Saison mit dem Namen %s existiert nicht!".formatted(seasonName))));
+    public SeasonData getSeasonByName(String seasonName) {
+        return seasonToSeasonData(seasonRepository.findByName(seasonName)
+                .orElseThrow(() -> new NotFoundException("Saison mit dem Namen %s existiert nicht!".formatted(seasonName))));
     }
 
-    public SeasonData getArchivedSeasonByName(String seasonName) {
-        return seasonToSeasonData(seasonRepository.findByName(seasonName).filter(season -> season.getStage().equals(SeasonStage.ARCHIVED))
-                .orElseThrow(() -> new NotFoundException("Archivierte Saison mit dem Namen %s existiert nicht!".formatted(seasonName))));
+    public SeasonData getSeasonById(Long seasonId) {
+        return seasonToSeasonData(seasonRepository.findById(seasonId)
+                .orElseThrow(() -> new NotFoundException("Saison mit der ID %d existiert nicht!".formatted(seasonId))));
     }
 
-    public SeasonData getNonArchivedSeasonById(Long seasonId) {
-        return seasonToSeasonData(seasonRepository.findById(seasonId).filter(season -> !season.getStage().equals(SeasonStage.ARCHIVED))
-                .orElseThrow(() -> new NotFoundException("Nichtarchivierte Saison mit der ID %d existiert nicht!".formatted(seasonId))));
-    }
-
-    public SeasonData getArchivedSeasonById(Long seasonId) {
-        return seasonToSeasonData(seasonRepository.findById(seasonId).filter(season -> season.getStage().equals(SeasonStage.ARCHIVED))
-                .orElseThrow(() -> new NotFoundException("Archivierte Saison mit der ID %d existiert nicht!".formatted(seasonId))));
-    }
-
-    public Collection<SeasonData> getAllNonArchivedSeasons() {
+    public Collection<SeasonData> getAllSeasons() {
         return seasonRepository.findAll()
                 .stream()
-                .filter(season -> !season.getStage().equals(SeasonStage.ARCHIVED))
-                .map(this::seasonToSeasonData)
-                .toList();
-    }
-
-    public Collection<SeasonData> getAllArchivedSeasons() {
-        return seasonRepository.findAll()
-                .stream()
-                .filter(season -> season.getStage().equals(SeasonStage.ARCHIVED))
                 .map(this::seasonToSeasonData)
                 .toList();
     }

@@ -23,30 +23,16 @@ public class SeasonController {
         this.seasonService = seasonService;
     }
 
-    @GetMapping(value = "/seasons/non-archived", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<SeasonData>> getAllNonArchivedSeasons() {
+    @GetMapping(value = "/seasons", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<SeasonData>> getAllSeasons() {
         return ResponseEntity
-                .ok(seasonService.getAllNonArchivedSeasons());
+                .ok(seasonService.getAllSeasons());
     }
 
-    @RolesAllowed(Roles.ADMIN)
-    @GetMapping(value = "/seasons/archived", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<SeasonData>> getAllArchivedSeasons() {
+    @GetMapping(value = "/seasons/{seasonName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SeasonData> getSeasonByName(@PathVariable String seasonName) {
         return ResponseEntity
-                .ok(seasonService.getAllArchivedSeasons());
-    }
-
-    @GetMapping(value = "/seasons/non-archived/{seasonName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SeasonData> getNonArchivedSeason(@PathVariable String seasonName) {
-        return ResponseEntity
-                .ok(seasonService.getNonArchivedSeasonByName(seasonName));
-    }
-
-    @RolesAllowed(Roles.ADMIN)
-    @GetMapping(value = "/seasons/archived/{seasonName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SeasonData> getArchivedSeason(@PathVariable String seasonName) {
-        return ResponseEntity
-                .ok(seasonService.getArchivedSeasonByName(seasonName));
+                .ok(seasonService.getSeasonByName(seasonName));
     }
 
     @RolesAllowed(Roles.ADMIN)
