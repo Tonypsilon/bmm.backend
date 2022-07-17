@@ -76,6 +76,10 @@ public class TeamService {
         teamRepository.delete(team);
     }
 
+    public Boolean existsById(Long teamId) {
+        return teamRepository.existsById(teamId);
+    }
+
     private void verifyTeamNumber(TeamCreationData teamCreationData) {
         Integer maxTeamNumber = getMaxTeamNumberForTeamsOfClub(teamCreationData.seasonId(), teamCreationData.clubId());
         if (!teamCreationData.number().equals(maxTeamNumber+1)) {

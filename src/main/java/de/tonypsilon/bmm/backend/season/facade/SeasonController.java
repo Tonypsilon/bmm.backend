@@ -45,7 +45,7 @@ public class SeasonController {
                 .body(seasonService.createSeason(seasonCreationDataRequestEntity.getBody()));
     }
 
-    @RolesAllowed({Roles.ADMIN, Roles.SEASON_ADMIN})
+    @RolesAllowed(Roles.SEASON_ADMIN)
     @PatchMapping(value = "/seasons/{seasonName}",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)

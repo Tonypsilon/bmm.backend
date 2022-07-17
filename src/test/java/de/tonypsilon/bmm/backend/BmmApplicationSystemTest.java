@@ -43,7 +43,7 @@ class BmmApplicationSystemTest {
      * @throws Exception
      */
     @Test
-    @WithMockUser(authorities = Roles.ADMIN)
+    @WithMockUser(authorities = {Roles.ADMIN, Roles.SEASON_ADMIN})
     void bmmSmokeTest() throws Exception {
         // Step 1: Create a season
         MockHttpServletResponse postSeasonResponse = this.mockMvc.perform(post("/seasons")
@@ -91,6 +91,7 @@ class BmmApplicationSystemTest {
         assertEquals(SeasonStage.ARCHIVED, actualSeason.stage());
 
         // Step 5: Test an error case: Try to get a season that does not exist.
+        // This step implicitly tests the functionality of the BmmExceptionAdvice class.
         MockHttpServletResponse getSeasonThatDoesNotExistResponse = this.mockMvc.perform(get("/seasons/non-existent"))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse();
