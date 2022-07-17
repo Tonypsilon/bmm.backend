@@ -78,7 +78,7 @@ public class TeamService {
 
     private void verifyTeamNumber(TeamCreationData teamCreationData) {
         Integer maxTeamNumber = getMaxTeamNumberForTeamsOfClub(teamCreationData.seasonId(), teamCreationData.clubId());
-        if (teamCreationData.number().equals(maxTeamNumber+1)) {
+        if (!teamCreationData.number().equals(maxTeamNumber+1)) {
             throw new BadDataException(
                     "Das neue Team hat nicht die passende Teamnummer. Erwartet: %d. Tatsächlich: %d."
                             .formatted(maxTeamNumber+1, teamCreationData.number()));
