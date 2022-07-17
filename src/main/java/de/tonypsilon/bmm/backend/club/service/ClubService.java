@@ -41,8 +41,8 @@ public class ClubService {
     public ClubData patchClub(@NonNull ClubData patchedClubData) {
         checkThatClubWithIdExists(patchedClubData.id());
         Club clubToBePatched = clubRepository.getById(patchedClubData.id());
-        if(! clubToBePatched.getZps().equals(patchedClubData.zps())) {
-            throw new BadDataException("Die id und zps des Clubs stimmen nicht überein!");
+        if(!clubToBePatched.getZps().equals(patchedClubData.zps())) {
+            throw new BadDataException("Die Eigenschaft zps eines Vereins darf sich nicht ändern!");
         }
         clubToBePatched.setName(patchedClubData.name());
         clubToBePatched.setActive(patchedClubData.active());
@@ -61,31 +61,31 @@ public class ClubService {
 
     private void checkIfClubNameIsValid(String name) {
         if(name == null || name.isBlank()) {
-            throw new NameBlankException("Der Name des Clubs darf nicht leer sein!");
+            throw new NameBlankException("Der Name des Vereins darf nicht leer sein!");
         }
     }
 
     private void checkThatClubWithNameDoesNotExist(String name) {
         if(Boolean.TRUE.equals(clubRepository.existsByName(name))) {
-            throw new AlreadyExistsException("Club mit dem Namen %s existiert bereits!".formatted(name));
+            throw new AlreadyExistsException("Verein mit dem Namen %s existiert bereits!".formatted(name));
         }
     }
 
     private void checkThatClubWithZpsDoesNotExist(@NonNull Integer zps) {
         if(Boolean.TRUE.equals(clubRepository.existsByZps(zps))) {
-            throw new AlreadyExistsException("Club mit der zps %d existiert bereits!".formatted(zps));
+            throw new AlreadyExistsException("Verein mit der zps %d existiert bereits!".formatted(zps));
         }
     }
 
     private void checkThatClubWithIdExists(Long id) {
         if(id == null || Boolean.FALSE.equals(clubRepository.existsById(id))) {
-            throw new NotFoundException("Club mit der ID %d existiert nicht!".formatted(id));
+            throw new NotFoundException("Verein mit der ID %d existiert nicht!".formatted(id));
         }
     }
 
     private void validateZps(Integer zps) {
         if(zps == null) {
-            throw new MissingDataException("Club muss Eigenschaft zps besitzen!");
+            throw new MissingDataException("Verein muss Eigenschaft zps besitzen!");
         }
     }
 
