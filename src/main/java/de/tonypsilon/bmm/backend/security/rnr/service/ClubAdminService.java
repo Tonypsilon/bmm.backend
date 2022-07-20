@@ -46,7 +46,8 @@ public class ClubAdminService {
                 clubAdminRepository.getByClubIdAndUsername(clubAdminCreateData.clubId(), clubAdminCreateData.username()));
     }
 
-    public Boolean isClubAdmin(Long clubId, String username) {
+    @NonNull
+    public Boolean isClubAdmin(@NonNull Long clubId, @NonNull String username) {
         return clubAdminRepository.existsByClubIdAndUsername(clubId, username);
     }
 
@@ -54,7 +55,7 @@ public class ClubAdminService {
     public void deleteClubAdmin(Long clubId, String username) {
         ClubAdmin clubAdminToDelete = clubAdminRepository.findByClubIdAndUsername(clubId, username)
                 .orElseThrow(() -> new NotFoundException("Benutzer %s ist kein Administrator für den Club mit ID %d!"
-                .formatted(username, clubId)));
+                        .formatted(username, clubId)));
         clubAdminRepository.delete(clubAdminToDelete);
     }
 

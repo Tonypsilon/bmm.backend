@@ -34,7 +34,7 @@ public class SeasonAdminService {
         if(!seasonService.seasonExistsById(seasonAdminCreateData.seasonId())) {
             throw new NotFoundException("Es gibt keine Saison mit der ID %d!".formatted(seasonAdminCreateData.seasonId()));
         }
-        if (seasonAdminRepository.existsBySeasonIdAndUsername(seasonAdminCreateData.seasonId(), seasonAdminCreateData.username())) {
+        if(seasonAdminRepository.existsBySeasonIdAndUsername(seasonAdminCreateData.seasonId(), seasonAdminCreateData.username())) {
             throw new AlreadyExistsException("Benutzer %s ist bereits Administrator für die Saison mit ID %d!"
                     .formatted(seasonAdminCreateData.username(), seasonAdminCreateData.seasonId()));
         }
@@ -46,7 +46,8 @@ public class SeasonAdminService {
                 seasonAdminRepository.getBySeasonIdAndUsername(seasonAdminCreateData.seasonId(), seasonAdminCreateData.username()));
     }
 
-    public Boolean isSeasonAdmin(Long seasonId, String username) {
+    @NonNull
+    public Boolean isSeasonAdmin(@NonNull Long seasonId, @NonNull String username) {
         return seasonAdminRepository.existsBySeasonIdAndUsername(seasonId, username);
     }
 
