@@ -55,7 +55,7 @@ public class SeasonAdminService {
     public void deleteSeasonAdmin(Long seasonId, String username) {
         SeasonAdmin seasonAdminToDelete = seasonAdminRepository.findBySeasonIdAndUsername(seasonId, username)
                         .orElseThrow(() -> new NotFoundException(
-                                "Benutzer %s ist kein Administrator für die Saison mit ID %d"
+                                "Benutzer %s ist kein Administrator für die Saison mit ID %d!"
                                         .formatted(username, seasonId)));
         seasonAdminRepository.delete(seasonAdminToDelete);
     }

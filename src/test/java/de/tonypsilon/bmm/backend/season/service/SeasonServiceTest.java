@@ -32,7 +32,7 @@ class SeasonServiceTest {
 
     @BeforeEach
     private void setUp() {
-        this.seasonService = new SeasonService(seasonRepository);
+        seasonService = new SeasonService(seasonRepository);
         seasonRegistration = new Season();
         seasonRegistration.setId(1L);
         seasonRegistration.setName("Saison-Registration");
