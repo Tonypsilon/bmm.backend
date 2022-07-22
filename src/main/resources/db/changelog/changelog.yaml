@@ -208,3 +208,52 @@ databaseChangeLog:
                   constraints:
                     unique: false
                     nullable: false
+  - changeSet:
+      id: 9
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: participationeligibility
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: season_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: club_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: forename
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: surname
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: pkz
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: dwz
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: true
