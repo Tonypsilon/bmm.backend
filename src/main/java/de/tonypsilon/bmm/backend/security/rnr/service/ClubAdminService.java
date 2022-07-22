@@ -32,10 +32,10 @@ public class ClubAdminService {
             throw new NotFoundException("Es gibt keinen Benutzer mit dem Namen %s!".formatted(clubAdminCreateData.username()));
         }
         if(!clubService.clubExistsById(clubAdminCreateData.clubId())) {
-            throw new NotFoundException("Es gibt keinen Club mit der ID %d!".formatted(clubAdminCreateData.clubId()));
+            throw new NotFoundException("Es gibt keinen Verein mit der ID %d!".formatted(clubAdminCreateData.clubId()));
         }
         if(clubAdminRepository.existsByClubIdAndUsername(clubAdminCreateData.clubId(), clubAdminCreateData.username())) {
-            throw new AlreadyExistsException("Benutzer %s ist bereits Administrator für den Club mit ID %d"
+            throw new AlreadyExistsException("Benutzer %s ist bereits Administrator für den Verein mit ID %d!"
                     .formatted(clubAdminCreateData.username(), clubAdminCreateData.clubId()));
         }
         ClubAdmin clubAdmin = new ClubAdmin();
@@ -54,7 +54,7 @@ public class ClubAdminService {
     @Transactional
     public void deleteClubAdmin(Long clubId, String username) {
         ClubAdmin clubAdminToDelete = clubAdminRepository.findByClubIdAndUsername(clubId, username)
-                .orElseThrow(() -> new NotFoundException("Benutzer %s ist kein Administrator für den Club mit ID %d!"
+                .orElseThrow(() -> new NotFoundException("Benutzer %s ist kein Administrator für den Verein mit ID %d!"
                         .formatted(username, clubId)));
         clubAdminRepository.delete(clubAdminToDelete);
     }

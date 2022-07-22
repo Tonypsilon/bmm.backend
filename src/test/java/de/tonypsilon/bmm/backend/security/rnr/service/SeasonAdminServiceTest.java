@@ -20,10 +20,9 @@ class SeasonAdminServiceTest {
     private final SeasonAdminRepository seasonAdminRepository = mock(SeasonAdminRepository.class);
     private final SeasonService seasonService = mock(SeasonService.class);
     private final UserDetailsManager userDetailsManager = mock(UserDetailsManager.class);
-    private SeasonAdmin seasonAdmin1;
-    private SeasonAdminData seasonAdminData1 = new SeasonAdminData(1L, "user1");
-
     private SeasonAdminService seasonAdminService;
+    private SeasonAdmin seasonAdmin1;
+    private final SeasonAdminData seasonAdminData1 = new SeasonAdminData(1L, "user1");
 
     @BeforeEach
     private void setUp() {
@@ -67,7 +66,7 @@ class SeasonAdminServiceTest {
     }
 
     @Test
-    void testCreaateSeasonAdminAlreadyExists() {
+    void testCreateSeasonAdminAlreadyExists() {
         when(userDetailsManager.userExists("user1")).thenReturn(Boolean.TRUE);
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonAdminRepository.existsBySeasonIdAndUsername(1L, "user1")).thenReturn(Boolean.TRUE);
