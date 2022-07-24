@@ -13,6 +13,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+
 @Service
 public class ParticipationEligibilityService {
 
@@ -31,26 +33,26 @@ public class ParticipationEligibilityService {
     @Transactional
     public ParticipationEligibilityData createParticipationEligibility(
             ParticipationEligibilityCreationData participationEligibilityCreationData) {
-        if(!seasonService.seasonExistsById(participationEligibilityCreationData.seasonId())) {
+        if (!seasonService.seasonExistsById(participationEligibilityCreationData.seasonId())) {
             throw new NotFoundException("Es gibt keine Saison mit der ID %d!"
                     .formatted(participationEligibilityCreationData.seasonId()));
         }
-        if(!clubService.clubExistsById(participationEligibilityCreationData.clubId())) {
+        if (!clubService.clubExistsById(participationEligibilityCreationData.clubId())) {
             throw new NotFoundException("Es gibt keinen Verein mit der ID %d!"
                     .formatted(participationEligibilityCreationData.clubId()));
         }
         verifyName(participationEligibilityCreationData.forename());
         verifyName(participationEligibilityCreationData.surname());
         participationEligibilityCreationData.dwz().ifPresent(this::verifyDwz);
-        if(participationEligibilityRepository.existsBySeasonIdAndClubIdAndPkz(
+        if (participationEligibilityRepository.existsBySeasonIdAndClubIdAndPkz(
                 participationEligibilityCreationData.seasonId(),
                 participationEligibilityCreationData.clubId(),
                 participationEligibilityCreationData.pkz())) {
-            throw new AlreadyExistsException("Es gibt bereits eine Spielberechtigung für die Spielernummer %d" +
-                    "für den Club mit ID %d und die Saison mit der ID %d!"
-                            .formatted(participationEligibilityCreationData.pkz(),
-                                    participationEligibilityCreationData.clubId(),
-                                    participationEligibilityCreationData.seasonId()));
+            throw new AlreadyExistsException(("Es gibt bereits eine Spielberechtigung für die Spielernummer %d" +
+                    " für den Club mit ID %d und die Saison mit der ID %d!")
+                    .formatted(participationEligibilityCreationData.pkz(),
+                            participationEligibilityCreationData.clubId(),
+                            participationEligibilityCreationData.seasonId()));
         }
         ParticipationEligibility participationEligibility = new ParticipationEligibility();
         participationEligibility.setSeasonId(participationEligibilityCreationData.seasonId());
@@ -61,10 +63,35 @@ public class ParticipationEligibilityService {
         participationEligibility.setDwz(participationEligibilityCreationData.dwz().orElse(null));
         participationEligibilityRepository.save(participationEligibility);
 
-        return  participationEligibilityToParticipationEligibilityData(
+        return participationEligibilityToParticipationEligibilityData(
                 participationEligibilityRepository.getBySeasonIdAndClubIdAndPkz(participationEligibility.getSeasonId(),
                         participationEligibility.getClubId(),
                         participationEligibility.getPkz()));
+    }
+
+    public Collection<ParticipationEligibilityData> getAllParticipationEligibilitiesForSeason(Long seasonId) {
+        return participationEligibilityRepository
+                .getBySeasonId(seasonId)
+                .stream()
+                .map(this::participationEligibilityToParticipationEligibilityData)
+                .toList();
+    }
+
+    public Collection<ParticipationEligibilityData> getAllParticipationEligibilitiesForSeasonAndClub(
+            Long seasonId, Long clubId) {
+        return participationEligibilityRepository
+                .getBySeasonIdAndClubId(seasonId, clubId)
+                .stream()
+                .map(this::participationEligibilityToParticipationEligibilityData)
+                .toList();
+    }
+
+    @Transactional
+    public void deleteParticipationEligibility(Long participationEligibilityId) {
+        participationEligibilityRepository.delete(
+                participationEligibilityRepository.findById(participationEligibilityId)
+                        .orElseThrow(() -> new NotFoundException("Es gibt keine Spielberechtigung mit ID %d!"
+                                .formatted(participationEligibilityId))));
     }
 
     @NonNull
@@ -80,13 +107,13 @@ public class ParticipationEligibilityService {
     }
 
     private void verifyDwz(Integer dwz) {
-        if(dwz <= 0) {
+        if (dwz <= 0) {
             throw new BadDataException("Die DWZ muss positiv sein!");
         }
     }
 
     private void verifyName(String name) {
-        if(name == null || name.isBlank()) {
+        if (name == null || name.isBlank()) {
             throw new BadDataException("Der Name darf nicht leer sein!");
         }
     }

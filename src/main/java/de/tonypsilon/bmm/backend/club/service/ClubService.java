@@ -54,6 +54,15 @@ public class ClubService {
         return clubRepository.existsById(clubId);
     }
 
+    @Transactional
+    public void deleteClub(Long clubId) {
+        clubRepository.delete(clubRepository.findById(clubId)
+                .orElseThrow(
+                        () -> new NotFoundException("Es gibt keinen Verein mit ID %d!".formatted(clubId))
+                )
+        );
+    }
+
     @NonNull
     private ClubData clubToClubData(@NonNull Club club) {
         return new ClubData(club.getId(), club.getName(), club.getZps(), club.getActive());

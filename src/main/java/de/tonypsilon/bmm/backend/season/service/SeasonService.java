@@ -80,7 +80,8 @@ public class SeasonService {
         }
     }
 
-    public Boolean seasonExistsById(Long seasonId) {
+    @NonNull
+    public Boolean seasonExistsById(@NonNull Long seasonId) {
         return seasonRepository.existsById(seasonId);
     }
 

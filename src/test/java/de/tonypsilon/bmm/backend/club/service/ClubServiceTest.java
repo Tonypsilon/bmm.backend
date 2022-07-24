@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -160,6 +161,26 @@ class ClubServiceTest {
         when(clubRepository.existsById(-1L)).thenReturn(Boolean.FALSE);
         assertEquals(Boolean.TRUE, clubService.clubExistsById(1L));
         assertEquals(Boolean.FALSE, clubService.clubExistsById(-1L));
+    }
+
+    @Test
+    void testDeleteClubOK() {
+        when(clubRepository.findById(1L)).thenReturn(Optional.of(club1));
+        clubService.deleteClub(1L);
+        verify(clubRepository, times(1)).delete(
+                argThat(club -> club.getId().equals(1L)
+                && club.getName().equals("club1")
+                && club.getZps().equals(100)
+                && club.getActive().equals(Boolean.TRUE))
+        );
+    }
+
+    @Test
+    void testDeleteClubThatDoesNotExist() {
+        when(clubRepository.findById(-1L)).thenReturn(Optional.empty());
+        NotFoundException actualException = assertThrows(NotFoundException.class,
+                () -> clubService.deleteClub(-1L));
+        assertEquals("Es gibt keinen Verein mit ID -1!", actualException.getMessage());
     }
 
 }
