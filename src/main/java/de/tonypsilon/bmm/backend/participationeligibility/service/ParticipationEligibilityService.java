@@ -90,7 +90,7 @@ public class ParticipationEligibilityService {
     public void deleteParticipationEligibility(Long participationEligibilityId) {
         participationEligibilityRepository.delete(
                 participationEligibilityRepository.findById(participationEligibilityId)
-                        .orElseThrow(() -> new NotFoundException("Es gibt keine Spielberechtigung mit ID %d!"
+                        .orElseThrow(() -> new NotFoundException("Es gibt keine Spielberechtigung mit der ID %d!"
                                 .formatted(participationEligibilityId))));
     }
 

@@ -12,11 +12,12 @@ import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class ParticipationEligibilityServiceTest {
 
@@ -27,7 +28,14 @@ class ParticipationEligibilityServiceTest {
     private ParticipationEligibilityService participationEligibilityService;
     private ParticipationEligibilityData participationEligibilityData1 =
             new ParticipationEligibilityData(1L, 2L, 3L, "Max", "Mustermann", 1, Optional.empty());
-    private ParticipationEligibility participationEligibility1;
+    private ParticipationEligibilityData participationEligibilityData2 =
+            new ParticipationEligibilityData(2L, 2L, 3L, "Erika", "Musterfrau", 2, Optional.empty());
+    private ParticipationEligibilityData participationEligibilityData3 =
+            new ParticipationEligibilityData(3L, 3L, 3L, "Max", "Mustermann", 1, Optional.empty());
+    private ParticipationEligibilityData participationEligibilityData4 =
+            new ParticipationEligibilityData(4L, 2L, 4L, "Hal", "Lo", 1, Optional.empty());
+    private ParticipationEligibility participationEligibility1, participationEligibility2,
+            participationEligibility3, participationEligibility4;
 
     @BeforeEach
     private void setUp() {
@@ -43,6 +51,30 @@ class ParticipationEligibilityServiceTest {
         participationEligibility1.setSurname("Mustermann");
         participationEligibility1.setPkz(1);
         participationEligibility1.setDwz(null);
+        participationEligibility2 = new ParticipationEligibility();
+        participationEligibility2.setId(2L);
+        participationEligibility2.setSeasonId(2L);
+        participationEligibility2.setClubId(3L);
+        participationEligibility2.setForename("Erika");
+        participationEligibility2.setSurname("Musterfrau");
+        participationEligibility2.setPkz(2);
+        participationEligibility2.setDwz(null);
+        participationEligibility3 = new ParticipationEligibility();
+        participationEligibility3.setId(3L);
+        participationEligibility3.setSeasonId(3L);
+        participationEligibility3.setClubId(3L);
+        participationEligibility3.setForename("Max");
+        participationEligibility3.setSurname("Mustermann");
+        participationEligibility3.setPkz(1);
+        participationEligibility3.setDwz(null);
+        participationEligibility4 = new ParticipationEligibility();
+        participationEligibility4.setId(4L);
+        participationEligibility4.setSeasonId(2L);
+        participationEligibility4.setClubId(4L);
+        participationEligibility4.setForename("Hal");
+        participationEligibility4.setSurname("Lo");
+        participationEligibility4.setPkz(1);
+        participationEligibility4.setDwz(null);
     }
 
     @Test
@@ -131,4 +163,50 @@ class ParticipationEligibilityServiceTest {
                 "für den Club mit ID 3 und die Saison mit der ID 2!", actualException.getMessage());
     }
 
+    @Test
+    void testGetAllParticipationEligibilitiesForSeason() {
+        when(participationEligibilityRepository.getBySeasonId(2L))
+                .thenReturn(List.of(participationEligibility1, participationEligibility2, participationEligibility4));
+        Collection<ParticipationEligibilityData> actual = participationEligibilityService
+                .getAllParticipationEligibilitiesForSeason(2L);
+        assertEquals(3, actual.size());
+        assertTrue(actual.containsAll(List.of(participationEligibilityData1,
+                participationEligibilityData2, participationEligibilityData4)));
+    }
+
+    @Test
+    void testGetAllParticipationEligibilitiesForSeasonAndClub() {
+        when(participationEligibilityRepository.getBySeasonIdAndClubId(2L, 3L))
+                .thenReturn(List.of(participationEligibility1, participationEligibility2));
+        Collection<ParticipationEligibilityData> actual = participationEligibilityService
+                .getAllParticipationEligibilitiesForSeasonAndClub(2L, 3L);
+        assertEquals(2, actual.size());
+        assertTrue(actual.containsAll(List.of(participationEligibilityData1, participationEligibilityData2)));
+    }
+
+    @Test
+    void testDeleteParticipationEligibilityOk() {
+        when(participationEligibilityRepository.findById(4L))
+                .thenReturn(Optional.of(participationEligibility4));
+        participationEligibilityService.deleteParticipationEligibility(4L);
+        verify(participationEligibilityRepository, times(1)).delete(
+                argThat(participationEligibility -> participationEligibility.getId().equals(4L)
+                && participationEligibility.getSeasonId().equals(2L)
+                && participationEligibility.getClubId().equals(4L)
+                && participationEligibility.getForename().equals("Hal")
+                && participationEligibility.getSurname().equals("Lo")
+                && participationEligibility.getPkz().equals(1)
+                && participationEligibility.getDwz().isEmpty())
+        );
+    }
+
+    @Test
+    void testDeleteParticipationEligibilityThatDoesNotExist() {
+        when(participationEligibilityRepository.findById(5L))
+                .thenReturn(Optional.empty());
+        NotFoundException actualException = assertThrows(NotFoundException.class,
+                () -> participationEligibilityService.deleteParticipationEligibility(5L)
+        );
+        assertEquals("Es gibt keine Spielberechtigung mit der ID 5!", actualException.getMessage());
+    }
 }
