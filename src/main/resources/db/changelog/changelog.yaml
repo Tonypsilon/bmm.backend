@@ -257,3 +257,34 @@ databaseChangeLog:
                   constraints:
                     unique: false
                     nullable: true
+  - changeSet:
+      id: 10
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: matchday
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: division_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: date
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: round
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
