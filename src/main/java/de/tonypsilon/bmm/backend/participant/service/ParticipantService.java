@@ -24,9 +24,14 @@ public class ParticipantService {
     }
 
     @Transactional
-    public List<ParticipantData> createValidParticipantConfigurationForTeam(
-            Long teamId, Collection<ParticipantCreateData> participants) {
-        return null;
+    public Collection<ParticipantData> createValidParticipantConfigurationForTeam(
+            Long teamId, Collection<ParticipantCreateData> participantsCreateData) {
+        Collection<ParticipantData> createdParticipants = participantsCreateData
+                .stream()
+                .map(this::createParticipant)
+                .toList();
+        validateParticipantsOfTeam(teamId);
+        return createdParticipants;
     }
 
     private ParticipantData createParticipant(ParticipantCreateData participantCreateData) {
