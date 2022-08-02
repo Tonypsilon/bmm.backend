@@ -288,3 +288,34 @@ databaseChangeLog:
                   constraints:
                     unique: false
                     nullable: false
+  - changeSet:
+      id: 11
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: participant
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: team_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: participation_eligibility_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: number
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
