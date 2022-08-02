@@ -11,7 +11,7 @@ public class Participant {
     private Long id;
 
     @Column(name = "team_id", unique = false, nullable = false)
-    private Long TeamId;
+    private Long teamId;
 
     @Column(name = "participation_eligibility_id", unique = false, nullable = false)
     private Long participationEligibilityId;
@@ -30,11 +30,11 @@ public class Participant {
 
     @NonNull
     public Long getTeamId() {
-        return TeamId;
+        return teamId;
     }
 
     public void setTeamId(@NonNull Long teamId) {
-        TeamId = teamId;
+        teamId = teamId;
     }
 
     @NonNull

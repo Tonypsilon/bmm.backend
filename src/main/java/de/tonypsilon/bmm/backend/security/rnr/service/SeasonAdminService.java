@@ -43,7 +43,10 @@ public class SeasonAdminService {
         seasonAdmin.setUsername(seasonAdminCreateData.username());
         seasonAdminRepository.save(seasonAdmin);
         return seasonAdminToSeasonAdminData(
-                seasonAdminRepository.getBySeasonIdAndUsername(seasonAdminCreateData.seasonId(), seasonAdminCreateData.username()));
+                seasonAdminRepository.getBySeasonIdAndUsername(
+                        seasonAdminCreateData.seasonId(), seasonAdminCreateData.username()
+                )
+        );
     }
 
     @NonNull

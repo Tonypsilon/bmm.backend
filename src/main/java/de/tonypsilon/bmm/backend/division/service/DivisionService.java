@@ -6,10 +6,9 @@ import de.tonypsilon.bmm.backend.division.data.Division;
 import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
 import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.division.data.DivisionRepository;
-import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
-import de.tonypsilon.bmm.backend.exception.BadDataException;
-import de.tonypsilon.bmm.backend.exception.BmmException;
-import de.tonypsilon.bmm.backend.exception.NameBlankException;
+import de.tonypsilon.bmm.backend.exception.*;
+import de.tonypsilon.bmm.backend.season.service.SeasonService;
+import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +20,12 @@ import java.util.Comparator;
 public class DivisionService {
 
     private final DivisionRepository divisionRepository;
+    private final SeasonService seasonService;
 
-    public DivisionService(DivisionRepository divisionRepository) {
+    public DivisionService(DivisionRepository divisionRepository,
+                           SeasonService seasonService) {
         this.divisionRepository = divisionRepository;
+        this.seasonService = seasonService;
     }
 
     public SortedSetMultimap<Integer, DivisionData> getAllDivisionsOfSeasonByLevel(Long seasonId) {
@@ -44,6 +46,13 @@ public class DivisionService {
         if (divisionCreationData.seasonId() == null) {
             throw new BadDataException("Zur Erstellung einer Staffel muss eine Saison gegeben sein!");
         }
+        if(!seasonService.seasonExistsById(divisionCreationData.seasonId())) {
+            throw new NotFoundException("Es gibt keine Saison mit der ID %d!"
+                    .formatted(divisionCreationData.seasonId()));
+        }
+        if(!seasonService.getStageOfSeason(divisionCreationData.seasonId()).equals(SeasonStage.PREPARATION)) {
+            throw new SeasonStageException("Saison ist nicht in der Vorbereitungsphase!");
+        }
         if (divisionRepository.existsBySeasonIdAndName(divisionCreationData.seasonId(), divisionCreationData.name())) {
             throw new AlreadyExistsException("Staffel mit Namen %s für Saison mit ID %d existiert bereits!"
                     .formatted(divisionCreationData.name(), divisionCreationData.seasonId()));
@@ -56,6 +65,10 @@ public class DivisionService {
         divisionRepository.save(division);
         return divisionToDivisionData(
                 divisionRepository.getBySeasonIdAndName(divisionCreationData.seasonId(), divisionCreationData.name()));
+    }
+
+    public Boolean divisionExistsById(Long divisionId) {
+        return divisionRepository.existsById(divisionId);
     }
 
     @NonNull
