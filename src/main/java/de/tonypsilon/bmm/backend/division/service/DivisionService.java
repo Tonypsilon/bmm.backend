@@ -38,6 +38,14 @@ public class DivisionService {
         return divisionsOfSeasonByLevel;
     }
 
+    public Long getSeasonIdByDivisionId(Long divisionId) {
+        return divisionRepository.findById(divisionId)
+                .orElseThrow(
+                () -> new NotFoundException("Es gibt keine Staffel mit der ID %d!"
+                        .formatted(divisionId))
+                ).getSeasonId();
+    }
+
     @Transactional
     public DivisionData createDivision(DivisionCreationData divisionCreationData) {
         if(divisionCreationData.name() == null || divisionCreationData.name().isBlank()) {
