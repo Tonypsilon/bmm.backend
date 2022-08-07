@@ -41,8 +41,8 @@ public class MatchdayService {
             throw new AlreadyExistsException("Es gibt für die Staffel mit der ID %d und Runde %d schon einen Spieltag!"
                     .formatted(createMatchdayData.divisionId(), createMatchdayData.round()));
         }
-        if(!seasonService.getStageOfSeason(divisionService.getSeasonIdByDivisionId(createMatchdayData.divisionId()))
-                .equals(SeasonStage.PREPARATION)) {
+        if(seasonService.getStageOfSeason(divisionService.getSeasonIdByDivisionId(createMatchdayData.divisionId()))
+                != SeasonStage.PREPARATION) {
             throw new SeasonStageException("Saison ist nicht in der Vorbereitungsphase!");
         }
         verifyRoundNumber(createMatchdayData.divisionId(), createMatchdayData.round());
@@ -103,15 +103,6 @@ public class MatchdayService {
         matchdayRepository.delete(matchdayToDelete);
     }
 
-    private void verifyMatchdayDate(String date) {
-        if(date == null || date.isBlank()) {
-            throw new BadDataException("Das Datum darf nicht leer sein!");
-        }
-        if (!date.matches("[\\w\\-\\.]+")) {
-            throw new BadDataException("Das Spieltagsdatum enthält ungültige Zeichen!");
-        }
-    }
-
     private void verifyRoundNumber(Long divisionId, Integer round) {
         List<Integer> currentRounds = matchdayRepository.findByDivisionIdOrderByRoundAsc(divisionId)
                 .stream()
@@ -119,8 +110,17 @@ public class MatchdayService {
                 .toList();
         // TODO check if rounds are valid sequence.
         if(!round.equals(currentRounds.size()+1)) {
-            throw new BadDataException("Für die Staffel mit ID %d sollte als nächstes Runde %d erstellt werden, nicht %s!"
+            throw new BadDataException("Für die Staffel mit ID %d sollte als nächstes Runde %d erstellt werden, nicht %d!"
                     .formatted(divisionId, currentRounds.size()+1, round));
+        }
+    }
+
+    private void verifyMatchdayDate(String date) {
+        if(date == null || date.isBlank()) {
+            throw new BadDataException("Das Spieltagsdatum darf nicht leer sein!");
+        }
+        if (!date.matches("[\\w\\-\\.]+")) {
+            throw new BadDataException("Das Spieltagsdatum enthält ungültige Zeichen!");
         }
     }
 
