@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -149,6 +150,109 @@ class MatchdayServiceTest {
         );
         assertEquals("Das Spieltagsdatum darf nicht leer sein!",
                 actualException.getMessage());
+    }
+
+    @Test
+    void testGetMatchdaysOfDivisionOrderedByRound() {
+        when(matchdayRepository.findByDivisionIdOrderByRoundAsc(1L)).thenReturn(List.of(matchday1, matchday2));
+        List<MatchdayData> actual = matchdayService.getMatchdaysOfDivisionOrderedByRound(1L);
+        assertEquals(2, actual.size());
+        assertTrue(actual.containsAll(List.of(matchdayData1, matchdayData2)));
+    }
+
+    @Test
+    void testUpdateMatchdayOk() {
+        when(matchdayRepository.findById(1L)).thenReturn(Optional.of(matchday1));
+        when(divisionService.getSeasonIdByDivisionId(1L)).thenReturn(2L);
+        when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.RUNNING);
+        Matchday modifiedMatchday = new Matchday();
+        modifiedMatchday.setId(matchday1.getId());
+        modifiedMatchday.setDivisionId(matchday1.getDivisionId());
+        modifiedMatchday.setRound(matchday1.getRound());
+        modifiedMatchday.setDate("12.1.2001");
+        when(matchdayRepository.getByDivisionIdAndRound(1L, 1)).thenReturn(modifiedMatchday);
+        MatchdayData actual = matchdayService.updateMatchday(new MatchdayData(1L, 1L, "12.1.2001", 1));
+        assertEquals(actual, new MatchdayData(1L, 1L, "12.1.2001", 1));
+        verify(matchdayRepository, times(1)).save(argThat(
+                matchday -> matchday.getId().equals(1L)
+                && matchday.getDivisionId().equals(1L)
+                && matchday.getRound().equals(1)
+                && matchday.getDate().equals("12.1.2001")
+        ));
+    }
+
+    @Test
+    void testUpdateMatchdayThatDoesNotExist() {
+        when(matchdayRepository.findById(1L)).thenReturn(Optional.empty());
+        NotFoundException actualException = assertThrows(NotFoundException.class,
+                () -> matchdayService.updateMatchday(matchdayData1));
+        assertEquals("Es gibt keinen Spieltag mit der ID 1!", actualException.getMessage());
+    }
+
+    @Test
+    void testUpdateMatchdayChangedDivision() {
+        when(matchdayRepository.findById(1L)).thenReturn(Optional.of(matchday1));
+        BadDataException actualException = assertThrows(BadDataException.class,
+                () -> matchdayService.updateMatchday(new MatchdayData(1L, 2L, "13.1.2001", 1))
+        );
+        assertEquals("Die Staffel eines Spieltags kann sich nicht ändern!", actualException.getMessage());
+    }
+
+    @Test
+    void testUpdateMatchdayChangedRound() {
+        when(matchdayRepository.findById(1L)).thenReturn(Optional.of(matchday1));
+        BadDataException actualException = assertThrows(BadDataException.class,
+                () -> matchdayService.updateMatchday(new MatchdayData(1L, 1L, "13.1.2001", 2))
+        );
+        assertEquals("Die Runde eines Spieltags kann sich nicht ändern!", actualException.getMessage());
+    }
+
+    @Test
+    void testUpdateMatchdayWrongSeasonStage() {
+        when(matchdayRepository.findById(1L)).thenReturn(Optional.of(matchday1));
+        when(divisionService.getSeasonIdByDivisionId(1L)).thenReturn(2L);
+        when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.COMPLETED);
+        SeasonStageException actualException = assertThrows(SeasonStageException.class,
+                () -> matchdayService.updateMatchday(new MatchdayData(1L, 1L, "13.1.2001", 1))
+        );
+        assertEquals("In dieser Saisonphase können Spieltage nicht angepasst werden!",
+                actualException.getMessage());
+    }
+
+    @Test
+    void testUpdateMatchdayInvalidDate() {
+        when(matchdayRepository.findById(1L)).thenReturn(Optional.of(matchday1));
+        when(divisionService.getSeasonIdByDivisionId(1L)).thenReturn(2L);
+        when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.RUNNING);
+        BadDataException actualException = assertThrows(BadDataException.class,
+                () -> matchdayService.updateMatchday(new MatchdayData(1L, 1L, "123abc;", 1))
+        );
+        assertEquals("Das Spieltagsdatum enthält ungültige Zeichen!", actualException.getMessage());
+    }
+
+    @Test
+    void testDeleteMatchdayOk() {
+        when(matchdayRepository.findById(2L)).thenReturn(Optional.of(matchday2));
+        when(divisionService.getSeasonIdByDivisionId(1L)).thenReturn(2L);
+        when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.PREPARATION);
+        when(matchdayRepository.findByDivisionIdOrderByRoundAsc(1L)).thenReturn(List.of(matchday1, matchday2));
+        matchdayService.deleteMatchday(2L);
+        verify(matchdayRepository, times(1)).delete(argThat(
+                matchday -> matchday.getId().equals(2L)
+                && matchday.getDivisionId().equals(1L)
+                && matchday.getRound().equals(2)
+                && matchday.getDate().equals("22.2.2001-KW3"))
+        );
+    }
+
+    @Test
+    void testDeleteMatchdayThatDoesNotExist() {
+
+    }
+
+    @Test
+    void testDeleteMatchdayWrongSeasonStage() {
+
     }
 
     private void prepareMocksForInvalidDateCase() {

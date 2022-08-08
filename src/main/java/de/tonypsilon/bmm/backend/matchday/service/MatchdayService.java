@@ -45,7 +45,7 @@ public class MatchdayService {
                 != SeasonStage.PREPARATION) {
             throw new SeasonStageException("Saison ist nicht in der Vorbereitungsphase!");
         }
-        verifyRoundNumber(createMatchdayData.divisionId(), createMatchdayData.round());
+        verifyRoundNumberCreation(createMatchdayData.divisionId(), createMatchdayData.round());
         verifyMatchdayDate(createMatchdayData.date());
 
         Matchday matchday = new Matchday();
@@ -100,19 +100,38 @@ public class MatchdayService {
         Matchday matchdayToDelete = matchdayRepository.findById(matchdayId).orElseThrow(
                 () -> new NotFoundException("Es gibt keinen Spieltag mit der ID %d!".formatted(matchdayId))
         );
+        if(!Set.of(SeasonStage.PREPARATION, SeasonStage.RUNNING).contains(
+                seasonService.getStageOfSeason(divisionService.getSeasonIdByDivisionId(
+                        matchdayToDelete.getDivisionId()
+                )))) {
+            throw new SeasonStageException("In dieser Saisonphase können Spieltage nicht gelöscht werden!");
+        }
+        verifyRoundNumberDeletion(matchdayToDelete.getDivisionId(), matchdayToDelete.getRound());
         matchdayRepository.delete(matchdayToDelete);
     }
 
-    private void verifyRoundNumber(Long divisionId, Integer round) {
-        List<Integer> currentRounds = matchdayRepository.findByDivisionIdOrderByRoundAsc(divisionId)
-                .stream()
-                .map(Matchday::getRound)
-                .toList();
+    private void verifyRoundNumberCreation(Long divisionId, Integer round) {
+        List<Integer> currentRounds = getRoundsForDivision(divisionId);
         // TODO check if rounds are valid sequence.
         if(!round.equals(currentRounds.size()+1)) {
             throw new BadDataException("Für die Staffel mit ID %d sollte als nächstes Runde %d erstellt werden, nicht %d!"
                     .formatted(divisionId, currentRounds.size()+1, round));
         }
+    }
+
+    private void verifyRoundNumberDeletion(Long divisionId, Integer round) {
+        List<Integer> currentRounds = getRoundsForDivision(divisionId);
+        if(!round.equals(currentRounds.size())) {
+            throw new BadDataException("Für die Staffel mit ID %d kann nur Runde %d gelöscht werden, nicht %d!"
+                    .formatted(divisionId, currentRounds.size(), round));
+        }
+    }
+
+    private List<Integer> getRoundsForDivision(Long divisionId) {
+        return matchdayRepository.findByDivisionIdOrderByRoundAsc(divisionId)
+                .stream()
+                .map(Matchday::getRound)
+                .toList();
     }
 
     private void verifyMatchdayDate(String date) {
