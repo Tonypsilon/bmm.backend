@@ -12,4 +12,10 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
     public Collection<Participant> findByTeamId(Long teamId);
 
     public Optional<Participant> findByTeamIdAndNumber(Long teamId, Integer number);
+
+    public Boolean existsByParticipationEligibilityId(Long participationEligibilityId);
+
+    public Participant getByTeamIdAndNumber(Long teamId, Integer number);
+
+    public Boolean existsByTeamIdAndNumber(Long teamId, Integer number);
 }

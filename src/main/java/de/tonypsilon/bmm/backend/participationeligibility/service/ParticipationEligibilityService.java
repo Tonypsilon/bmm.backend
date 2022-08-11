@@ -94,6 +94,10 @@ public class ParticipationEligibilityService {
                                 .formatted(participationEligibilityId))));
     }
 
+    public Boolean existsById(Long ParticipationEligibilityId) {
+        return participationEligibilityRepository.existsById(ParticipationEligibilityId);
+    }
+
     @NonNull
     private ParticipationEligibilityData participationEligibilityToParticipationEligibilityData(
             @NonNull ParticipationEligibility participationEligibility) {
