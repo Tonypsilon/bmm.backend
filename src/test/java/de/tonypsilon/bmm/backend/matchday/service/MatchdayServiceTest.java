@@ -11,7 +11,6 @@ import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayRepository;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -247,12 +246,36 @@ class MatchdayServiceTest {
 
     @Test
     void testDeleteMatchdayThatDoesNotExist() {
-
+        when(matchdayRepository.findById(2L)).thenReturn(Optional.empty());
+        NotFoundException actualException = assertThrows(NotFoundException.class,
+                () -> matchdayService.deleteMatchday(2L)
+        );
+        assertEquals("Es gibt keinen Spieltag mit der ID 2!", actualException.getMessage());
     }
 
     @Test
     void testDeleteMatchdayWrongSeasonStage() {
+        when(matchdayRepository.findById(2L)).thenReturn(Optional.of(matchday2));
+        when(divisionService.getSeasonIdByDivisionId(1L)).thenReturn(2L);
+        when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.ARCHIVED);
+        SeasonStageException actualException = assertThrows(SeasonStageException.class,
+                () -> matchdayService.deleteMatchday(2L)
+        );
+        assertEquals("In dieser Saisonphase können Spieltage nicht gelöscht werden!",
+                actualException.getMessage());
+    }
 
+    @Test
+    void testDeleteMatchdayWrongRoundNumber() {
+        when(matchdayRepository.findById(1L)).thenReturn(Optional.of(matchday1));
+        when(divisionService.getSeasonIdByDivisionId(1L)).thenReturn(2L);
+        when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.PREPARATION);
+        when(matchdayRepository.findByDivisionIdOrderByRoundAsc(1L)).thenReturn(List.of(matchday1, matchday2));
+        BadDataException actualException = assertThrows(BadDataException.class,
+                () -> matchdayService.deleteMatchday(1L)
+        );
+        assertEquals("Für die Staffel mit ID 1 kann nur Runde 2 gelöscht werden, nicht 1!",
+                actualException.getMessage());
     }
 
     private void prepareMocksForInvalidDateCase() {
