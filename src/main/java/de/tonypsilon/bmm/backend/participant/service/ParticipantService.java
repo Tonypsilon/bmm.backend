@@ -1,6 +1,7 @@
 package de.tonypsilon.bmm.backend.participant.service;
 
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
+import de.tonypsilon.bmm.backend.exception.BmmException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.participant.data.Participant;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantCreationData;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class ParticipantService {
@@ -71,7 +73,18 @@ public class ParticipantService {
     }
 
     private void validateParticipantsOfTeam(Long teamId) {
-
+        List<Integer> currentTeamNumbers = participantRepository.findByTeamId(teamId)
+                .stream()
+                .map(Participant::getNumber)
+                .sorted()
+                .toList();
+        for (int i=0; i<currentTeamNumbers.size(); i++) {
+            if (!currentTeamNumbers.get(i).equals(i+1)) {
+                throw new BmmException("Die Spielernummern für die Mannschaft mit ID %d sind nicht gültig: "
+                        .formatted(teamId)
+                        + currentTeamNumbers.toString());
+            }
+        }
     }
 
     private ParticipantData participantToParticipantData(Participant participant) {
