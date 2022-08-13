@@ -80,6 +80,11 @@ public class TeamService {
         return teamRepository.existsById(teamId);
     }
 
+    public TeamData getTeamById(Long teamId) {
+        return teamToTeamData(teamRepository.findById(teamId).orElseThrow(
+                () -> new NotFoundException("Es gibt keine Mannschaft mit der ID %d".formatted(teamId))));
+    }
+
     private void verifyTeamNumber(TeamCreationData teamCreationData) {
         Integer maxTeamNumber = getMaxTeamNumberForTeamsOfClub(teamCreationData.seasonId(), teamCreationData.clubId());
         if (!teamCreationData.number().equals(maxTeamNumber+1)) {
