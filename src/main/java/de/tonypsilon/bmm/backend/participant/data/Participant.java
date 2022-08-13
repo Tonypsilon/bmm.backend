@@ -34,7 +34,7 @@ public class Participant {
     }
 
     public void setTeamId(@NonNull Long teamId) {
-        teamId = teamId;
+        this.teamId = teamId;
     }
 
     @NonNull

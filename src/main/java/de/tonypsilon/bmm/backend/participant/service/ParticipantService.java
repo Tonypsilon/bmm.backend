@@ -53,7 +53,7 @@ public class ParticipantService {
     private ParticipantData createSingleParticipantFromGivenCollection(ParticipantCreationData participantCreationData) {
         validateParticipantCreationData(participantCreationData);
         if(seasonService.getStageOfSeason(teamService.getTeamById(participantCreationData.teamId()).seasonId())
-                == SeasonStage.REGISTRATION) {
+                != SeasonStage.REGISTRATION) {
             throw new SeasonStageException("In dieser Saisonphase kann keine Mannschaft mit Teilnehmern befüllt werden!");
         }
         // Number sequence validation is done at the end (and not here) so that the order of creation from
