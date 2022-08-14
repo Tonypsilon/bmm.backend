@@ -85,7 +85,7 @@ public class ParticipantService {
         Participant participantToDelete = participantRepository.findById(participantId).orElseThrow(
                         () -> new NotFoundException("Es gibt keinen Teilnehmer mit der ID %d!".formatted(participantId))
         );
-        if(!List.of(SeasonStage.REGISTRATION, SeasonStage.RUNNING)
+        if(!List.of(SeasonStage.REGISTRATION)
                 .contains(seasonService.getStageOfSeason(
                         teamService.getTeamById(participantToDelete.getTeamId()).seasonId())
                 )
@@ -124,7 +124,7 @@ public class ParticipantService {
         if(participantRepository.existsByTeamIdAndNumber(
                 participantCreationData.teamId(), participantCreationData.number())) {
             throw new AlreadyExistsException(
-                    "Es gibt für die Mannschaft mit der ID %d bereits einen Teilnehmer mit Nummer %d"
+                    "Es gibt für die Mannschaft mit der ID %d bereits einen Teilnehmer mit Nummer %d!"
                             .formatted(participantCreationData.teamId(), participantCreationData.number()));
         }
     }
