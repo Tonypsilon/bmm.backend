@@ -319,3 +319,64 @@ databaseChangeLog:
                   constraints:
                     unique: false
                     nullable: false
+  - changeSet:
+      id: 12
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: match
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: home_team_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: away_team_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: date
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: home_team_points
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: away_team_points
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: overruled_home_board_half_points
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: overruled_away_board_half_points
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: referee_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: true
