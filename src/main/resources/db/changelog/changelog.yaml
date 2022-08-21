@@ -380,3 +380,64 @@ databaseChangeLog:
                   constraints:
                     unique: false
                     nullable: true
+  - changeSet:
+      id: 13
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: game
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: match_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: board_number
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: home_player_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: away_player_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: played_result_home
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: overruled_result_home
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: played_result_away
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: overruled_result_away
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: true
