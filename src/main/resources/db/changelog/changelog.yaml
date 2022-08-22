@@ -441,3 +441,13 @@ databaseChangeLog:
                   constraints:
                     unique: false
                     nullable: true
+  - changeSet:
+      id: 14
+      author: Tonypsilon
+      changes:
+        - addColumn:
+            tableName: match
+            columns:
+              - column:
+                  name: matchday_id
+                  type: int

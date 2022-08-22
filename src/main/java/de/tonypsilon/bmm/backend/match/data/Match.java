@@ -13,6 +13,9 @@ public class Match {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "matchday_id", unique = false, nullable = false)
+    private Long matchdayId;
+
     @Column(name = "home_team_id",  unique = false, nullable = false)
     private Long homeTeamId;
 
@@ -52,6 +55,15 @@ public class Match {
 
     public void setId(@NonNull Long id) {
         this.id = id;
+    }
+
+    @NonNull
+    public Long getMatchdayId() {
+        return matchdayId;
+    }
+
+    public void setMatchdayId(@NonNull Long matchdayId) {
+        this.matchdayId = matchdayId;
     }
 
     @NonNull
