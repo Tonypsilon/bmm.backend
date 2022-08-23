@@ -11,10 +11,12 @@ import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayRepository;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -66,6 +68,11 @@ public class MatchdayService {
                 .stream()
                 .map(this::matchdayToMatchdayData)
                 .toList();
+    }
+
+    public Optional<MatchdayData> findById(@NonNull Long matchdayId) {
+        return matchdayRepository.findById(matchdayId)
+                .map(this::matchdayToMatchdayData);
     }
 
     @Transactional
