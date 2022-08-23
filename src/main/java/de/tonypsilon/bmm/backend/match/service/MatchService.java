@@ -43,10 +43,10 @@ public class MatchService {
             throw new NotFoundException("Die Gastmannschaft mit ID %d existiert nicht!"
                     .formatted(createMatchData.awayTeamId()));
         }
-        if(matchRepository.existsByHomeTeamIdOrAwayTeamIdEquals(createMatchData.homeTeamId())) {
+        if(matchRepository.existsByHomeTeamIdOrAwayTeamId(createMatchData.homeTeamId())) {
             throw new AlreadyExistsException("Die Heimmannschaft hat an diesem Spieltag schon einen Wettkampf!");
         }
-        if(matchRepository.existsByHomeTeamIdOrAwayTeamIdEquals(createMatchData.awayTeamId())) {
+        if(matchRepository.existsByHomeTeamIdOrAwayTeamId(createMatchData.awayTeamId())) {
             throw new AlreadyExistsException("Die Gastmannschaft hat an diesem Spieltag schon einen Wettkampf!");
         }
         createMatchData.date().ifPresent(this::verifyMatchdayDate);

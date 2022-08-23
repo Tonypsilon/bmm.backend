@@ -451,3 +451,79 @@ databaseChangeLog:
               - column:
                   name: matchday_id
                   type: int
+  - changeSet:
+      id: 15
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: referee
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: season_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: forename
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: surname
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: email_address
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
+        - createTable:
+            tableName: teamcaptain
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: team_id
+                  type: int
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: email_address
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: phone_number
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: forename
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: surname
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
