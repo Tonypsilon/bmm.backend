@@ -11,6 +11,7 @@ import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayRepository;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
+import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,7 @@ class MatchdayServiceTest {
     private final MatchdayRepository matchdayRepository = mock(MatchdayRepository.class);
     private final DivisionService divisionService = mock(DivisionService.class);
     private final SeasonService seasonService = mock(SeasonService.class);
+    private final ValidationService validationService = new ValidationService();
     private Matchday matchday1, matchday2;
     private final MatchdayData matchdayData1 = new MatchdayData(1L, 1L, "11.1.2001", 1);
     private final MatchdayData matchdayData2 = new MatchdayData(2L, 1L, "22.2.2001-KW3", 2);
@@ -34,7 +36,8 @@ class MatchdayServiceTest {
     private void setUp() {
         matchdayService = new MatchdayService(matchdayRepository,
                 divisionService,
-                seasonService);
+                seasonService,
+                validationService);
         matchday1 = new Matchday();
         matchday1.setId(1L);
         matchday1.setDivisionId(1L);

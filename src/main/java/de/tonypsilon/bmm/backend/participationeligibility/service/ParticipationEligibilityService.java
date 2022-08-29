@@ -9,6 +9,7 @@ import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationElig
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityRepository;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
+import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,33 +22,36 @@ public class ParticipationEligibilityService {
     private final ParticipationEligibilityRepository participationEligibilityRepository;
     private final SeasonService seasonService;
     private final ClubService clubService;
+    private final ValidationService validationService;
 
     public ParticipationEligibilityService(final ParticipationEligibilityRepository participationEligibilityRepository,
                                            final SeasonService seasonService,
-                                           final ClubService clubService) {
+                                           final ClubService clubService,
+                                           final ValidationService validationService) {
         this.participationEligibilityRepository = participationEligibilityRepository;
         this.seasonService = seasonService;
         this.clubService = clubService;
+        this.validationService = validationService;
     }
 
     @Transactional
     public ParticipationEligibilityData createParticipationEligibility(
             ParticipationEligibilityCreationData participationEligibilityCreationData) {
-        if (!seasonService.seasonExistsById(participationEligibilityCreationData.seasonId())) {
+        if (Boolean.FALSE.equals(seasonService.seasonExistsById(participationEligibilityCreationData.seasonId()))) {
             throw new NotFoundException("Es gibt keine Saison mit der ID %d!"
                     .formatted(participationEligibilityCreationData.seasonId()));
         }
-        if (!clubService.clubExistsById(participationEligibilityCreationData.clubId())) {
+        if (Boolean.FALSE.equals(clubService.clubExistsById(participationEligibilityCreationData.clubId()))) {
             throw new NotFoundException("Es gibt keinen Verein mit der ID %d!"
                     .formatted(participationEligibilityCreationData.clubId()));
         }
-        verifyName(participationEligibilityCreationData.forename());
-        verifyName(participationEligibilityCreationData.surname());
-        participationEligibilityCreationData.dwz().ifPresent(this::verifyDwz);
-        if (participationEligibilityRepository.existsBySeasonIdAndClubIdAndPkz(
+        validationService.validateName(participationEligibilityCreationData.forename());
+        validationService.validateName(participationEligibilityCreationData.surname());
+        participationEligibilityCreationData.dwz().ifPresent(validationService::validateRating);
+        if (Boolean.TRUE.equals(participationEligibilityRepository.existsBySeasonIdAndClubIdAndPkz(
                 participationEligibilityCreationData.seasonId(),
                 participationEligibilityCreationData.clubId(),
-                participationEligibilityCreationData.pkz())) {
+                participationEligibilityCreationData.pkz()))) {
             throw new AlreadyExistsException(("Es gibt bereits eine Spielberechtigung für die Spielernummer %d" +
                     " für den Club mit ID %d und die Saison mit der ID %d!")
                     .formatted(participationEligibilityCreationData.pkz(),
@@ -94,8 +98,8 @@ public class ParticipationEligibilityService {
                                 .formatted(participationEligibilityId))));
     }
 
-    public Boolean existsById(Long ParticipationEligibilityId) {
-        return participationEligibilityRepository.existsById(ParticipationEligibilityId);
+    public Boolean existsById(Long participationEligibilityId) {
+        return participationEligibilityRepository.existsById(participationEligibilityId);
     }
 
     @NonNull
@@ -110,15 +114,4 @@ public class ParticipationEligibilityService {
                 participationEligibility.getDwz());
     }
 
-    private void verifyDwz(Integer dwz) {
-        if (dwz <= 0) {
-            throw new BadDataException("Die DWZ muss positiv sein!");
-        }
-    }
-
-    private void verifyName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new BadDataException("Der Name darf nicht leer sein!");
-        }
-    }
 }

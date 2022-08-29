@@ -13,6 +13,7 @@ import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.referee.data.RefereeData;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
+import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,17 +27,20 @@ public class MatchService {
     private final TeamService teamService;
     private final RefereeService refereeService;
     private final DivisionService divisionService;
+    private final ValidationService validationService;
 
     public MatchService(final MatchRepository matchRepository,
                         final MatchdayService matchdayService,
                         final TeamService teamService,
                         final RefereeService refereeService,
-                        final DivisionService divisionService) {
+                        final DivisionService divisionService,
+                        final ValidationService validationService) {
         this.matchRepository = matchRepository;
         this.matchdayService = matchdayService;
         this.teamService = teamService;
         this.refereeService = refereeService;
         this.divisionService = divisionService;
+        this.validationService = validationService;
     }
 
     @Transactional
@@ -45,21 +49,21 @@ public class MatchService {
         MatchdayData matchdayData = matchdayService.findById(createMatchData.matchdayId())
                 .orElseThrow(() -> new NotFoundException("Es gibt keinen Spieltag mit der ID %d!"
                 .formatted(createMatchData.matchdayId())));
-        if(!teamService.existsById(createMatchData.homeTeamId())) {
+        if(Boolean.FALSE.equals(teamService.existsById(createMatchData.homeTeamId()))) {
             throw new NotFoundException("Die Heimmannschaft mit ID %d existiert nicht!"
                     .formatted(createMatchData.homeTeamId()));
         }
-        if(!teamService.existsById(createMatchData.awayTeamId())) {
+        if(Boolean.FALSE.equals(teamService.existsById(createMatchData.awayTeamId()))) {
             throw new NotFoundException("Die Gastmannschaft mit ID %d existiert nicht!"
                     .formatted(createMatchData.awayTeamId()));
         }
-        if(matchRepository.existsByHomeTeamIdOrAwayTeamId(createMatchData.homeTeamId())) {
+        if(Boolean.TRUE.equals(matchRepository.existsByHomeTeamIdOrAwayTeamId(createMatchData.homeTeamId()))) {
             throw new AlreadyExistsException("Die Heimmannschaft hat an diesem Spieltag schon einen Wettkampf!");
         }
-        if(matchRepository.existsByHomeTeamIdOrAwayTeamId(createMatchData.awayTeamId())) {
+        if(Boolean.TRUE.equals(matchRepository.existsByHomeTeamIdOrAwayTeamId(createMatchData.awayTeamId()))) {
             throw new AlreadyExistsException("Die Gastmannschaft hat an diesem Spieltag schon einen Wettkampf!");
         }
-        createMatchData.date().ifPresent(this::verifyMatchdayDate);
+        createMatchData.date().ifPresent(validationService::validateDateString);
         Long seasonId = divisionService.getSeasonIdByDivisionId(matchdayData.divisionId());
         createMatchData.refereeId().ifPresent(refereeId -> verifyRefereeId(refereeId, seasonId));
         Match match = new Match();
@@ -89,15 +93,6 @@ public class MatchService {
                 match.getOverruledHomeBoardHalfPoints(),
                 match.getOverruledAwayBoardHalfPoints(),
                 match.getRefereeId());
-    }
-
-    private void verifyMatchdayDate(String date) {
-        if(date.isBlank()) {
-            throw new BadDataException("Das Wettkampfsdatum darf nicht leer sein!");
-        }
-        if (!date.matches("[\\w\\-\\.]+")) {
-            throw new BadDataException("Das Wettkampfsdatum enthält ungültige Zeichen!");
-        }
     }
 
     private void verifyRefereeId(@NonNull Long refereeId, @NonNull Long seasonId) {

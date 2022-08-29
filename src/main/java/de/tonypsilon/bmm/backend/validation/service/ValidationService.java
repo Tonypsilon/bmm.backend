@@ -7,6 +7,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 
+/**
+ * A service to take over general validation tasks. This is not meant
+ * to do business validation that would involve any other services.
+ *
+ * Note: This service is designed to be self-sufficient, so there is
+ * no need to mock it in unit tests.
+ */
 @Service
 public class ValidationService {
 
@@ -51,6 +58,15 @@ public class ValidationService {
     public void validateEmailAddress(@Nullable String emailAddress) {
         if(emailAddress == null || !emailValidator.isValid(emailAddress)) {
             throw new BadDataException("Die E-Mailadresse ist ungültig!");
+        }
+    }
+
+    public void validateRating(Integer rating) {
+        if(rating == null) {
+            throw new BadDataException("Das Rating darf nicht leer sein!");
+        }
+        if (rating <= 0) {
+            throw new BadDataException("Das Rating muss positiv sein!");
         }
     }
 }

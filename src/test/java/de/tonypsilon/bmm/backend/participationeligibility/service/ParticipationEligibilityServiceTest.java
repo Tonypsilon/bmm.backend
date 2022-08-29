@@ -9,6 +9,7 @@ import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationElig
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityRepository;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
+import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +26,7 @@ class ParticipationEligibilityServiceTest {
             mock(ParticipationEligibilityRepository.class);
     private final SeasonService seasonService = mock(SeasonService.class);
     private final ClubService clubService = mock(ClubService.class);
+    private final ValidationService validationService = new ValidationService();
     private ParticipationEligibilityService participationEligibilityService;
     private ParticipationEligibilityData participationEligibilityData1 =
             new ParticipationEligibilityData(1L, 2L, 3L, "Max", "Mustermann", 1, Optional.empty());
@@ -42,7 +44,8 @@ class ParticipationEligibilityServiceTest {
         participationEligibilityService = new ParticipationEligibilityService(
                 participationEligibilityRepository,
                 seasonService,
-                clubService);
+                clubService,
+                validationService);
         participationEligibility1 = new ParticipationEligibility();
         participationEligibility1.setId(1L);
         participationEligibility1.setSeasonId(2L);
@@ -146,7 +149,7 @@ class ParticipationEligibilityServiceTest {
                         new ParticipationEligibilityCreationData(2L, 3L, "Max", "Mustermann", 1, Optional.of(-1))
                 )
         );
-        assertEquals("Die DWZ muss positiv sein!", actualException.getMessage());
+        assertEquals("Das Rating muss positiv sein!", actualException.getMessage());
     }
 
     @Test

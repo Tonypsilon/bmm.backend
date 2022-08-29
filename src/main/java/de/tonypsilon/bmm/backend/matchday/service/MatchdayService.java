@@ -11,6 +11,7 @@ import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayRepository;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
+import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,21 +26,24 @@ public class MatchdayService {
     private final MatchdayRepository matchdayRepository;
     private final DivisionService divisionService;
     private final SeasonService seasonService;
+    private final ValidationService validationService;
 
     public MatchdayService(MatchdayRepository matchdayRepository,
                            DivisionService divisionService,
-                           SeasonService seasonService) {
+                           SeasonService seasonService,
+                           ValidationService validationService) {
         this.matchdayRepository = matchdayRepository;
         this.divisionService = divisionService;
         this.seasonService = seasonService;
+        this.validationService = validationService;
     }
 
     @Transactional
     public MatchdayData createMatchday(CreateMatchdayData createMatchdayData) {
-        if(!divisionService.divisionExistsById(createMatchdayData.divisionId())) {
+        if(Boolean.FALSE.equals(divisionService.divisionExistsById(createMatchdayData.divisionId()))) {
             throw new NotFoundException("Es gibt keine Staffel mit der ID %d!".formatted(createMatchdayData.divisionId()));
         }
-        if(matchdayRepository.existsByDivisionIdAndRound(createMatchdayData.divisionId(), createMatchdayData.round())) {
+        if(Boolean.TRUE.equals(matchdayRepository.existsByDivisionIdAndRound(createMatchdayData.divisionId(), createMatchdayData.round()))) {
             throw new AlreadyExistsException("Es gibt für die Staffel mit der ID %d und Runde %d schon einen Spieltag!"
                     .formatted(createMatchdayData.divisionId(), createMatchdayData.round()));
         }
@@ -48,7 +52,7 @@ public class MatchdayService {
             throw new SeasonStageException("Saison ist nicht in der Vorbereitungsphase!");
         }
         verifyRoundNumberCreation(createMatchdayData.divisionId(), createMatchdayData.round());
-        verifyMatchdayDate(createMatchdayData.date());
+        validationService.validateDateString(createMatchdayData.date());
 
         Matchday matchday = new Matchday();
         matchday.setDivisionId(createMatchdayData.divisionId());
@@ -92,7 +96,7 @@ public class MatchdayService {
                 )))) {
             throw new SeasonStageException("In dieser Saisonphase können Spieltage nicht angepasst werden!");
         }
-        verifyMatchdayDate(matchdayData.date());
+        validationService.validateDateString(matchdayData.date());
         matchdayToBeUpdated.setDate(matchdayData.date());
         matchdayRepository.save(matchdayToBeUpdated);
         return matchdayToMatchdayData(
@@ -139,15 +143,6 @@ public class MatchdayService {
                 .stream()
                 .map(Matchday::getRound)
                 .toList();
-    }
-
-    private void verifyMatchdayDate(String date) {
-        if(date == null || date.isBlank()) {
-            throw new BadDataException("Das Spieltagsdatum darf nicht leer sein!");
-        }
-        if (!date.matches("[\\w\\-\\.]+")) {
-            throw new BadDataException("Das Spieltagsdatum enthält ungültige Zeichen!");
-        }
     }
 
     private MatchdayData matchdayToMatchdayData(Matchday matchday) {
