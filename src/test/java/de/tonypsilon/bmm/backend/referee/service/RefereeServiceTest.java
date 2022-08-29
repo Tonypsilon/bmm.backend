@@ -4,6 +4,7 @@ import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.referee.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
+import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ class RefereeServiceTest {
 
     private final RefereeRepository refereeRepository = mock(RefereeRepository.class);
     private final SeasonService seasonService = mock(SeasonService.class);
+    private final ValidationService validationService = new ValidationService();
     private RefereeService refereeService;
     private final RefereeData refereeData = new RefereeData(
             1L, 1L, "Forename", "Surname","fore.sure@name.com");
@@ -27,7 +29,9 @@ class RefereeServiceTest {
 
     @BeforeEach
     private void setUp() {
-        refereeService = new RefereeService(refereeRepository, seasonService);
+        refereeService = new RefereeService(refereeRepository,
+                seasonService,
+                validationService);
         referee1 = new Referee();
         referee1.setId(1L);
         referee1.setSeasonId(1L);

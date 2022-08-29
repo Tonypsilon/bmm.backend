@@ -4,6 +4,7 @@ import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.referee.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
+import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -17,12 +18,14 @@ public class RefereeService {
 
     private final RefereeRepository refereeRepository;
     private final SeasonService seasonService;
-    private final EmailValidator emailValidator = EmailValidator.getInstance();
+    private final ValidationService validationService;
 
     public RefereeService(final RefereeRepository refereeRepository,
-                          final SeasonService seasonService) {
+                          final SeasonService seasonService,
+                          final ValidationService validationService) {
         this.refereeRepository = refereeRepository;
         this.seasonService = seasonService;
+        this.validationService = validationService;
     }
 
     @Transactional
@@ -38,9 +41,9 @@ public class RefereeService {
                     .formatted(createRefereeData.seasonId())
             + " und der E-Mailadresse %s!".formatted(createRefereeData.emailAddress()));
         }
-        verifyName(createRefereeData.forename());
-        verifyName(createRefereeData.surname());
-        verifyEmailAddress(createRefereeData.emailAddress());
+        validationService.validateName(createRefereeData.forename());
+        validationService.validateName(createRefereeData.surname());
+        validationService.validateEmailAddress(createRefereeData.emailAddress());
 
         Referee referee = new Referee();
         referee.setSeasonId(createRefereeData.seasonId());
@@ -70,9 +73,9 @@ public class RefereeService {
                     .formatted(refereeUpdateData.seasonId())
                     + " und der E-Mailadresse %s!".formatted(refereeUpdateData.emailAddress()));
         }
-        verifyName(refereeUpdateData.forename());
-        verifyName(refereeUpdateData.surname());
-        verifyEmailAddress(refereeUpdateData.emailAddress());
+        validationService.validateName(refereeUpdateData.forename());
+        validationService.validateName(refereeUpdateData.surname());
+        validationService.validateEmailAddress(refereeUpdateData.emailAddress());
 
         refereeToBeUpdated.setForename(refereeUpdateData.forename());
         refereeToBeUpdated.setSurname(refereeUpdateData.surname());
@@ -109,18 +112,5 @@ public class RefereeService {
                 referee.getForename(),
                 referee.getSurname(),
                 referee.getEmailAddress());
-    }
-
-    private void verifyName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new BadDataException("Der Name darf nicht leer sein!");
-        }
-
-    }
-
-    private void verifyEmailAddress(String emailAddress) {
-        if(emailAddress == null || !emailValidator.isValid(emailAddress)) {
-            throw new BadDataException("Die E-Mailadresse ist ungültig!");
-        }
     }
 }
