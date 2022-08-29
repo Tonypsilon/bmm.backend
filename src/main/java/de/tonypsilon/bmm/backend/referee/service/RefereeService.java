@@ -32,8 +32,8 @@ public class RefereeService {
             throw new NotFoundException("Es gibt keine Saison mit der ID %d!"
                     .formatted(createRefereeData.seasonId()));
         }
-        if(refereeRepository.existsBySeasonIdAndEmailAddress(
-                createRefereeData.seasonId(), createRefereeData.emailAddress())) {
+        if(Boolean.TRUE.equals(refereeRepository.existsBySeasonIdAndEmailAddress(
+                createRefereeData.seasonId(), createRefereeData.emailAddress()))) {
             throw new AlreadyExistsException("Es gibt bereits einen Schiedsrichter für die Saison mit der ID %d"
                     .formatted(createRefereeData.seasonId())
             + " und der E-Mailadresse %s!".formatted(createRefereeData.emailAddress()));
@@ -63,8 +63,9 @@ public class RefereeService {
         if(!refereeUpdateData.seasonId().equals(refereeToBeUpdated.getSeasonId())) {
             throw new BadDataException("Die Saison darf sich nicht ändern!");
         }
-        if(refereeRepository.existsBySeasonIdAndEmailAddress(
-                refereeUpdateData.seasonId(), refereeUpdateData.emailAddress())) {
+        if(!refereeToBeUpdated.getEmailAddress().equals(refereeUpdateData.emailAddress()) &&
+                Boolean.TRUE.equals(refereeRepository.existsBySeasonIdAndEmailAddress(
+                refereeUpdateData.seasonId(), refereeUpdateData.emailAddress()))) {
             throw new AlreadyExistsException("Es gibt bereits einen Schiedsrichter für die Saison mit der ID %d"
                     .formatted(refereeUpdateData.seasonId())
                     + " und der E-Mailadresse %s!".formatted(refereeUpdateData.emailAddress()));
