@@ -120,7 +120,7 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.createMatchday(new CreateMatchdayData(1L, "abc;", 2))
         );
-        assertEquals("Das Spieltagsdatum enthält ungültige Zeichen!",
+        assertEquals("Das Datum enthält ungültige Zeichen!",
                 actualException.getMessage());
     }
 
@@ -130,7 +130,7 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.createMatchday(new CreateMatchdayData(1L, "abc/", 2))
         );
-        assertEquals("Das Spieltagsdatum enthält ungültige Zeichen!",
+        assertEquals("Das Datum enthält ungültige Zeichen!",
                 actualException.getMessage());
     }
 
@@ -140,7 +140,7 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.createMatchday(new CreateMatchdayData(1L, "abc&", 2))
         );
-        assertEquals("Das Spieltagsdatum enthält ungültige Zeichen!",
+        assertEquals("Das Datum enthält ungültige Zeichen!",
                 actualException.getMessage());
     }
 
@@ -150,7 +150,7 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.createMatchday(new CreateMatchdayData(1L, "", 2))
         );
-        assertEquals("Das Spieltagsdatum darf nicht leer sein!",
+        assertEquals("Das Datum darf nicht leer sein!",
                 actualException.getMessage());
     }
 
@@ -229,7 +229,7 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.updateMatchday(new MatchdayData(1L, 1L, "123abc;", 1))
         );
-        assertEquals("Das Spieltagsdatum enthält ungültige Zeichen!", actualException.getMessage());
+        assertEquals("Das Datum enthält ungültige Zeichen!", actualException.getMessage());
     }
 
     @Test
