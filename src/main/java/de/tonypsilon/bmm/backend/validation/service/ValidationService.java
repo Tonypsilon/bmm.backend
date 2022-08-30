@@ -24,6 +24,7 @@ public class ValidationService {
     /**
      * Validate a date string to not be empty / blank and to contain only
      * alphanumerical symbols or . or -
+     *
      * @param date the date to be validated
      */
     public void validateDateString(String date) {
@@ -38,6 +39,7 @@ public class ValidationService {
     /**
      * Validate a forename or surname to not be empty / blank and to not
      * contain certain special characters.
+     *
      * @param name the name to be validated
      */
     public void validateName(@Nullable String name) {
@@ -53,6 +55,7 @@ public class ValidationService {
     /**
      * Validate an email address to not be null and to be a valid email
      * address format, based on apache commons validation.
+     *
      * @param emailAddress the emailAddress to be validated.
      */
     public void validateEmailAddress(@Nullable String emailAddress) {
@@ -61,6 +64,27 @@ public class ValidationService {
         }
     }
 
+    /**
+     * Validates a phone number string to optionally start with a plus sign,
+     * followed by only digits.
+     *
+     * @param phoneNumber the phone number to be validated.
+     */
+    public void validatePhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.isBlank()) {
+            throw new BadDataException("Die Telefonnummer darf nicht leer sein!");
+        }
+        if(!phoneNumber.matches("\\+?[\\d]+")) {
+            throw new BadDataException("Die Telefonnummer enthält ungültige Zeichen!");
+        }
+    }
+
+    /**
+     * Validate a rating (like DWZ or ELO) to not be null and to be a
+     * positive integer.
+     *
+     * @param rating the rating to be validated
+     */
     public void validateRating(Integer rating) {
         if(rating == null) {
             throw new BadDataException("Das Rating darf nicht leer sein!");
