@@ -527,3 +527,64 @@ databaseChangeLog:
                   constraints:
                     unique: false
                     nullable: false
+  - changeSet:
+      id: 16
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: organization
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: season_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
+        - createTable:
+            tableName: organizationmember
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: club_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: organization_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_organizationmember_organization
+            baseTableName: organizationmember
+            baseColumnNames: organization_id
+            referencedTableName: organization
+            referencedColumnNames: id
+  - changeSet:
+      id: 17
+      author: Tonypsilon
+      changes:
+        - renameColumn:
+            tableName: team
+            oldColumnName: club_id
+            newColumnName: organization_id
+            columnDataType: int

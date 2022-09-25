@@ -1,10 +1,12 @@
-package de.tonypsilon.bmm.backend.team.data;
+package de.tonypsilon.bmm.backend.organization.data;
 
 import jakarta.persistence.*;
 import org.springframework.lang.NonNull;
 
+import java.util.Set;
+
 @Entity
-public class Team {
+public class Organization {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,11 +15,11 @@ public class Team {
     @Column(name = "season_id", unique = false, nullable = false)
     private Long seasonId;
 
-    @Column(name = "organization_id", unique = false, nullable = false)
-    private Long organizationId;
-
     @Column(unique = false, nullable = false)
-    private Integer number;
+    private String name;
+
+    @OneToMany(mappedBy = "organization")
+    private Set<OrganizationMember> organizationMembers;
 
     @NonNull
     public Long getId() {
@@ -38,20 +40,20 @@ public class Team {
     }
 
     @NonNull
-    public Long getOrganizationId() {
-        return organizationId;
+    public String getName() {
+        return name;
     }
 
-    public void setOrganizationId(@NonNull Long organizationId) {
-        this.organizationId = organizationId;
+    public void setName(@NonNull String name) {
+        this.name = name;
     }
 
     @NonNull
-    public Integer getNumber() {
-        return number;
+    public Set<OrganizationMember> getOrganizationMembers() {
+        return organizationMembers;
     }
 
-    public void setNumber(@NonNull Integer number) {
-        this.number = number;
+    public void setOrganizationMembers(@NonNull Set<OrganizationMember> organizationMembers) {
+        this.organizationMembers = organizationMembers;
     }
 }

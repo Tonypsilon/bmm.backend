@@ -6,9 +6,7 @@ import java.util.Collection;
 
 public interface TeamRepository extends JpaRepository<Team, Long> {
 
-    public Boolean existsBySeasonIdAndClubIdAndNumber(Long seasonId, Long clubId, Integer number);
+    public Team getBySeasonIdAndOrganizationIdAndNumber(Long seasonId, Long organizationId, Integer number);
 
-    public Team getBySeasonIdAndClubIdAndNumber(Long seasonId, Long clubId, Integer number);
-
-    public Collection<Team> findBySeasonIdAndClubId(Long seasonId, Long clubId);
+    public Collection<Team> findBySeasonIdAndOrganizationId(Long seasonId, Long organizationId);
 }

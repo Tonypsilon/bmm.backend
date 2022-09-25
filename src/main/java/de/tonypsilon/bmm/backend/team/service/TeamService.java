@@ -1,9 +1,9 @@
 package de.tonypsilon.bmm.backend.team.service;
 
-import de.tonypsilon.bmm.backend.club.service.ClubService;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.exception.SeasonStageException;
+import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.team.data.Team;
@@ -20,14 +20,14 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final SeasonService seasonService;
-    private final ClubService clubService;
+    private final OrganizationService organizationService;
 
     public TeamService(final TeamRepository teamRepository,
                        SeasonService seasonService,
-                       ClubService clubService) {
+                       OrganizationService organizationService) {
         this.teamRepository = teamRepository;
         this.seasonService = seasonService;
-        this.clubService = clubService;
+        this.organizationService = organizationService;
     }
 
     @Transactional
@@ -38,20 +38,22 @@ public class TeamService {
         if (!seasonService.getStageOfSeason(teamCreationData.seasonId()).equals(SeasonStage.REGISTRATION)) {
             throw new SeasonStageException("Saison ist nicht in der Registrierungsphase!");
         }
-        if(!clubService.clubExistsById(teamCreationData.clubId())) {
-            throw new NotFoundException("Es gibt keinen Verein mit ID %d!".formatted(teamCreationData.clubId()));
+        if(!organizationService.existsByIdAndSeasonId(teamCreationData.organizationId(),
+                teamCreationData.seasonId())) {
+            throw new NotFoundException("Es gibt keine Organisation mit ID %d für die Saison mit der ID %d!"
+                    .formatted(teamCreationData.organizationId(), teamCreationData.seasonId()));
         }
         verifyTeamNumber(teamCreationData);
 
         Team team = new Team();
         team.setSeasonId(teamCreationData.seasonId());
-        team.setClubId(teamCreationData.clubId());
+        team.setOrganizationId(teamCreationData.organizationId());
         team.setNumber(teamCreationData.number());
 
         teamRepository.save(team);
 
-        return teamToTeamData(teamRepository.getBySeasonIdAndClubIdAndNumber(teamCreationData.seasonId(),
-                teamCreationData.clubId(),
+        return teamToTeamData(teamRepository.getBySeasonIdAndOrganizationIdAndNumber(teamCreationData.seasonId(),
+                teamCreationData.organizationId(),
                 teamCreationData.number()));
     }
 
@@ -68,7 +70,7 @@ public class TeamService {
         if (!seasonService.getStageOfSeason(team.getSeasonId()).equals(SeasonStage.REGISTRATION)) {
             throw new SeasonStageException("Saison ist nicht in der Registrierungsphase!");
         }
-        if(!team.getNumber().equals(getMaxTeamNumberForTeamsOfClub(team.getSeasonId(), team.getClubId()))) {
+        if(!team.getNumber().equals(getMaxTeamNumberForTeamsOfOrganization(team.getSeasonId(), team.getOrganizationId()))) {
             throw new BadDataException(
                     "Es kann nur das Team mit der höchsten Nummer gelöscht werden!"
             );
@@ -86,7 +88,7 @@ public class TeamService {
     }
 
     private void verifyTeamNumber(TeamCreationData teamCreationData) {
-        Integer maxTeamNumber = getMaxTeamNumberForTeamsOfClub(teamCreationData.seasonId(), teamCreationData.clubId());
+        Integer maxTeamNumber = getMaxTeamNumberForTeamsOfOrganization(teamCreationData.seasonId(), teamCreationData.organizationId());
         if (!teamCreationData.number().equals(maxTeamNumber+1)) {
             throw new BadDataException(
                     "Das neue Team hat nicht die passende Teamnummer. Erwartet: %d. Tatsächlich: %d."
@@ -94,9 +96,9 @@ public class TeamService {
         }
     }
 
-    private Integer getMaxTeamNumberForTeamsOfClub(Long seasonId, Long clubId) {
-        List<Integer> teamNumbers = teamRepository.findBySeasonIdAndClubId(
-                        seasonId, clubId)
+    private Integer getMaxTeamNumberForTeamsOfOrganization(Long seasonId, Long organizationId) {
+        List<Integer> teamNumbers = teamRepository.findBySeasonIdAndOrganizationId(
+                        seasonId, organizationId)
                 .stream()
                 .map(Team::getNumber)
                 .toList();
@@ -107,7 +109,7 @@ public class TeamService {
     private TeamData teamToTeamData(Team team) {
         return new TeamData(team.getId(),
                 team.getSeasonId(),
-                team.getClubId(),
+                team.getOrganizationId(),
                 team.getNumber());
     }
 }
