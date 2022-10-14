@@ -10,9 +10,6 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "season_id", unique = false, nullable = false)
-    private Long seasonId;
-
     @Column(name = "organization_id", unique = false, nullable = false)
     private Long organizationId;
 
@@ -26,15 +23,6 @@ public class Team {
 
     public void setId(@NonNull Long id) {
         this.id = id;
-    }
-
-    @NonNull
-    public Long getSeasonId() {
-        return seasonId;
-    }
-
-    public void setSeasonId(@NonNull Long seasonId) {
-        this.seasonId = seasonId;
     }
 
     @NonNull

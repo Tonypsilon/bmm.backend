@@ -4,6 +4,7 @@ import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BmmException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.exception.SeasonStageException;
+import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.participant.data.Participant;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantCreationData;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
@@ -25,21 +26,24 @@ public class ParticipantService {
     private final TeamService teamService;
     private final ParticipationEligibilityService participationEligibilityService;
     private final SeasonService seasonService;
+    private final OrganizationService organizationService;
 
     public ParticipantService(ParticipantRepository participantRepository,
                               TeamService teamService,
                               ParticipationEligibilityService participationEligibilityService,
-                              SeasonService seasonService) {
+                              SeasonService seasonService,
+                              OrganizationService organizationService) {
         this.participantRepository = participantRepository;
         this.teamService = teamService;
         this.participationEligibilityService = participationEligibilityService;
         this.seasonService = seasonService;
+        this.organizationService = organizationService;
     }
 
     @Transactional
     public Collection<ParticipantData> createValidParticipantConfigurationForTeam(
             Long teamId, Collection<ParticipantCreationData> participantsCreationData) {
-        if(!teamService.existsById(teamId)) {
+        if(Boolean.FALSE.equals(teamService.existsById(teamId))) {
             throw new NotFoundException("Es gibt keine Mannschaft mit der ID %d!".formatted(teamId));
         }
         Collection<ParticipantData> createdParticipants = participantsCreationData
@@ -52,7 +56,9 @@ public class ParticipantService {
 
     private ParticipantData createSingleParticipantFromGivenCollection(ParticipantCreationData participantCreationData) {
         validateParticipantCreationData(participantCreationData);
-        if(seasonService.getStageOfSeason(teamService.getTeamById(participantCreationData.teamId()).seasonId())
+        if(seasonService.getStageOfSeason(
+                organizationService.getSeasonIdOfOrganization(
+                        teamService.getTeamById(participantCreationData.teamId()).organizationId()))
                 != SeasonStage.REGISTRATION) {
             throw new SeasonStageException("In dieser Saisonphase kann keine Mannschaft mit Teilnehmern befüllt werden!");
         }
@@ -68,7 +74,9 @@ public class ParticipantService {
     public ParticipantData addParticipantToTeam(ParticipantCreationData participantCreationData) {
         validateParticipantCreationData(participantCreationData);
         if(!List.of(SeasonStage.REGISTRATION, SeasonStage.RUNNING).contains(
-                seasonService.getStageOfSeason(teamService.getTeamById(participantCreationData.teamId()).seasonId())
+                seasonService.getStageOfSeason(
+                        organizationService.getSeasonIdOfOrganization(
+                        teamService.getTeamById(participantCreationData.teamId()).organizationId()))
         )) {
             throw new SeasonStageException(
                     "In dieser Saisonphase können keine Teilnehmer zu einer Mannschaft hinzugefügt werden!");
@@ -87,7 +95,8 @@ public class ParticipantService {
         );
         if(!List.of(SeasonStage.REGISTRATION)
                 .contains(seasonService.getStageOfSeason(
-                        teamService.getTeamById(participantToDelete.getTeamId()).seasonId())
+                        organizationService.getSeasonIdOfOrganization(
+                        teamService.getTeamById(participantToDelete.getTeamId()).organizationId()))
                 )
         ) {
             throw new SeasonStageException("In dieser Saisonphase kann kein Teilnehmer entfernt werden!");
@@ -112,17 +121,17 @@ public class ParticipantService {
     }
 
     private void validateParticipantCreationData(ParticipantCreationData participantCreationData) {
-        if(!participationEligibilityService.existsById(participantCreationData.participationEligibilityId())) {
+        if(Boolean.FALSE.equals(participationEligibilityService.existsById(participantCreationData.participationEligibilityId()))) {
             throw new NotFoundException("Es gibt keine Spielberechtigung mit der ID %d!"
                     .formatted(participantCreationData.participationEligibilityId()));
         }
-        if(participantRepository.existsByParticipationEligibilityId(
-                participantCreationData.participationEligibilityId())) {
+        if(Boolean.TRUE.equals(participantRepository.existsByParticipationEligibilityId(
+                participantCreationData.participationEligibilityId()))) {
             throw new AlreadyExistsException("Es gibt bereits einen Teilnehmer für die Spielberechtigung mit der ID %d!"
                     .formatted(participantCreationData.participationEligibilityId()));
         }
-        if(participantRepository.existsByTeamIdAndNumber(
-                participantCreationData.teamId(), participantCreationData.number())) {
+        if(Boolean.TRUE.equals(participantRepository.existsByTeamIdAndNumber(
+                participantCreationData.teamId(), participantCreationData.number()))) {
             throw new AlreadyExistsException(
                     "Es gibt für die Mannschaft mit der ID %d bereits einen Teilnehmer mit Nummer %d!"
                             .formatted(participantCreationData.teamId(), participantCreationData.number()));

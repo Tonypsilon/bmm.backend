@@ -6,11 +6,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClubRepository extends JpaRepository<Club, Long> {
 
-    public Boolean existsByName(String name);
+    Boolean existsByName(String name);
 
-    public Boolean existsByZps(Integer zps);
+    Boolean existsByZps(Integer zps);
 
-    public Club getByName(String name);
+    Club getByName(String name);
 
-    public Club getById(Long id);
+    Club getById(Long id);
 }

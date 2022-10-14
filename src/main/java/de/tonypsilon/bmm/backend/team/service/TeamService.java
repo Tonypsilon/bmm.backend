@@ -32,27 +32,23 @@ public class TeamService {
 
     @Transactional
     public TeamData createTeam(TeamCreationData teamCreationData) {
-        if(!seasonService.seasonExistsById(teamCreationData.seasonId())) {
-            throw new NotFoundException("Es gibt keine Saison mit ID %d!".formatted(teamCreationData.seasonId()));
-        }
-        if (!seasonService.getStageOfSeason(teamCreationData.seasonId()).equals(SeasonStage.REGISTRATION)) {
+        // if the organization would not exist, getStageOfSeason would throw a NotFound Exception.
+        // hence no need to explicitly check that again.
+        if (!seasonService.getStageOfSeason(
+                organizationService.getSeasonIdOfOrganization(teamCreationData.organizationId()))
+                .equals(SeasonStage.REGISTRATION)) {
             throw new SeasonStageException("Saison ist nicht in der Registrierungsphase!");
         }
-        if(!organizationService.existsByIdAndSeasonId(teamCreationData.organizationId(),
-                teamCreationData.seasonId())) {
-            throw new NotFoundException("Es gibt keine Organisation mit ID %d für die Saison mit der ID %d!"
-                    .formatted(teamCreationData.organizationId(), teamCreationData.seasonId()));
-        }
+
         verifyTeamNumber(teamCreationData);
 
         Team team = new Team();
-        team.setSeasonId(teamCreationData.seasonId());
         team.setOrganizationId(teamCreationData.organizationId());
         team.setNumber(teamCreationData.number());
 
         teamRepository.save(team);
 
-        return teamToTeamData(teamRepository.getBySeasonIdAndOrganizationIdAndNumber(teamCreationData.seasonId(),
+        return teamToTeamData(teamRepository.getByOrganizationIdAndNumber(
                 teamCreationData.organizationId(),
                 teamCreationData.number()));
     }
@@ -67,10 +63,12 @@ public class TeamService {
         Team team = teamRepository.findById(teamId).orElseThrow(
                 () -> new NotFoundException("Es gibt kein Team mit ID %d!".formatted(teamId))
         );
-        if (!seasonService.getStageOfSeason(team.getSeasonId()).equals(SeasonStage.REGISTRATION)) {
+        if (!seasonService.getStageOfSeason(
+                organizationService.getSeasonIdOfOrganization(team.getOrganizationId())
+        ).equals(SeasonStage.REGISTRATION)) {
             throw new SeasonStageException("Saison ist nicht in der Registrierungsphase!");
         }
-        if(!team.getNumber().equals(getMaxTeamNumberForTeamsOfOrganization(team.getSeasonId(), team.getOrganizationId()))) {
+        if(!team.getNumber().equals(getMaxTeamNumberForTeamsOfOrganization(team.getOrganizationId()))) {
             throw new BadDataException(
                     "Es kann nur das Team mit der höchsten Nummer gelöscht werden!"
             );
@@ -88,7 +86,7 @@ public class TeamService {
     }
 
     private void verifyTeamNumber(TeamCreationData teamCreationData) {
-        Integer maxTeamNumber = getMaxTeamNumberForTeamsOfOrganization(teamCreationData.seasonId(), teamCreationData.organizationId());
+        Integer maxTeamNumber = getMaxTeamNumberForTeamsOfOrganization(teamCreationData.organizationId());
         if (!teamCreationData.number().equals(maxTeamNumber+1)) {
             throw new BadDataException(
                     "Das neue Team hat nicht die passende Teamnummer. Erwartet: %d. Tatsächlich: %d."
@@ -96,9 +94,8 @@ public class TeamService {
         }
     }
 
-    private Integer getMaxTeamNumberForTeamsOfOrganization(Long seasonId, Long organizationId) {
-        List<Integer> teamNumbers = teamRepository.findBySeasonIdAndOrganizationId(
-                        seasonId, organizationId)
+    private Integer getMaxTeamNumberForTeamsOfOrganization(Long organizationId) {
+        List<Integer> teamNumbers = teamRepository.findByOrganizationId(organizationId)
                 .stream()
                 .map(Team::getNumber)
                 .toList();
@@ -108,7 +105,6 @@ public class TeamService {
 
     private TeamData teamToTeamData(Team team) {
         return new TeamData(team.getId(),
-                team.getSeasonId(),
                 team.getOrganizationId(),
                 team.getNumber());
     }

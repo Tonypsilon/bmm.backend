@@ -588,3 +588,10 @@ databaseChangeLog:
             oldColumnName: club_id
             newColumnName: organization_id
             columnDataType: int
+  - changeSet:
+      id: 18
+      author: Tonypsilon
+      changes:
+        - dropColumn:
+            tableName: team
+            columnName: season_id
