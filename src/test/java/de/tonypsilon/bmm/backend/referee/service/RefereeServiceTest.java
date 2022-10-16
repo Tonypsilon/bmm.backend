@@ -28,7 +28,7 @@ class RefereeServiceTest {
     private Referee referee1;
 
     @BeforeEach
-    private void setUp() {
+    void setUp() {
         refereeService = new RefereeService(refereeRepository,
                 seasonService,
                 validationService);

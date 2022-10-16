@@ -40,7 +40,7 @@ class ParticipationEligibilityServiceTest {
             participationEligibility3, participationEligibility4;
 
     @BeforeEach
-    private void setUp() {
+    void setUp() {
         participationEligibilityService = new ParticipationEligibilityService(
                 participationEligibilityRepository,
                 seasonService,

@@ -25,7 +25,7 @@ class TeamAdminServiceTest {
     private final TeamAdminData teamAdminData1 = new TeamAdminData(1L, "user1");
 
     @BeforeEach
-    private void setUp() {
+    void setUp() {
         teamAdminService = new TeamAdminService(teamAdminRepository, teamService, userDetailsManager);
         teamAdmin1 = new TeamAdmin();
         teamAdmin1.setTeamId(1L);

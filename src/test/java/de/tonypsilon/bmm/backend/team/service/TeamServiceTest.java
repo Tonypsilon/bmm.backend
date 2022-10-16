@@ -29,7 +29,7 @@ class TeamServiceTest {
     private final TeamData team2Data = new TeamData(2L, 1L, 2);
 
     @BeforeEach
-    private void setUp() {
+    void setUp() {
         teamService = new TeamService(teamRepository, seasonService, organizationService);
         team1 = new Team();
         team1.setId(1L);

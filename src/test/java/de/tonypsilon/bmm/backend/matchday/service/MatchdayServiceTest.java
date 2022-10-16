@@ -33,7 +33,7 @@ class MatchdayServiceTest {
     private final MatchdayData matchdayData2 = new MatchdayData(2L, 1L, "22.2.2001-KW3", 2);
 
     @BeforeEach
-    private void setUp() {
+    void setUp() {
         matchdayService = new MatchdayService(matchdayRepository,
                 divisionService,
                 seasonService,

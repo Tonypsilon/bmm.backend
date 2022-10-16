@@ -25,7 +25,7 @@ class SeasonAdminServiceTest {
     private final SeasonAdminData seasonAdminData1 = new SeasonAdminData(1L, "user1");
 
     @BeforeEach
-    private void setUp() {
+    void setUp() {
         seasonAdminService = new SeasonAdminService(seasonAdminRepository, seasonService, userDetailsManager);
         seasonAdmin1 = new SeasonAdmin();
         seasonAdmin1.setSeasonId(1L);

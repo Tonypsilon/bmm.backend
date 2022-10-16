@@ -27,7 +27,7 @@ class DivisionServiceTest {
     private DivisionData landesligaData, stadtligaAData, stadtLigaBData, divisionOfOtherSeasonData;
 
     @BeforeEach
-    private void setUp() {
+    void setUp() {
         this.divisionService = new DivisionService(divisionRepository, seasonService);
         this.landesligaData = new DivisionData(1L, "Landesliga", 1, 8, 1L);
         this.stadtligaAData = new DivisionData(2L, "Stadtliga A", 2, 8, 1L);

@@ -25,7 +25,7 @@ class ClubAdminServiceTest {
     private final ClubAdminData clubAdminData1 = new ClubAdminData(1L, "user1");
 
     @BeforeEach
-    private void setUp() {
+    void setUp() {
         clubAdminService = new ClubAdminService(clubAdminRepository, clubService, userDetailsManager);
         clubAdmin1 = new ClubAdmin();
         clubAdmin1.setClubId(1L);

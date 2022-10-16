@@ -41,7 +41,7 @@ class ParticipantServiceTest {
     private final ParticipantCreationData participantCreationData2 = new ParticipantCreationData(1L, 1L, 2);
 
     @BeforeEach
-    private void setUp() {
+    void setUp() {
         this.participantService = new ParticipantService(participantRepository,
                 teamService,
                 participationEligibilityService,

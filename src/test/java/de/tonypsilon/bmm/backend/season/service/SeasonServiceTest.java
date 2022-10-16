@@ -31,7 +31,7 @@ class SeasonServiceTest {
     private final SeasonData seasonArchivedData = new SeasonData(5L, "Saison-Archived", SeasonStage.ARCHIVED);
 
     @BeforeEach
-    private void setUp() {
+    void setUp() {
         seasonService = new SeasonService(seasonRepository);
         seasonRegistration = new Season();
         seasonRegistration.setId(1L);

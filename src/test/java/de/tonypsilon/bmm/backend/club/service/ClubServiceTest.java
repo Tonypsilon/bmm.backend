@@ -25,7 +25,7 @@ class ClubServiceTest {
     private final ClubData club3Data = new ClubData(3L, "club3", 133, Boolean.TRUE);
 
     @BeforeEach
-    private void setUp() {
+    void setUp() {
         this.clubService = new ClubService(clubRepository);
         club1 = new Club();
         club1.setId(1L);
