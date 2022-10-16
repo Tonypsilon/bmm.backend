@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -75,6 +76,21 @@ class DivisionServiceTest {
         assertEquals(stadtligaAData, level2Actual.next());
         assertEquals(stadtLigaBData, level2Actual.next());
         assertFalse(level2Actual.hasNext());
+    }
+
+    @Test
+    void testGetSeasonIdByDivisionIdOk() {
+        when(divisionRepository.findById(1L)).thenReturn(Optional.of(landesliga));
+        Long actual = divisionService.getSeasonIdByDivisionId(1L);
+        assertEquals(landesliga.getSeasonId(), actual);
+    }
+
+    @Test
+    void testGetSeasonIdByDivisionIdDivisionDoesNotExist() {
+        when(divisionRepository.findById(-1L)).thenReturn(Optional.empty());
+        NotFoundException actualException = assertThrows(NotFoundException.class,
+                () -> divisionService.getSeasonIdByDivisionId(-1L));
+        assertEquals("Es gibt keine Staffel mit der ID -1!", actualException.getMessage());
     }
 
     @Test

@@ -61,7 +61,7 @@ public class DivisionService {
         if(!seasonService.getStageOfSeason(divisionCreationData.seasonId()).equals(SeasonStage.PREPARATION)) {
             throw new SeasonStageException("Saison ist nicht in der Vorbereitungsphase!");
         }
-        if (divisionRepository.existsBySeasonIdAndName(divisionCreationData.seasonId(), divisionCreationData.name())) {
+        if (Boolean.TRUE.equals(divisionRepository.existsBySeasonIdAndName(divisionCreationData.seasonId(), divisionCreationData.name()))) {
             throw new AlreadyExistsException("Staffel mit Namen %s für Saison mit ID %d existiert bereits!"
                     .formatted(divisionCreationData.name(), divisionCreationData.seasonId()));
         }

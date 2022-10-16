@@ -163,6 +163,14 @@ class MatchdayServiceTest {
     }
 
     @Test
+    void testFindById() {
+        when(matchdayRepository.findById(1L)).thenReturn(Optional.of(matchday1));
+        when(matchdayRepository.findById(-1L)).thenReturn(Optional.empty());
+        assertEquals(Optional.of(matchdayData1), matchdayService.findById(1L));
+        assertEquals(Optional.empty(), matchdayService.findById(-1L));
+    }
+
+    @Test
     void testUpdateMatchdayOk() {
         when(matchdayRepository.findById(1L)).thenReturn(Optional.of(matchday1));
         when(divisionService.getSeasonIdByDivisionId(1L)).thenReturn(2L);
