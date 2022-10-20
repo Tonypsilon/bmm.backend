@@ -3,6 +3,8 @@ package de.tonypsilon.bmm.backend.team.data;
 import jakarta.persistence.*;
 import org.springframework.lang.NonNull;
 
+import java.util.Optional;
+
 @Entity
 public class Team {
 
@@ -15,6 +17,9 @@ public class Team {
 
     @Column(unique = false, nullable = false)
     private Integer number;
+
+    @Column(name = "division_id", unique = false, nullable = true)
+    private Long divisionId;
 
     @NonNull
     public Long getId() {
@@ -41,5 +46,13 @@ public class Team {
 
     public void setNumber(@NonNull Integer number) {
         this.number = number;
+    }
+
+    public Optional<Long> getDivisionId() {
+        return Optional.ofNullable(divisionId);
+    }
+
+    public void setDivisionId(Long divisionId) {
+        this.divisionId = divisionId;
     }
 }

@@ -595,3 +595,16 @@ databaseChangeLog:
         - dropColumn:
             tableName: team
             columnName: season_id
+  - changeSet:
+      id: 19
+      author: Tonypsilon
+      changes:
+        - addColumn:
+            tableName: team
+            columns:
+              - column:
+                  name: division_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: true

@@ -62,7 +62,7 @@ class ParticipantServiceTest {
     @Test
     void testCreateValidParticipantConfigurationForTeamOk() {
         when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
-        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4));
+        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4, Optional.empty()));
         when(organizationService.getSeasonIdOfOrganization(3L)).thenReturn(2L);
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.REGISTRATION);
         when(participationEligibilityService.existsById(1L)).thenReturn(Boolean.TRUE);
@@ -106,7 +106,7 @@ class ParticipantServiceTest {
     @Test
     void testCreateValidParticipantConfigurationForTeamInvalidNumbers() {
         when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
-        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4));
+        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4, Optional.empty()));
         when(participationEligibilityService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(organizationService.getSeasonIdOfOrganization(3L)).thenReturn(2L);
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.REGISTRATION);
@@ -125,7 +125,7 @@ class ParticipantServiceTest {
     @Test
     void testCreateValidParticipantConfigurationForTeamWrongSeasonStage() {
         when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
-        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4));
+        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4, Optional.empty()));
         when(participationEligibilityService.existsById(2L)).thenReturn(Boolean.TRUE);
         when(organizationService.getSeasonIdOfOrganization(3L)).thenReturn(2L);
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.RUNNING);
@@ -144,7 +144,7 @@ class ParticipantServiceTest {
         when(participationEligibilityService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(participantRepository.existsByParticipationEligibilityId(1L)).thenReturn(Boolean.FALSE);
         when(participantRepository.existsByTeamIdAndNumber(1L, 2)).thenReturn(Boolean.FALSE);
-        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4));
+        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4, Optional.empty()));
         when(organizationService.getSeasonIdOfOrganization(3L)).thenReturn(2L);
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.RUNNING);
         when(participantRepository.findByTeamId(1L)).thenReturn(List.of(participant1, participant2));
@@ -200,7 +200,7 @@ class ParticipantServiceTest {
         when(participationEligibilityService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(participantRepository.existsByParticipationEligibilityId(1L)).thenReturn(Boolean.FALSE);
         when(participantRepository.existsByTeamIdAndNumber(1L, 2)).thenReturn(Boolean.FALSE);
-        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4));
+        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4, Optional.empty()));
         when(organizationService.getSeasonIdOfOrganization(3L)).thenReturn(2L);
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.PREPARATION);
 
@@ -216,7 +216,7 @@ class ParticipantServiceTest {
         when(participationEligibilityService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(participantRepository.existsByParticipationEligibilityId(1L)).thenReturn(Boolean.FALSE);
         when(participantRepository.existsByTeamIdAndNumber(1L, 2)).thenReturn(Boolean.FALSE);
-        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4));
+        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4, Optional.empty()));
         when(organizationService.getSeasonIdOfOrganization(3L)).thenReturn(2L);
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.RUNNING);
         when(participantRepository.findByTeamId(1L)).thenReturn(List.of(participant2));
@@ -231,7 +231,7 @@ class ParticipantServiceTest {
     @Test
     void testDeleteParticipantOk() {
         when(participantRepository.findById(2L)).thenReturn(Optional.of(participant2));
-        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4));
+        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4, Optional.empty()));
         when(organizationService.getSeasonIdOfOrganization(3L)).thenReturn(2L);
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.REGISTRATION);
         when(participantRepository.findByTeamId(1L)).thenReturn(List.of(participant1));
@@ -259,7 +259,7 @@ class ParticipantServiceTest {
     @Test
     void testDeleteParticipantWrongSeasonStage() {
         when(participantRepository.findById(2L)).thenReturn(Optional.of(participant2));
-        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4));
+        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4, Optional.empty()));
         when(organizationService.getSeasonIdOfOrganization(3L)).thenReturn(2L);
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.ARCHIVED);
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
@@ -273,7 +273,7 @@ class ParticipantServiceTest {
     void testDeleteParticipantWrongNumber() {
         when(participantRepository.findById(1L)).thenReturn(Optional.of(participant1));
         when(organizationService.getSeasonIdOfOrganization(3L)).thenReturn(2L);
-        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4));
+        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 3L, 4, Optional.empty()));
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.REGISTRATION);
         when(participantRepository.findByTeamId(1L)).thenReturn(List.of(participant2));
         BmmException actualException = assertThrows(BmmException.class,

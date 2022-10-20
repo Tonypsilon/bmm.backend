@@ -1,13 +1,13 @@
 package de.tonypsilon.bmm.backend.match.service;
 
 import de.tonypsilon.bmm.backend.division.service.DivisionService;
+import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.match.data.CreateMatchData;
 import de.tonypsilon.bmm.backend.match.data.Match;
 import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.data.MatchRepository;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
-import de.tonypsilon.bmm.backend.matchday.data.MatchdayRepository;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
@@ -61,6 +61,8 @@ class MatchServiceTest {
         when(matchdayService.findById(1L)).thenReturn(Optional.of(matchdayData));
         when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(teamService.existsById(2L)).thenReturn(Boolean.TRUE);
+        when(matchRepository.existsByHomeTeamIdOrAwayTeamId(1L)).thenReturn(Boolean.FALSE);
+        when(matchRepository.existsByHomeTeamIdOrAwayTeamId(2L)).thenReturn(Boolean.FALSE);
     }
 
     @Test
@@ -98,12 +100,31 @@ class MatchServiceTest {
 
     @Test
     void testCreateMatchHomeTeamAlreadyHasMatch() {
-
+        when(matchdayService.findById(1L)).thenReturn(Optional.of(matchdayData));
+        when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
+        when(teamService.existsById(2L)).thenReturn(Boolean.TRUE);
+        when(matchRepository.existsByHomeTeamIdOrAwayTeamId(1L)).thenReturn(Boolean.TRUE);
+        CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L,
+                Optional.empty(), Optional.empty());
+        AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
+                () -> matchService.createMatch(createMatchData));
+        assertEquals("Die Heimmannschaft hat an diesem Spieltag schon einen Wettkampf!",
+                actualException.getMessage());
     }
 
     @Test
     void testCreateMatchAwayTeamAlreadyHasMatch() {
-
+        when(matchdayService.findById(1L)).thenReturn(Optional.of(matchdayData));
+        when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
+        when(teamService.existsById(2L)).thenReturn(Boolean.TRUE);
+        when(matchRepository.existsByHomeTeamIdOrAwayTeamId(1L)).thenReturn(Boolean.FALSE);
+        when(matchRepository.existsByHomeTeamIdOrAwayTeamId(2L)).thenReturn(Boolean.TRUE);
+        CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L,
+                Optional.empty(), Optional.empty());
+        AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
+                () -> matchService.createMatch(createMatchData));
+        assertEquals("Die Gastmannschaft hat an diesem Spieltag schon einen Wettkampf!",
+                actualException.getMessage());
     }
 
 }

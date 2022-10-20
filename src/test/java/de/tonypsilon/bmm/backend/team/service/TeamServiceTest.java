@@ -26,7 +26,7 @@ class TeamServiceTest {
     private final OrganizationService organizationService = mock(OrganizationService.class);
     private TeamService teamService;
     private Team team1, team2;
-    private final TeamData team2Data = new TeamData(2L, 1L, 2);
+    private final TeamData team2Data = new TeamData(2L, 1L, 2, Optional.empty());
 
     @BeforeEach
     void setUp() {

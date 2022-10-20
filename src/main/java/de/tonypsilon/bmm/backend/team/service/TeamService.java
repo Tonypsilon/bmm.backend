@@ -45,6 +45,7 @@ public class TeamService {
         Team team = new Team();
         team.setOrganizationId(teamCreationData.organizationId());
         team.setNumber(teamCreationData.number());
+        team.setDivisionId(null);
 
         teamRepository.save(team);
 
@@ -106,6 +107,7 @@ public class TeamService {
     private TeamData teamToTeamData(Team team) {
         return new TeamData(team.getId(),
                 team.getOrganizationId(),
-                team.getNumber());
+                team.getNumber(),
+                team.getDivisionId());
     }
 }
