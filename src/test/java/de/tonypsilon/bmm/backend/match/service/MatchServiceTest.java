@@ -10,6 +10,7 @@ import de.tonypsilon.bmm.backend.match.data.MatchRepository;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
+import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,8 +62,8 @@ class MatchServiceTest {
         when(matchdayService.findById(1L)).thenReturn(Optional.of(matchdayData));
         when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(teamService.existsById(2L)).thenReturn(Boolean.TRUE);
-        when(matchRepository.existsByHomeTeamIdOrAwayTeamId(1L)).thenReturn(Boolean.FALSE);
-        when(matchRepository.existsByHomeTeamIdOrAwayTeamId(2L)).thenReturn(Boolean.FALSE);
+        when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.FALSE);
+        when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 2L)).thenReturn(Boolean.FALSE);
     }
 
     @Test
@@ -78,32 +79,32 @@ class MatchServiceTest {
     @Test
     void testCreateMatchHomeTeamDoesNotExist() {
         when(matchdayService.findById(1L)).thenReturn(Optional.of(matchdayData));
-        when(teamService.existsById(-1L)).thenReturn(Boolean.FALSE);
+        when(teamService.getTeamById(-1L)).thenThrow(new NotFoundException("Es gibt kein Team mit ID -1!"));
         CreateMatchData createMatchData = new CreateMatchData(1L, -1L, 2L,
                 Optional.empty(), Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> matchService.createMatch(createMatchData));
-        assertEquals("Die Heimmannschaft mit ID -1 existiert nicht!", actualException.getMessage());
+        assertEquals("Es gibt kein Team mit ID -1!", actualException.getMessage());
     }
 
     @Test
     void testCreateMatchAwayTeamDoesNotExist() {
         when(matchdayService.findById(1L)).thenReturn(Optional.of(matchdayData));
-        when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
-        when(teamService.existsById(-1L)).thenReturn(Boolean.FALSE);
+        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 1L, 1, Optional.of(2L)));
+        when(teamService.getTeamById(-1L)).thenThrow(new NotFoundException("Es gibt kein Team mit ID -1!"));
         CreateMatchData createMatchData = new CreateMatchData(1L, 1L, -1L,
                 Optional.empty(), Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> matchService.createMatch(createMatchData));
-        assertEquals("Die Gastmannschaft mit ID -1 existiert nicht!", actualException.getMessage());
+        assertEquals("Es gibt kein Team mit ID -1!", actualException.getMessage());
     }
 
     @Test
     void testCreateMatchHomeTeamAlreadyHasMatch() {
         when(matchdayService.findById(1L)).thenReturn(Optional.of(matchdayData));
-        when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
-        when(teamService.existsById(2L)).thenReturn(Boolean.TRUE);
-        when(matchRepository.existsByHomeTeamIdOrAwayTeamId(1L)).thenReturn(Boolean.TRUE);
+        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 1L, 1, Optional.of(2L)));
+        when(teamService.getTeamById(2L)).thenReturn(new TeamData(2L, 2L, 2, Optional.of(2L)));
+        when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.TRUE);
         CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L,
                 Optional.empty(), Optional.empty());
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
@@ -115,10 +116,10 @@ class MatchServiceTest {
     @Test
     void testCreateMatchAwayTeamAlreadyHasMatch() {
         when(matchdayService.findById(1L)).thenReturn(Optional.of(matchdayData));
-        when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
-        when(teamService.existsById(2L)).thenReturn(Boolean.TRUE);
-        when(matchRepository.existsByHomeTeamIdOrAwayTeamId(1L)).thenReturn(Boolean.FALSE);
-        when(matchRepository.existsByHomeTeamIdOrAwayTeamId(2L)).thenReturn(Boolean.TRUE);
+        when(teamService.getTeamById(1L)).thenReturn(new TeamData(1L, 1L, 1, Optional.of(2L)));
+        when(teamService.getTeamById(2L)).thenReturn(new TeamData(2L, 2L, 2, Optional.of(2L)));
+        when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.FALSE);
+        when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 2L)).thenReturn(Boolean.TRUE);
         CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L,
                 Optional.empty(), Optional.empty());
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,

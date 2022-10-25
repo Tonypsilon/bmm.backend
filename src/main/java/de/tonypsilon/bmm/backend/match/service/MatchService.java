@@ -12,6 +12,7 @@ import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.referee.data.RefereeData;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
+import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.springframework.lang.NonNull;
@@ -49,18 +50,25 @@ public class MatchService {
         MatchdayData matchdayData = matchdayService.findById(createMatchData.matchdayId())
                 .orElseThrow(() -> new NotFoundException("Es gibt keinen Spieltag mit der ID %d!"
                 .formatted(createMatchData.matchdayId())));
-        if(Boolean.FALSE.equals(teamService.existsById(createMatchData.homeTeamId()))) {
-            throw new NotFoundException("Die Heimmannschaft mit ID %d existiert nicht!"
-                    .formatted(createMatchData.homeTeamId()));
+        // If any of the teams does not exist, TeamService throws a NotFoundException.
+        TeamData homeTeamData = teamService.getTeamById(createMatchData.homeTeamId());
+        TeamData awayTeamData = teamService.getTeamById(createMatchData.awayTeamId());
+
+        if (homeTeamData.divisionId().isEmpty()
+        || awayTeamData.divisionId().isEmpty()
+        || !homeTeamData.divisionId().get().equals(matchdayData.divisionId())
+        || !awayTeamData.divisionId().get().equals(matchdayData.divisionId())) {
+            throw new BadDataException("Mindestens eine der beiden Mannschaften gehört nicht zur richtigen Staffel.");
         }
-        if(Boolean.FALSE.equals(teamService.existsById(createMatchData.awayTeamId()))) {
-            throw new NotFoundException("Die Gastmannschaft mit ID %d existiert nicht!"
-                    .formatted(createMatchData.awayTeamId()));
-        }
-        if(Boolean.TRUE.equals(matchRepository.existsByHomeTeamIdOrAwayTeamId(createMatchData.homeTeamId()))) {
+
+        if(Boolean.TRUE.equals(
+                matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(
+                        createMatchData.matchdayId(), createMatchData.homeTeamId()))) {
             throw new AlreadyExistsException("Die Heimmannschaft hat an diesem Spieltag schon einen Wettkampf!");
         }
-        if(Boolean.TRUE.equals(matchRepository.existsByHomeTeamIdOrAwayTeamId(createMatchData.awayTeamId()))) {
+        if(Boolean.TRUE.equals(
+                matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(
+                        createMatchData.matchdayId(), createMatchData.awayTeamId()))) {
             throw new AlreadyExistsException("Die Gastmannschaft hat an diesem Spieltag schon einen Wettkampf!");
         }
         createMatchData.date().ifPresent(validationService::validateDateString);

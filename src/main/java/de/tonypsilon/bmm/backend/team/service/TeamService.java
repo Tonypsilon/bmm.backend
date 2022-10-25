@@ -32,8 +32,8 @@ public class TeamService {
 
     @Transactional
     public TeamData createTeam(TeamCreationData teamCreationData) {
-        // if the organization would not exist, getStageOfSeason would throw a NotFound Exception.
-        // hence no need to explicitly check that again.
+        // If the organization would not exist, getStageOfSeason would throw a NotFound Exception.
+        // Hence, no need to explicitly check that again.
         if (!seasonService.getStageOfSeason(
                 organizationService.getSeasonIdOfOrganization(teamCreationData.organizationId()))
                 .equals(SeasonStage.REGISTRATION)) {
