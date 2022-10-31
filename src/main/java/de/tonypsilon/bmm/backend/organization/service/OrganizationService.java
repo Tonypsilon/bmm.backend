@@ -1,11 +1,18 @@
 package de.tonypsilon.bmm.backend.organization.service;
 
 import de.tonypsilon.bmm.backend.club.service.ClubService;
-import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.organization.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
+import de.tonypsilon.bmm.backend.season.service.SeasonStage;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 public class OrganizationService {
@@ -27,6 +34,21 @@ public class OrganizationService {
 
     @Transactional
     public OrganizationData createOrganization(OrganizationCreationData organizationCreationData) {
+        if(organizationCreationData.name() == null || organizationCreationData.name().isEmpty()) {
+            throw new BadDataException("Der Name der Organisation darf nicht leer sein!");
+        }
+        if(!seasonService.seasonExistsById(organizationCreationData.seasonId())) {
+            throw new NotFoundException(
+                    "Es gibt keine Saison mit der ID %d!".formatted(organizationCreationData.seasonId()));
+        }
+        if(!seasonService.getStageOfSeason(organizationCreationData.seasonId()).equals(SeasonStage.PREPARATION)) {
+            throw new SeasonStageException("Saison ist nicht in der Vorbereitungsphase!");
+        }
+        if(organizationCreationData.clubIds() == null || organizationCreationData.clubIds().isEmpty()) {
+            throw new BadDataException("Zur Erstellung einer Organisation muss mindestens ein Verein gegeben sein!");
+        }
+        validateClubIds(organizationCreationData.clubIds(), organizationCreationData.seasonId());
+
         Organization organization = new Organization();
         organization.setSeasonId(organizationCreationData.seasonId());
 
@@ -37,6 +59,30 @@ public class OrganizationService {
                         organizationCreationData.name()));
     }
 
+    // checks if clubs exist and also ensures they are not yet part of another organization for that season.
+    private void validateClubIds(Collection<Long> clubIds, Long seasonId) {
+        clubIds.stream()
+                .filter(Predicate.not(clubService::clubExistsById))
+                .findFirst()
+                .ifPresent(id -> {
+                    throw new NotFoundException("Es gibt keinen Verein mit der ID %d!".formatted(id));
+                });
+        Set<Long> organizationIdsOfCurrentSeason = organizationRepository.findBySeasonId(seasonId)
+                .stream()
+                .map(Organization::getId)
+                .collect(Collectors.toSet());
+        organizationMemberRepository.findByOrganizationIdIn(organizationIdsOfCurrentSeason)
+                .stream()
+                .map(OrganizationMember::getClubId)
+                .filter(clubIds::contains)
+                .findFirst()
+                .ifPresent(id -> {
+                    throw new AlreadyExistsException(
+                            "Es gibt schon eine Organisation in der Saison mit der ID %d für den Verein mit der ID %d!"
+                                    .formatted(seasonId, id));
+                });
+    }
+
     public Long getSeasonIdOfOrganization(Long organizationId) {
         return organizationRepository.findById(organizationId)
                 .map(Organization::getSeasonId)
@@ -44,12 +90,12 @@ public class OrganizationService {
                         .formatted(organizationId)));
     }
 
-    public Boolean existsByIdAndSeasonId(Long organizationId, Long seasonId) {
-        return organizationRepository.existsByIdAndSeasonId(organizationId, seasonId);
-    }
-
     private OrganizationData toOrganizationData(Organization organization) {
-        return null;
+        return new OrganizationData(organization.getId(),
+                organization.getSeasonId(),
+                organization.getName(),
+                organization.getOrganizationMembers()
+                        .stream().map(OrganizationMember::getClubId).collect(Collectors.toSet()));
     }
 
 }
