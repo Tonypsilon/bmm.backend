@@ -11,6 +11,8 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+
 @Service
 public class SeasonAdminService {
 
@@ -24,6 +26,14 @@ public class SeasonAdminService {
         this.seasonAdminRepository = seasonAdminRepository;
         this.seasonService = seasonService;
         this.userDetailsManager = userDetailsManager;
+    }
+
+    @NonNull
+    public Collection<SeasonAdminData> getAllSeasonAdmins() {
+        return seasonAdminRepository.findAll()
+                .stream()
+                .map(this::seasonAdminToSeasonAdminData)
+                .toList();
     }
 
     @Transactional
@@ -52,6 +62,12 @@ public class SeasonAdminService {
     @NonNull
     public Boolean isSeasonAdmin(@NonNull Long seasonId, @NonNull String username) {
         return seasonAdminRepository.existsBySeasonIdAndUsername(seasonId, username);
+    }
+
+    @NonNull
+    public Boolean isSeasonAdmin(@NonNull String seasonName, @NonNull String username) {
+        return seasonAdminRepository.existsBySeasonIdAndUsername(
+                seasonService.getSeasonByName(seasonName).id(), username);
     }
 
     @Transactional

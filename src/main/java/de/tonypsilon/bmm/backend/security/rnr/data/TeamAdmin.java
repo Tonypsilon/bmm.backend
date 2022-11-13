@@ -1,9 +1,6 @@
 package de.tonypsilon.bmm.backend.security.rnr.data;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
+import javax.persistence.*;
 import org.springframework.lang.NonNull;
 
 @Entity

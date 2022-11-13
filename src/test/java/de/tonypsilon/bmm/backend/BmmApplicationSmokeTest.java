@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tonypsilon.bmm.backend.exception.ErrorData;
 import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
-import de.tonypsilon.bmm.backend.season.data.SeasonStageChangeData;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class BmmApplicationSystemTest {
+class BmmApplicationSmokeTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -67,30 +66,7 @@ class BmmApplicationSystemTest {
         assertEquals("test", actualSeason.name());
         assertEquals(SeasonStage.REGISTRATION, actualSeason.stage());
 
-        // Step 3: Patch the season to archived
-        MockHttpServletResponse patchSeasonResponse = this.mockMvc.perform(patch("/seasons/test")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .with(csrf())
-                        .content(objectMapper.writeValueAsString(new SeasonStageChangeData("test", SeasonStage.ARCHIVED))))
-                .andExpect(status().isOk())
-                .andReturn().getResponse();
-
-        SeasonData patchSeasonResult = objectMapper.readValue(patchSeasonResponse.getContentAsString(), SeasonData.class);
-        assertEquals("test", patchSeasonResult.name());
-        assertEquals(SeasonStage.ARCHIVED, patchSeasonResult.stage());
-
-        // Step 4: Get the season again, this time as archived
-        getSeasonsResponse = this.mockMvc.perform(get("/seasons"))
-                .andExpect(status().isOk())
-                .andReturn().getResponse();
-        getSeasonsResult = objectMapper.readValue(getSeasonsResponse.getContentAsString(), new TypeReference<Collection<SeasonData>>() {
-        });
-        assertEquals(1, getSeasonsResult.size());
-        actualSeason = getSeasonsResult.iterator().next();
-        assertEquals("test", actualSeason.name());
-        assertEquals(SeasonStage.ARCHIVED, actualSeason.stage());
-
-        // Step 5: Test an error case: Try to get a season that does not exist.
+        // Step 3: Test an error case: Try to get a season that does not exist.
         // This step implicitly tests the functionality of the BmmExceptionAdvice class.
         MockHttpServletResponse getSeasonThatDoesNotExistResponse = this.mockMvc.perform(get("/seasons/non-existent"))
                 .andExpect(status().isBadRequest())

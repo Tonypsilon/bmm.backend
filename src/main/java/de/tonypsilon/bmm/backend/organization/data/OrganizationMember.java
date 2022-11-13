@@ -1,6 +1,6 @@
 package de.tonypsilon.bmm.backend.organization.data;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 public class OrganizationMember {

@@ -6,6 +6,7 @@ import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.SecurityConfiguration;
+import de.tonypsilon.bmm.backend.security.rnr.service.SeasonAdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -33,6 +34,9 @@ class SeasonControllerTest {
 
     @MockBean
     private SeasonService seasonService;
+
+    @MockBean
+    private SeasonAdminService seasonAdminService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

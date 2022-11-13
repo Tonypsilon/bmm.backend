@@ -1,6 +1,6 @@
 package de.tonypsilon.bmm.backend.teamcaptain.data;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import org.springframework.lang.NonNull;
 
 @Entity

@@ -35,6 +35,7 @@ public class SeasonService {
     }
 
     @Transactional
+    @NonNull
     public SeasonData createSeason(@NonNull SeasonCreationData seasonCreationData) {
         if(seasonCreationData.name() == null || seasonCreationData.name().isBlank()) {
             throw new NameBlankException("Der Name der Saison darf nicht leer sein!");
@@ -49,7 +50,8 @@ public class SeasonService {
         return seasonToSeasonData(seasonRepository.getByName(seasonCreationData.name()));
     }
 
-    public SeasonData getSeasonByName(String seasonName) {
+    @NonNull
+    public SeasonData getSeasonByName(@NonNull String seasonName) {
         return seasonToSeasonData(seasonRepository.findByName(seasonName)
                 .orElseThrow(() -> new NotFoundException("Saison mit dem Namen %s existiert nicht!".formatted(seasonName))));
     }
@@ -59,6 +61,7 @@ public class SeasonService {
                 .orElseThrow(() -> new NotFoundException("Saison mit der ID %d existiert nicht!".formatted(seasonId))));
     }
 
+    @NonNull
     public Collection<SeasonData> getAllSeasons() {
         return seasonRepository.findAll()
                 .stream()

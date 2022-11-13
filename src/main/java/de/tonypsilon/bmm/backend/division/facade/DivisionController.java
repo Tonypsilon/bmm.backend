@@ -6,7 +6,7 @@ import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.division.service.DivisionService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
-import jakarta.annotation.security.RolesAllowed;
+import javax.annotation.security.RolesAllowed;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;

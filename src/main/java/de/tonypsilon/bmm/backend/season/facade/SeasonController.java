@@ -1,26 +1,37 @@
 package de.tonypsilon.bmm.backend.season.facade;
 
+import com.google.common.base.Preconditions;
+import de.tonypsilon.bmm.backend.exception.BadDataException;
+import de.tonypsilon.bmm.backend.exception.SecurityException;
 import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.data.SeasonStageChangeData;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
-import jakarta.annotation.security.RolesAllowed;
+import de.tonypsilon.bmm.backend.security.rnr.service.SeasonAdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
+import java.security.Principal;
 import java.util.Collection;
 
 @RestController
 public class SeasonController {
 
     private final SeasonService seasonService;
+    private final SeasonAdminService seasonAdminService;
 
-    public SeasonController(final SeasonService seasonService) {
+    public SeasonController(final SeasonService seasonService,
+                            final SeasonAdminService seasonAdminService) {
         this.seasonService = seasonService;
+        this.seasonAdminService = seasonAdminService;
     }
 
     @GetMapping(value = "/seasons", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -30,7 +41,7 @@ public class SeasonController {
     }
 
     @GetMapping(value = "/seasons/{seasonName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SeasonData> getSeasonByName(@PathVariable String seasonName) {
+    public ResponseEntity<SeasonData> getSeasonByName(@NonNull @PathVariable String seasonName) {
         return ResponseEntity
                 .ok(seasonService.getSeasonByName(seasonName));
     }
@@ -39,7 +50,8 @@ public class SeasonController {
     @PostMapping(value = "/seasons",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SeasonData> createSeason(RequestEntity<SeasonCreationData> seasonCreationDataRequestEntity) {
+    public ResponseEntity<SeasonData> createSeason(RequestEntity<SeasonCreationData> seasonCreationDataRequestEntity,
+                                                   Principal principal) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(seasonService.createSeason(seasonCreationDataRequestEntity.getBody()));
@@ -49,7 +61,16 @@ public class SeasonController {
     @PatchMapping(value = "/seasons/{seasonName}",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SeasonData> changeSeasonState(RequestEntity<SeasonStageChangeData> patchedSeasonRequestEntity) {
+    public ResponseEntity<SeasonData> changeSeasonState(RequestEntity<SeasonStageChangeData> patchedSeasonRequestEntity,
+                                                        @NonNull @PathVariable String seasonName,
+                                                        Principal principal) {
+        if (!seasonName.equals(patchedSeasonRequestEntity.getBody().seasonName())) {
+            throw new BadDataException("Der Saisonname im Request passt nicht zum Requestbody.");
+        }
+        if (!seasonAdminService.isSeasonAdmin(seasonName, principal.getName())) {
+            throw new SecurityException("Der Benutzer %s ist kein Admin für die Saison %s"
+                    .formatted(principal.getName(), seasonName));
+        }
         return ResponseEntity
                 .ok(seasonService.updateSeasonStage(patchedSeasonRequestEntity.getBody()));
     }

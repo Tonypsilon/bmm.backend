@@ -4,7 +4,7 @@ import de.tonypsilon.bmm.backend.club.data.ClubCreationData;
 import de.tonypsilon.bmm.backend.club.data.ClubData;
 import de.tonypsilon.bmm.backend.club.service.ClubService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
-import jakarta.annotation.security.RolesAllowed;
+import javax.annotation.security.RolesAllowed;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;

@@ -1,7 +1,7 @@
 package de.tonypsilon.bmm.backend.game.data;
 
 import de.tonypsilon.bmm.backend.game.service.Result;
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 import java.util.Optional;
 

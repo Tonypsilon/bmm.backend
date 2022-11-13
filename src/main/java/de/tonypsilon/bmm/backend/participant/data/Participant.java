@@ -1,6 +1,6 @@
 package de.tonypsilon.bmm.backend.participant.data;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import org.springframework.lang.NonNull;
 
 @Entity
