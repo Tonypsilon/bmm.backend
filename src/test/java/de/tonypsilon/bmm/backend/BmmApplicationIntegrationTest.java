@@ -4,20 +4,36 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Comment snippets and all the annotated methods are copied from the spring reference
+ * documentation as a blueprint.
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
 @Commit
 public class BmmApplicationIntegrationTest {
+
+    final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    BmmApplicationIntegrationTest(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
 
     @Autowired
     private TestRestTemplate testRestTemplate;
@@ -33,9 +49,11 @@ public class BmmApplicationIntegrationTest {
     }
 
     @Test
+    @Sql({"classpath:test-user-data.sql"})
     @Rollback // overrides the class-level @Commit setting
     void modifyDatabaseWithinTransaction() {
         // logic which uses the test data and modifies database state
+        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "users"));
     }
 
     @AfterEach
