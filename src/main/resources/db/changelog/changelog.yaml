@@ -608,3 +608,40 @@ databaseChangeLog:
                   constraints:
                     unique: false
                     nullable: true
+  - changeSet:
+      id: 20
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: division
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: level
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: number_of_boards
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: season_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false

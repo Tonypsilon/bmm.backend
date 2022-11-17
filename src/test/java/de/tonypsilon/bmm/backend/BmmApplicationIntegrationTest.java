@@ -11,10 +11,6 @@ import javax.sql.DataSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Comment snippets and all the annotated methods are copied from the spring reference
- * documentation as a blueprint.
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BmmApplicationIntegrationTest {
 
