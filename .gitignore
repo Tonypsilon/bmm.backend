@@ -26,4 +26,6 @@ cors.properties
 !cors.properties.sample
 testdatabase.properties
 !testdatabase.properties.sample
+integrationtest.properties
+!integrationtest.properties.sample
 

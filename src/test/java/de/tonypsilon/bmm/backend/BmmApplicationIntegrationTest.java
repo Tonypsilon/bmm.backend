@@ -24,6 +24,9 @@ public class BmmApplicationIntegrationTest {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
+    @Autowired
+    private BmmApplicationIntegrationTestConfiguration bmmApplicationIntegrationTestConfiguration;
+
     @Test
     @Sql(scripts = "classpath:test-user-data.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -31,6 +34,7 @@ public class BmmApplicationIntegrationTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void modifyDatabaseWithinTransaction() {
         // logic which uses the test data and modifies database state
+        System.out.println(bmmApplicationIntegrationTestConfiguration.adminUsername());
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "users"));
     }
 
