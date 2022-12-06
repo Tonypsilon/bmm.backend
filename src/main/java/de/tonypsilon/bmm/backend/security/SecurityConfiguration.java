@@ -18,15 +18,17 @@ public class SecurityConfiguration {
     public SecurityFilterChain web(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .cors()
-                .and().authorizeHttpRequests()
+                .and().httpBasic()
+                .and().authorizeRequests()
                 .antMatchers("/", "/seasons/**", "/divisions/**").permitAll()
-                .and().authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
-                .httpBasic(withDefaults())
+                .and().authorizeRequests()
+                .anyRequest().authenticated()
+                .and()
                 .sessionManagement(session -> session
                         .maximumSessions(1)
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/administration/logout")
                         .addLogoutHandler(securityContextLogoutHandler())
                 )
                 .build();
