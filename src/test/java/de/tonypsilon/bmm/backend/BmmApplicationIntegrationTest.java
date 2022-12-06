@@ -19,7 +19,9 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = {"logging.level.root=DEBUG"}
+        )
 public class BmmApplicationIntegrationTest {
 
     final JdbcTemplate jdbcTemplate;
@@ -57,6 +59,7 @@ public class BmmApplicationIntegrationTest {
 
         headers.add("X-XSRF-TOKEN", loginCookies.get("XSRF-TOKEN"));
         headers.add("Cookie", "JSESSIONID=" + loginCookies.get("JSESSIONID"));
+
 
         // Step 1: Create a new season
         HttpEntity<SeasonCreationData> createSeasonRequestEntity = new HttpEntity<>(
