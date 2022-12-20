@@ -92,8 +92,10 @@ public class MatchService {
     }
 
     @NonNull
-    public Optional<MatchData> findById(Long matchId) {
-        return matchRepository.findById(matchId).map(this::matchToMatchData);
+    public MatchData getMatchById(Long matchId) {
+        return matchRepository.findById(matchId).map(this::matchToMatchData)
+                .orElseThrow(() -> new NotFoundException("Es gibt keinen Mannschaftskampf mit der ID %d!"
+                        .formatted(matchId)));
     }
 
     @NonNull
