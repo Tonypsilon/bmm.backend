@@ -645,3 +645,17 @@ databaseChangeLog:
                   constraints:
                     unique: false
                     nullable: false
+  - changeSet:
+      id: 21
+      author: Tonypsilon
+      changes:
+        - renameColumn:
+            tableName: game
+            oldColumnName: home_player_id
+            newColumnName: home_participant_id
+            columnDataType: int
+        - renameColumn:
+            tableName: game
+            oldColumnName: away_player_id
+            newColumnName: away_participant_id
+            columnDataType: int

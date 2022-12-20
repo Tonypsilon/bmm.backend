@@ -19,6 +19,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 
 @Service
 public class MatchService {
@@ -87,6 +89,11 @@ public class MatchService {
 
         return matchToMatchData(matchRepository.getByMatchdayIdAndHomeTeamIdAndAwayTeamId(
                 createMatchData.matchdayId(), createMatchData.homeTeamId(), createMatchData.awayTeamId()));
+    }
+
+    @NonNull
+    public Optional<MatchData> findById(Long matchId) {
+        return matchRepository.findById(matchId).map(this::matchToMatchData);
     }
 
     @NonNull

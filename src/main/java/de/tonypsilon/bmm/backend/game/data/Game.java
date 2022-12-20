@@ -18,11 +18,11 @@ public class Game {
     @Column(name = "board_number", unique = false, nullable = false)
     private Integer boardNumber;
 
-    @Column(name = "home_player_id", unique = false, nullable = false)
-    private Long homePlayerId;
+    @Column(name = "home_participant_id", unique = false, nullable = false)
+    private Long homeParticipantId;
 
-    @Column(name = "away_player_id", unique = false, nullable = false)
-    private Long awayPlayerId;
+    @Column(name = "away_participant_id", unique = false, nullable = false)
+    private Long awayParticipantId;
 
     @Column(name = "played_result_home", unique = false, nullable = true)
     private String playedResultHome;
@@ -60,20 +60,20 @@ public class Game {
         this.boardNumber = boardNumber;
     }
 
-    public Long getHomePlayerId() {
-        return homePlayerId;
+    public Long getHomeParticipantId() {
+        return homeParticipantId;
     }
 
-    public void setHomePlayerId(Long homePlayerId) {
-        this.homePlayerId = homePlayerId;
+    public void setHomeParticipantId(Long homeParticipantId) {
+        this.homeParticipantId = homeParticipantId;
     }
 
-    public Long getAwayPlayerId() {
-        return awayPlayerId;
+    public Long getAwayParticipantId() {
+        return awayParticipantId;
     }
 
-    public void setAwayPlayerId(Long awayPlayerId) {
-        this.awayPlayerId = awayPlayerId;
+    public void setAwayParticipantId(Long awayParticipantId) {
+        this.awayParticipantId = awayParticipantId;
     }
 
     public Optional<Result> getPlayedResultHome() {

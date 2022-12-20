@@ -5,6 +5,7 @@ import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.organization.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +34,7 @@ public class OrganizationService {
     }
 
     @Transactional
+    @NonNull
     public OrganizationData createOrganization(OrganizationCreationData organizationCreationData) {
         if(organizationCreationData.name() == null || organizationCreationData.name().isEmpty()) {
             throw new BadDataException("Der Name der Organisation darf nicht leer sein!");
@@ -96,6 +98,7 @@ public class OrganizationService {
         return organizationMember;
     }
 
+    @NonNull
     public Long getSeasonIdOfOrganization(Long organizationId) {
         return organizationRepository.findById(organizationId)
                 .map(Organization::getSeasonId)

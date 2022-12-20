@@ -6,8 +6,8 @@ import java.util.Optional;
 
 public record CreateGameData(Long matchId,
                              Integer boardNumber,
-                             Long homePlayerId,
-                             Long awayPlayerId,
+                             Long homeParticipantId,
+                             Long awayParticipantId,
                              Optional<Result> playedResultHome,
                              Optional<Result> overruledResultHome,
                              Optional<Result> playedResultAway,

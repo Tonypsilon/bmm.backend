@@ -13,6 +13,7 @@ import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationE
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +42,7 @@ public class ParticipantService {
     }
 
     @Transactional
+    @NonNull
     public Collection<ParticipantData> createValidParticipantConfigurationForTeam(
             Long teamId, Collection<ParticipantCreationData> participantsCreationData) {
         if(Boolean.FALSE.equals(teamService.existsById(teamId))) {
@@ -71,7 +73,8 @@ public class ParticipantService {
     }
 
     @Transactional
-    public ParticipantData addParticipantToTeam(ParticipantCreationData participantCreationData) {
+    @NonNull
+    public ParticipantData addParticipantToTeam(@NonNull ParticipantCreationData participantCreationData) {
         validateParticipantCreationData(participantCreationData);
         if(!List.of(SeasonStage.REGISTRATION, SeasonStage.RUNNING).contains(
                 seasonService.getStageOfSeason(
@@ -89,7 +92,7 @@ public class ParticipantService {
     }
 
     @Transactional
-    public void deleteParticipant(Long participantId) {
+    public void deleteParticipant(@NonNull Long participantId) {
         Participant participantToDelete = participantRepository.findById(participantId).orElseThrow(
                         () -> new NotFoundException("Es gibt keinen Teilnehmer mit der ID %d!".formatted(participantId))
         );
@@ -105,6 +108,14 @@ public class ParticipantService {
         validateParticipantsNumbersOfTeam(participantToDelete.getTeamId());
     }
 
+    @NonNull
+    public ParticipantData getParticipantById(Long participantId) {
+        return participantRepository.findById(participantId)
+                .map(this::participantToParticipantData)
+                .orElseThrow(() -> new NotFoundException("Es gibt keinen Teilnehmer mit der ID %d!"
+                        .formatted(participantId)));
+    }
+
     private void validateParticipantsNumbersOfTeam(Long teamId) {
         List<Integer> currentTeamNumbers = participantRepository.findByTeamId(teamId)
                 .stream()
@@ -115,7 +126,7 @@ public class ParticipantService {
             if (!currentTeamNumbers.get(i).equals(i+1)) {
                 throw new BmmException("Die Spielernummern für die Mannschaft mit ID %d sind nicht gültig: "
                         .formatted(teamId)
-                        + currentTeamNumbers.toString());
+                        + currentTeamNumbers);
             }
         }
     }
@@ -146,7 +157,8 @@ public class ParticipantService {
         return participant;
     }
 
-    private ParticipantData participantToParticipantData(Participant participant) {
+    @NonNull
+    private ParticipantData participantToParticipantData(@NonNull Participant participant) {
         return new ParticipantData(participant.getId(),
                 participant.getTeamId(),
                 participant.getParticipationEligibilityId(),

@@ -56,7 +56,7 @@ public class TeamService {
 
     /**
      * Only to be called from another service after deletion
-     * of the players of the team has been taken care of!
+     * of the participants of the team has been taken care of!
      * @param teamId
      */
     @Transactional
