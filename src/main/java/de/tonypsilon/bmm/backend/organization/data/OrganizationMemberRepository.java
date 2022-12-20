@@ -9,4 +9,6 @@ import java.util.Set;
 public interface OrganizationMemberRepository extends JpaRepository<OrganizationMember, Long> {
 
     public Set<OrganizationMember> findByOrganizationIdIn(Set<Long> organizationIds);
+
+    public Set<OrganizationMember> findByOrganization(Organization organization);
 }

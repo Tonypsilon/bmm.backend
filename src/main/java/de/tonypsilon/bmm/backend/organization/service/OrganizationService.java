@@ -5,11 +5,11 @@ import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.organization.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -41,8 +41,8 @@ public class OrganizationService {
             throw new NotFoundException(
                     "Es gibt keine Saison mit der ID %d!".formatted(organizationCreationData.seasonId()));
         }
-        if(!seasonService.getStageOfSeason(organizationCreationData.seasonId()).equals(SeasonStage.PREPARATION)) {
-            throw new SeasonStageException("Saison ist nicht in der Vorbereitungsphase!");
+        if(!seasonService.getStageOfSeason(organizationCreationData.seasonId()).equals(SeasonStage.REGISTRATION)) {
+            throw new SeasonStageException("Saison ist nicht in der Registrierungsphase!");
         }
         if(organizationCreationData.clubIds() == null || organizationCreationData.clubIds().isEmpty()) {
             throw new BadDataException("Zur Erstellung einer Organisation muss mindestens ein Verein gegeben sein!");
@@ -51,9 +51,15 @@ public class OrganizationService {
 
         Organization organization = new Organization();
         organization.setSeasonId(organizationCreationData.seasonId());
+        organization.setName(organizationCreationData.name());
+
+        organization.setOrganizationMembers(new HashSet<>());
+        organizationCreationData.clubIds()
+                .forEach(clubId -> {
+                    organization.getOrganizationMembers().add(createOrganizationMember(clubId, organization));
+                });
 
         organizationRepository.save(organization);
-
         return toOrganizationData(
                 organizationRepository.getBySeasonIdAndName(organizationCreationData.seasonId(),
                         organizationCreationData.name()));
@@ -81,6 +87,13 @@ public class OrganizationService {
                             "Es gibt schon eine Organisation in der Saison mit der ID %d für den Verein mit der ID %d!"
                                     .formatted(seasonId, id));
                 });
+    }
+
+    private OrganizationMember createOrganizationMember(Long clubId, Organization organization) {
+        OrganizationMember organizationMember = new OrganizationMember();
+        organizationMember.setOrganization(organization);
+        organizationMember.setClubId(clubId);
+        return organizationMember;
     }
 
     public Long getSeasonIdOfOrganization(Long organizationId) {
