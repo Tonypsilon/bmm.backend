@@ -99,8 +99,8 @@ class DivisionServiceTest {
         when(divisionRepository.getBySeasonIdAndName(1L, "Landesliga")).thenReturn(landesliga);
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.PREPARATION);
-        DivisionData actual = divisionService.createDivision(
-                new DivisionCreationData("Landesliga", 1, 8, 1L));
+        DivisionCreationData divisionCreationData = new DivisionCreationData("Landesliga", 1, 8, 1L);
+        DivisionData actual = divisionService.createDivision(divisionCreationData);
         assertEquals(actual, landesligaData);
         verify(divisionRepository, times(1)).save(
                 argThat(division -> division.getName().equals("Landesliga")
@@ -159,6 +159,27 @@ class DivisionServiceTest {
                         new DivisionCreationData("Landesliga", 1, 8, 1L)));
         assertEquals("Staffel mit Namen Landesliga für Saison mit ID 1 existiert bereits!",
                 alreadyExistsException.getMessage());
+    }
+
+    @Test
+    void testCreateDivisionInvalidNumberOfBoards() {
+        when(divisionRepository.existsBySeasonIdAndName(1L, "Landesliga")).thenReturn(Boolean.FALSE);
+        when(divisionRepository.getBySeasonIdAndName(1L, "Landesliga")).thenReturn(landesliga);
+        when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
+        when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.PREPARATION);
+
+        DivisionCreationData divisionCreationDataNull = new DivisionCreationData("Landesliga", 1, null, 1L);
+        DivisionCreationData divisionCreationDataInvalid = new DivisionCreationData("Landesliga", 1, 0, 1L);
+
+        BadDataException actualExceptionNull = assertThrows(BadDataException.class,
+                () -> divisionService.createDivision(divisionCreationDataNull));
+        assertEquals("Die Anzahl der Bretter für eine Staffel muss eine ganze Zahl > 0 sein!",
+                actualExceptionNull.getMessage());
+
+        BadDataException actualExceptionInvalid = assertThrows(BadDataException.class,
+                () -> divisionService.createDivision(divisionCreationDataInvalid));
+        assertEquals("Die Anzahl der Bretter für eine Staffel muss eine ganze Zahl > 0 sein!",
+                actualExceptionInvalid.getMessage());
     }
 
     @Test

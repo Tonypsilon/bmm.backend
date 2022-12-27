@@ -59,6 +59,9 @@ public class DivisionService {
             throw new AlreadyExistsException("Staffel mit Namen %s für Saison mit ID %d existiert bereits!"
                     .formatted(divisionCreationData.name(), divisionCreationData.seasonId()));
         }
+        if(divisionCreationData.numberOfBoards() == null || divisionCreationData.numberOfBoards() < 1) {
+            throw new BadDataException("Die Anzahl der Bretter für eine Staffel muss eine ganze Zahl > 0 sein!");
+        }
         Division division = new Division();
         division.setName(divisionCreationData.name());
         division.setSeasonId(divisionCreationData.seasonId());
