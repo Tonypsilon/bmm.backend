@@ -60,7 +60,7 @@ public class ParticipantService {
         validateParticipantCreationData(participantCreationData);
         if(seasonService.getStageOfSeason(
                 organizationService.getSeasonIdOfOrganization(
-                        teamService.getTeamById(participantCreationData.teamId()).organizationId()))
+                        teamService.getTeamDataById(participantCreationData.teamId()).organizationId()))
                 != SeasonStage.REGISTRATION) {
             throw new SeasonStageException("In dieser Saisonphase kann keine Mannschaft mit Teilnehmern befüllt werden!");
         }
@@ -79,7 +79,7 @@ public class ParticipantService {
         if(!List.of(SeasonStage.REGISTRATION, SeasonStage.RUNNING).contains(
                 seasonService.getStageOfSeason(
                         organizationService.getSeasonIdOfOrganization(
-                        teamService.getTeamById(participantCreationData.teamId()).organizationId()))
+                        teamService.getTeamDataById(participantCreationData.teamId()).organizationId()))
         )) {
             throw new SeasonStageException(
                     "In dieser Saisonphase können keine Teilnehmer zu einer Mannschaft hinzugefügt werden!");
@@ -99,7 +99,7 @@ public class ParticipantService {
         if(!List.of(SeasonStage.REGISTRATION)
                 .contains(seasonService.getStageOfSeason(
                         organizationService.getSeasonIdOfOrganization(
-                        teamService.getTeamById(participantToDelete.getTeamId()).organizationId()))
+                        teamService.getTeamDataById(participantToDelete.getTeamId()).organizationId()))
                 )
         ) {
             throw new SeasonStageException("In dieser Saisonphase kann kein Teilnehmer entfernt werden!");

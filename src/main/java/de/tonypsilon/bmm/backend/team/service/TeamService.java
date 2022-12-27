@@ -10,6 +10,7 @@ import de.tonypsilon.bmm.backend.team.data.Team;
 import de.tonypsilon.bmm.backend.team.data.TeamCreationData;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.data.TeamRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,11 +78,13 @@ public class TeamService {
         teamRepository.delete(team);
     }
 
-    public Boolean existsById(Long teamId) {
+    @NonNull
+    public Boolean existsById(@NonNull Long teamId) {
         return teamRepository.existsById(teamId);
     }
 
-    public TeamData getTeamById(Long teamId) {
+    @NonNull
+    public TeamData getTeamDataById(@NonNull Long teamId) {
         return teamToTeamData(teamRepository.findById(teamId).orElseThrow(
                 () -> new NotFoundException("Es gibt keine Mannschaft mit der ID %d".formatted(teamId))));
     }

@@ -74,9 +74,9 @@ public class MatchdayService {
                 .toList();
     }
 
-    public Optional<MatchdayData> findById(@NonNull Long matchdayId) {
-        return matchdayRepository.findById(matchdayId)
-                .map(this::matchdayToMatchdayData);
+    @NonNull
+    public MatchdayData getMatchdayDataById(@NonNull Long matchdayId) {
+        return matchdayToMatchdayData(getById(matchdayId));
     }
 
     @Transactional
@@ -121,6 +121,11 @@ public class MatchdayService {
         matchdayRepository.delete(matchdayToDelete);
     }
 
+    @NonNull
+    public Integer getNumberOfBoardsForMatchday(Long matchdayId) {
+        return divisionService.getNumberOfBoardsByDivisionId(getById(matchdayId).getDivisionId());
+    }
+
     private void verifyRoundNumberCreation(Long divisionId, Integer round) {
         List<Integer> currentRounds = getRoundsForDivision(divisionId);
         // TODO check if rounds are valid sequence.
@@ -145,7 +150,16 @@ public class MatchdayService {
                 .toList();
     }
 
-    private MatchdayData matchdayToMatchdayData(Matchday matchday) {
+    private Matchday getById(Long matchDayId) {
+        return matchdayRepository.findById(matchDayId)
+                .orElseThrow(
+                        () -> new NotFoundException("Es gibt keinen Spieltag mit der ID %d!"
+                                .formatted(matchDayId))
+                );
+    }
+
+    @NonNull
+    private MatchdayData matchdayToMatchdayData(@NonNull Matchday matchday) {
         return new MatchdayData(matchday.getId(),
                 matchday.getDivisionId(),
                 matchday.getDate(),

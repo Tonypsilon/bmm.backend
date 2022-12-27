@@ -163,11 +163,14 @@ class MatchdayServiceTest {
     }
 
     @Test
-    void testFindById() {
+    void testGetById() {
         when(matchdayRepository.findById(1L)).thenReturn(Optional.of(matchday1));
         when(matchdayRepository.findById(-1L)).thenReturn(Optional.empty());
-        assertEquals(Optional.of(matchdayData1), matchdayService.findById(1L));
-        assertEquals(Optional.empty(), matchdayService.findById(-1L));
+        assertEquals(matchdayData1, matchdayService.getMatchdayDataById(1L));
+        NotFoundException notFoundException = assertThrows(NotFoundException.class,
+                () -> matchdayService.getMatchdayDataById(-1L));
+        assertEquals("Es gibt keinen Spieltag mit der ID -1!",
+                notFoundException.getMessage());
     }
 
     @Test

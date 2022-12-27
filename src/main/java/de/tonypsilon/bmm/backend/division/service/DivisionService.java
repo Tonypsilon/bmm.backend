@@ -22,13 +22,14 @@ public class DivisionService {
     private final DivisionRepository divisionRepository;
     private final SeasonService seasonService;
 
-    public DivisionService(DivisionRepository divisionRepository,
-                           SeasonService seasonService) {
+    public DivisionService(final DivisionRepository divisionRepository,
+                           final SeasonService seasonService) {
         this.divisionRepository = divisionRepository;
         this.seasonService = seasonService;
     }
 
-    public SortedSetMultimap<Integer, DivisionData> getAllDivisionsOfSeasonByLevel(Long seasonId) {
+    @NonNull
+    public SortedSetMultimap<Integer, DivisionData> getAllDivisionsOfSeasonByLevel(@NonNull Long seasonId) {
         Collection<Division> divisions = divisionRepository.findBySeasonId(seasonId);
         SortedSetMultimap<Integer, DivisionData> divisionsOfSeasonByLevel = TreeMultimap.create(
                 Integer::compareTo, Comparator.comparing(DivisionData::name));
@@ -38,16 +39,9 @@ public class DivisionService {
         return divisionsOfSeasonByLevel;
     }
 
-    public Long getSeasonIdByDivisionId(Long divisionId) {
-        return divisionRepository.findById(divisionId)
-                .orElseThrow(
-                () -> new NotFoundException("Es gibt keine Staffel mit der ID %d!"
-                        .formatted(divisionId))
-                ).getSeasonId();
-    }
-
     @Transactional
-    public DivisionData createDivision(DivisionCreationData divisionCreationData) {
+    @NonNull
+    public DivisionData createDivision(@NonNull DivisionCreationData divisionCreationData) {
         if(divisionCreationData.name() == null || divisionCreationData.name().isBlank()) {
             throw new NameBlankException("Der Name der Staffel darf nicht leer sein!");
         }
@@ -75,8 +69,28 @@ public class DivisionService {
                 divisionRepository.getBySeasonIdAndName(divisionCreationData.seasonId(), divisionCreationData.name()));
     }
 
-    public Boolean divisionExistsById(Long divisionId) {
+    @NonNull
+    public Boolean divisionExistsById(@NonNull Long divisionId) {
         return divisionRepository.existsById(divisionId);
+    }
+
+
+    @NonNull
+    public Long getSeasonIdByDivisionId(@NonNull Long divisionId) {
+        return getById(divisionId).getSeasonId();
+    }
+
+    @NonNull
+    public Integer getNumberOfBoardsByDivisionId(@NonNull Long divisionId) {
+        return getById(divisionId).getNumberOfBoards();
+    }
+
+    @NonNull private Division getById(@NonNull Long divisionId) {
+        return divisionRepository.findById(divisionId)
+                .orElseThrow(
+                        () -> new NotFoundException("Es gibt keine Staffel mit der ID %d!"
+                                .formatted(divisionId))
+                );
     }
 
     @NonNull

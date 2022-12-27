@@ -19,8 +19,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 
 @Service
 public class MatchService {
@@ -49,12 +47,9 @@ public class MatchService {
     @Transactional
     @NonNull
     public MatchData createMatch(CreateMatchData createMatchData) {
-        MatchdayData matchdayData = matchdayService.findById(createMatchData.matchdayId())
-                .orElseThrow(() -> new NotFoundException("Es gibt keinen Spieltag mit der ID %d!"
-                .formatted(createMatchData.matchdayId())));
-        // If any of the teams does not exist, TeamService throws a NotFoundException.
-        TeamData homeTeamData = teamService.getTeamById(createMatchData.homeTeamId());
-        TeamData awayTeamData = teamService.getTeamById(createMatchData.awayTeamId());
+        MatchdayData matchdayData = matchdayService.getMatchdayDataById(createMatchData.matchdayId());
+        TeamData homeTeamData = teamService.getTeamDataById(createMatchData.homeTeamId());
+        TeamData awayTeamData = teamService.getTeamDataById(createMatchData.awayTeamId());
 
         if (homeTeamData.divisionId().isEmpty()
         || awayTeamData.divisionId().isEmpty()

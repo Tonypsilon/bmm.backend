@@ -5,6 +5,7 @@ import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.game.data.*;
 import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.service.MatchService;
+import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
 import org.springframework.lang.NonNull;
@@ -16,13 +17,16 @@ public class GameService {
 
     private final GameRepository gameRepository;
     private final MatchService matchService;
+    private final MatchdayService matchdayService;
     private final ParticipantService participantService;
 
     public GameService(final GameRepository gameRepository,
                        final MatchService matchService,
-                       ParticipantService participantService) {
+                       final MatchdayService matchdayService,
+                       final ParticipantService participantService) {
         this.gameRepository = gameRepository;
         this.matchService = matchService;
+        this.matchdayService = matchdayService;
         this.participantService = participantService;
     }
 
@@ -36,14 +40,18 @@ public class GameService {
         verifyPlayerMatchesTeam(homeParticipantData, matchData.homeTeamId());
         verifyPlayerMatchesTeam(awayParticipantData, matchData.awayTeamId());
 
+        Integer numberOfBoardsOfDivision = matchdayService.getNumberOfBoardsForMatchday(matchData.matchdayId());
+        if(createGameData.boardNumber() == null
+                || createGameData.boardNumber() < 1
+                || createGameData.boardNumber() >= numberOfBoardsOfDivision) {
+            throw new BadDataException("Die Brettnummer ist ungültig: %d".formatted(createGameData.boardNumber()));
+        }
+
         if(gameRepository.existsByMatchIdAndBoardNumber(createGameData.matchId(), createGameData.boardNumber())) {
             throw new AlreadyExistsException(
                     "Es gibt für den Mannschaftskampf mit der ID %d bereits ein Spiel für Brett Nummer %d!"
                             .formatted(createGameData.matchId(), createGameData.boardNumber()));
         }
-
-        // todo: verify board number
-
         return gameToGameData(gameRepository.getByMatchIdAndBoardNumber(createGameData.matchId(), createGameData.boardNumber()));
     }
 
