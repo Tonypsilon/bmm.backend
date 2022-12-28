@@ -164,7 +164,6 @@ class DivisionServiceTest {
     @Test
     void testCreateDivisionInvalidNumberOfBoards() {
         when(divisionRepository.existsBySeasonIdAndName(1L, "Landesliga")).thenReturn(Boolean.FALSE);
-        when(divisionRepository.getBySeasonIdAndName(1L, "Landesliga")).thenReturn(landesliga);
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.PREPARATION);
 
@@ -183,10 +182,41 @@ class DivisionServiceTest {
     }
 
     @Test
+    void testCreateDivisionInvalidLevel() {
+        when(divisionRepository.existsBySeasonIdAndName(1L, "Landesliga")).thenReturn(Boolean.FALSE);
+        when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
+        when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.PREPARATION);
+
+        DivisionCreationData divisionCreationData = new DivisionCreationData("Landesliga", null, 8, 1L);
+
+        BadDataException actualException = assertThrows(BadDataException.class,
+                () -> divisionService.createDivision(divisionCreationData));
+        assertEquals("Das Level der Staffel muss eine ganze Zahl > 0 sein!",
+                actualException.getMessage());
+    }
+
+    @Test
     void testDivisionExistsById() {
         when(divisionRepository.existsById(1L)).thenReturn(Boolean.TRUE);
         when(divisionRepository.existsById(2L)).thenReturn(Boolean.FALSE);
         assertEquals(Boolean.TRUE, divisionService.divisionExistsById(1L));
         assertEquals(Boolean.FALSE, divisionService.divisionExistsById(2L));
+    }
+
+    @Test
+    void testGetNumberOfBoardsByDivisionIdOk() {
+        when(divisionRepository.findById(1L)).thenReturn(Optional.of(landesliga));
+
+        Integer actual = divisionService.getNumberOfBoardsByDivisionId(1L);
+        assertEquals(8, actual);
+    }
+
+    @Test
+    void testGetNumberOfBoardsByDivisionIdDoesNotExist() {
+        when(divisionRepository.findById(-1L)).thenReturn(Optional.empty());
+
+        NotFoundException actualException = assertThrows(NotFoundException.class,
+                () -> divisionService.getNumberOfBoardsByDivisionId(-1L));
+        assertEquals("Es gibt keine Staffel mit der ID -1!", actualException.getMessage());
     }
 }

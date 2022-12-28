@@ -62,6 +62,9 @@ public class DivisionService {
         if(divisionCreationData.numberOfBoards() == null || divisionCreationData.numberOfBoards() < 1) {
             throw new BadDataException("Die Anzahl der Bretter für eine Staffel muss eine ganze Zahl > 0 sein!");
         }
+        if(divisionCreationData.level() == null || divisionCreationData.level() < 1) {
+            throw new BadDataException("Das Level der Staffel muss eine ganze Zahl > 0 sein!");
+        }
         Division division = new Division();
         division.setName(divisionCreationData.name());
         division.setSeasonId(divisionCreationData.seasonId());
