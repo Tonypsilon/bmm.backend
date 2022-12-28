@@ -52,7 +52,7 @@ public class DivisionService {
             throw new NotFoundException("Es gibt keine Saison mit der ID %d!"
                     .formatted(divisionCreationData.seasonId()));
         }
-        if(!seasonService.getStageOfSeason(divisionCreationData.seasonId()).equals(SeasonStage.PREPARATION)) {
+        if(seasonService.getStageOfSeason(divisionCreationData.seasonId()) != SeasonStage.PREPARATION) {
             throw new SeasonStageException("Saison ist nicht in der Vorbereitungsphase!");
         }
         if (Boolean.TRUE.equals(divisionRepository.existsBySeasonIdAndName(divisionCreationData.seasonId(), divisionCreationData.name()))) {

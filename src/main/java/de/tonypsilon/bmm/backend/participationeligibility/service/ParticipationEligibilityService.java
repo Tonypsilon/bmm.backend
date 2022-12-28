@@ -4,11 +4,13 @@ import de.tonypsilon.bmm.backend.club.service.ClubService;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.exception.SeasonStageException;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibility;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityCreationData;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityRepository;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
+import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,9 @@ public class ParticipationEligibilityService {
         if (Boolean.FALSE.equals(seasonService.seasonExistsById(participationEligibilityCreationData.seasonId()))) {
             throw new NotFoundException("Es gibt keine Saison mit der ID %d!"
                     .formatted(participationEligibilityCreationData.seasonId()));
+        }
+        if(seasonService.getStageOfSeason(participationEligibilityCreationData.seasonId()) != SeasonStage.REGISTRATION) {
+            throw new SeasonStageException("Die Saison ist nicht in der Registrierungsphase!");
         }
         if (Boolean.FALSE.equals(clubService.clubExistsById(participationEligibilityCreationData.clubId()))) {
             throw new NotFoundException("Es gibt keinen Verein mit der ID %d!"
@@ -98,6 +103,7 @@ public class ParticipationEligibilityService {
                                 .formatted(participationEligibilityId))));
     }
 
+    @NonNull
     public Boolean existsById(Long participationEligibilityId) {
         return participationEligibilityRepository.existsById(participationEligibilityId);
     }

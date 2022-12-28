@@ -4,14 +4,19 @@ import de.tonypsilon.bmm.backend.club.service.ClubService;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.exception.SeasonStageException;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibility;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityCreationData;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityRepository;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
+import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Collection;
 import java.util.List;
@@ -83,6 +88,7 @@ class ParticipationEligibilityServiceTest {
     @Test
     void testCreateParticipationEligibilityOk() {
         when(seasonService.seasonExistsById(2L)).thenReturn(Boolean.TRUE);
+        when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.REGISTRATION);
         when(clubService.clubExistsById(3L)).thenReturn(Boolean.TRUE);
         when(participationEligibilityRepository.existsBySeasonIdAndClubIdAndPkz(2L, 3L, 1))
                 .thenReturn(Boolean.FALSE);
@@ -104,9 +110,23 @@ class ParticipationEligibilityServiceTest {
         assertEquals("Es gibt keine Saison mit der ID 1!", actualException.getMessage());
     }
 
+    @ParameterizedTest
+    @EnumSource(value = SeasonStage.class, mode = EnumSource.Mode.EXCLUDE, names = {"REGISTRATION"})
+    void testCreateParticipationEligibilityWrongSeasonStage(SeasonStage seasonStage) {
+        when(seasonService.seasonExistsById(2L)).thenReturn(Boolean.TRUE);
+        when(seasonService.getStageOfSeason(2L)).thenReturn(seasonStage);
+        ParticipationEligibilityCreationData participationEligibilityCreationData =
+                new ParticipationEligibilityCreationData(2L, 1L, "Max", "Mustermann", 1, Optional.empty());
+
+        SeasonStageException actualException = assertThrows(SeasonStageException.class,
+                () -> participationEligibilityService.createParticipationEligibility(participationEligibilityCreationData));
+        assertEquals("Die Saison ist nicht in der Registrierungsphase!", actualException.getMessage());
+    }
+
     @Test
     void testCreateParticipationEligibilityClubDoesNotExist() {
         when(seasonService.seasonExistsById(2L)).thenReturn(Boolean.TRUE);
+        when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.REGISTRATION);
         when(clubService.clubExistsById(1L)).thenReturn(Boolean.FALSE);
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> participationEligibilityService.createParticipationEligibility(
@@ -119,6 +139,7 @@ class ParticipationEligibilityServiceTest {
     @Test
     void testCreateParticipationEligibilityInvalidForename() {
         when(seasonService.seasonExistsById(2L)).thenReturn(Boolean.TRUE);
+        when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.REGISTRATION);
         when(clubService.clubExistsById(3L)).thenReturn(Boolean.TRUE);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> participationEligibilityService.createParticipationEligibility(
@@ -131,6 +152,7 @@ class ParticipationEligibilityServiceTest {
     @Test
     void testCreateParticipationEligibilityInvalidSurname() {
         when(seasonService.seasonExistsById(2L)).thenReturn(Boolean.TRUE);
+        when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.REGISTRATION);
         when(clubService.clubExistsById(3L)).thenReturn(Boolean.TRUE);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> participationEligibilityService.createParticipationEligibility(
@@ -143,6 +165,7 @@ class ParticipationEligibilityServiceTest {
     @Test
     void testCreateParticipationEligibilityInvalidDwz() {
         when(seasonService.seasonExistsById(2L)).thenReturn(Boolean.TRUE);
+        when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.REGISTRATION);
         when(clubService.clubExistsById(3L)).thenReturn(Boolean.TRUE);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> participationEligibilityService.createParticipationEligibility(
@@ -155,6 +178,7 @@ class ParticipationEligibilityServiceTest {
     @Test
     void testCreateParticipationEligibilityAlreadyExists() {
         when(seasonService.seasonExistsById(2L)).thenReturn(Boolean.TRUE);
+        when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.REGISTRATION);
         when(clubService.clubExistsById(3L)).thenReturn(Boolean.TRUE);
         when(participationEligibilityRepository.existsBySeasonIdAndClubIdAndPkz(2L, 3L, 1))
                 .thenReturn(Boolean.TRUE);
@@ -211,5 +235,12 @@ class ParticipationEligibilityServiceTest {
                 () -> participationEligibilityService.deleteParticipationEligibility(5L)
         );
         assertEquals("Es gibt keine Spielberechtigung mit der ID 5!", actualException.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "true", "false" })
+    void testExistsById(boolean doesExist) {
+        when(participationEligibilityRepository.existsById(1L)).thenReturn(doesExist);
+        assertEquals(doesExist, participationEligibilityService.existsById(1L));
     }
 }

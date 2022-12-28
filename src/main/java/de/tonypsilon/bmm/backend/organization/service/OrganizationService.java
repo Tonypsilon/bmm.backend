@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.function.Predicate.not;
+
 @Service
 public class OrganizationService {
 
@@ -43,7 +45,7 @@ public class OrganizationService {
             throw new NotFoundException(
                     "Es gibt keine Saison mit der ID %d!".formatted(organizationCreationData.seasonId()));
         }
-        if(!seasonService.getStageOfSeason(organizationCreationData.seasonId()).equals(SeasonStage.REGISTRATION)) {
+        if(seasonService.getStageOfSeason(organizationCreationData.seasonId()) != SeasonStage.REGISTRATION) {
             throw new SeasonStageException("Saison ist nicht in der Registrierungsphase!");
         }
         if(organizationCreationData.clubIds() == null || organizationCreationData.clubIds().isEmpty()) {
@@ -70,7 +72,7 @@ public class OrganizationService {
     // checks if clubs exist and also ensures they are not yet part of another organization for that season.
     private void validateClubIds(Collection<Long> clubIds, Long seasonId) {
         clubIds.stream()
-                .filter(Predicate.not(clubService::clubExistsById))
+                .filter(not(clubService::clubExistsById))
                 .findFirst()
                 .ifPresent(id -> {
                     throw new NotFoundException("Es gibt keinen Verein mit der ID %d!".formatted(id));
