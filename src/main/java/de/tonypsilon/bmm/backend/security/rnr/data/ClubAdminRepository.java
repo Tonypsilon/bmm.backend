@@ -8,9 +8,9 @@ import java.util.Optional;
 @Repository
 public interface ClubAdminRepository extends JpaRepository<ClubAdmin, ClubAdminKey> {
 
-    public Boolean existsByClubIdAndUsername(Long clubId, String username);
+    Boolean existsByClubIdAndUsername(Long clubId, String username);
 
-    public ClubAdmin getByClubIdAndUsername(Long clubId, String username);
+    ClubAdmin getByClubIdAndUsername(Long clubId, String username);
 
-    public Optional<ClubAdmin> findByClubIdAndUsername(Long clubId, String username);
+    Optional<ClubAdmin> findByClubIdAndUsername(Long clubId, String username);
 }

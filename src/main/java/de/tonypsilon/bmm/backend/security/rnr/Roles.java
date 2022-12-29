@@ -1,7 +1,5 @@
 package de.tonypsilon.bmm.backend.security.rnr;
 
-import java.util.List;
-
 public class Roles {
 
     private Roles() {}

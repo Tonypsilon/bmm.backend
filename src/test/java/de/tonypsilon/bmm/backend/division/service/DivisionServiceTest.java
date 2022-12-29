@@ -24,7 +24,7 @@ class DivisionServiceTest {
     private final SeasonService seasonService = mock(SeasonService.class);
     private DivisionService divisionService;
     private Division landesliga, stadtligaA, stadtLigaB, divisionOfOtherSeason;
-    private DivisionData landesligaData, stadtligaAData, stadtLigaBData, divisionOfOtherSeasonData;
+    private DivisionData landesligaData, stadtligaAData, stadtLigaBData;
 
     @BeforeEach
     void setUp() {
@@ -32,7 +32,6 @@ class DivisionServiceTest {
         this.landesligaData = new DivisionData(1L, "Landesliga", 1, 8, 1L);
         this.stadtligaAData = new DivisionData(2L, "Stadtliga A", 2, 8, 1L);
         this.stadtLigaBData = new DivisionData(3L, "Stadtliga B", 2, 8, 1L);
-        this.divisionOfOtherSeasonData = new DivisionData(4L, "Landesliga", 1, 8, 2L);
         this.landesliga = new Division();
         this.landesliga.setId(1L);
         this.landesliga.setName("Landesliga");
@@ -63,7 +62,7 @@ class DivisionServiceTest {
     void testGetAllDivisionsOfSeasonByLevel() {
         when(divisionRepository.findBySeasonId(1L)).thenReturn(List.of(
            landesliga, stadtligaA, stadtLigaB));
-        SortedSetMultimap actual = divisionService.getAllDivisionsOfSeasonByLevel(1L);
+        SortedSetMultimap<Integer, DivisionData> actual = divisionService.getAllDivisionsOfSeasonByLevel(1L);
         assertEquals(3, actual.size());
 
         assertEquals(1, actual.get(1).size());

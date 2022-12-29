@@ -97,6 +97,7 @@ class MatchdayServiceTest {
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> matchdayService.createMatchday(new CreateMatchdayData(1L, "1.1.1111", 2))
         );
+        assertEquals("Saison ist nicht in der Vorbereitungsphase!", actualException.getMessage());
     }
 
     @Test

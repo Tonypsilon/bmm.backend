@@ -2,7 +2,6 @@ package de.tonypsilon.bmm.backend.participationeligibility.service;
 
 import de.tonypsilon.bmm.backend.club.service.ClubService;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
-import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.exception.SeasonStageException;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibility;

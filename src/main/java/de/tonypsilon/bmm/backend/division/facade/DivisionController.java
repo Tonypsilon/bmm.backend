@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
+
 @RestController
 public class DivisionController {
 
@@ -44,7 +46,7 @@ public class DivisionController {
     public ResponseEntity<DivisionData> createDivision(RequestEntity<DivisionCreationData> divisionCreationDataRequestEntity) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(divisionService.createDivision(divisionCreationDataRequestEntity.getBody()));
+                .body(divisionService.createDivision(Objects.requireNonNull(divisionCreationDataRequestEntity.getBody())));
     }
 
 }

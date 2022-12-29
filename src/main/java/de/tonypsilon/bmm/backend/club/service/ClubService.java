@@ -20,10 +20,13 @@ public class ClubService {
         this.clubRepository = clubRepository;
     }
 
+    @NonNull
     public Collection<ClubData> getAllClubs() {
         return clubRepository.findAll().stream().map(this::clubToClubData).toList();
     }
 
+    @Transactional
+    @NonNull
     public ClubData createClub(@NonNull ClubCreationData clubCreationData) {
         checkIfClubNameIsValid(clubCreationData.name());
         checkThatClubWithNameDoesNotExist(clubCreationData.name());
@@ -38,34 +41,39 @@ public class ClubService {
     }
 
     @Transactional
+    @NonNull
     public ClubData patchClub(@NonNull ClubData patchedClubData) {
         checkThatClubWithIdExists(patchedClubData.id());
-        Club clubToBePatched = clubRepository.getById(patchedClubData.id());
+        Club clubToBePatched = getById(patchedClubData.id());
         if(!clubToBePatched.getZps().equals(patchedClubData.zps())) {
             throw new BadDataException("Die Eigenschaft zps eines Vereins darf sich nicht ändern!");
         }
         clubToBePatched.setName(patchedClubData.name());
         clubToBePatched.setActive(patchedClubData.active());
         clubRepository.save(clubToBePatched);
-        return clubToClubData(clubRepository.getById(patchedClubData.id()));
+        return clubToClubData(getById(patchedClubData.id()));
     }
 
-    public Boolean clubExistsById(Long clubId) {
+    @NonNull
+    public Boolean clubExistsById(@NonNull Long clubId) {
         return clubRepository.existsById(clubId);
     }
 
     @Transactional
-    public void deleteClub(Long clubId) {
-        clubRepository.delete(clubRepository.findById(clubId)
-                .orElseThrow(
-                        () -> new NotFoundException("Es gibt keinen Verein mit ID %d!".formatted(clubId))
-                )
-        );
+    public void deleteClub(@NonNull Long clubId) {
+        clubRepository.delete(getById(clubId));
     }
 
     @NonNull
     private ClubData clubToClubData(@NonNull Club club) {
         return new ClubData(club.getId(), club.getName(), club.getZps(), club.getActive());
+    }
+
+    @NonNull
+    private Club getById(@NonNull Long clubId) {
+        return clubRepository.findById(clubId)
+                .orElseThrow(() -> new NotFoundException("Es gibt keinen Verein mit der ID %d!"
+                        .formatted(clubId)));
     }
 
     private void checkIfClubNameIsValid(String name) {

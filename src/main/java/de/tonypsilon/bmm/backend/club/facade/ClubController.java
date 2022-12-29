@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
+import java.util.Objects;
 
 @RestController
 public class ClubController {
@@ -38,7 +39,7 @@ public class ClubController {
     public ResponseEntity<ClubData> createClub(RequestEntity<ClubCreationData> clubCreationDataRequestEntity) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(clubService.createClub(clubCreationDataRequestEntity.getBody()));
+                .body(clubService.createClub(Objects.requireNonNull(clubCreationDataRequestEntity.getBody())));
     }
 
 }

@@ -12,5 +12,4 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
 
     Club getByName(String name);
 
-    Club getById(Long id);
 }

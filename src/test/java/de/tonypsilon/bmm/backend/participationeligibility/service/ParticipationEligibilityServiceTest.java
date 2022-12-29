@@ -33,13 +33,11 @@ class ParticipationEligibilityServiceTest {
     private final ClubService clubService = mock(ClubService.class);
     private final ValidationService validationService = new ValidationService();
     private ParticipationEligibilityService participationEligibilityService;
-    private ParticipationEligibilityData participationEligibilityData1 =
+    private final ParticipationEligibilityData participationEligibilityData1 =
             new ParticipationEligibilityData(1L, 2L, 3L, "Max", "Mustermann", 1, Optional.empty());
-    private ParticipationEligibilityData participationEligibilityData2 =
+    private final ParticipationEligibilityData participationEligibilityData2 =
             new ParticipationEligibilityData(2L, 2L, 3L, "Erika", "Musterfrau", 2, Optional.empty());
-    private ParticipationEligibilityData participationEligibilityData3 =
-            new ParticipationEligibilityData(3L, 3L, 3L, "Max", "Mustermann", 1, Optional.empty());
-    private ParticipationEligibilityData participationEligibilityData4 =
+    private final ParticipationEligibilityData participationEligibilityData4 =
             new ParticipationEligibilityData(4L, 2L, 4L, "Hal", "Lo", 1, Optional.empty());
     private ParticipationEligibility participationEligibility1, participationEligibility2,
             participationEligibility3, participationEligibility4;

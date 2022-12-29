@@ -5,7 +5,6 @@ import de.tonypsilon.bmm.backend.referee.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -5,6 +5,7 @@ import de.tonypsilon.bmm.backend.club.data.ClubCreationData;
 import de.tonypsilon.bmm.backend.club.data.ClubData;
 import de.tonypsilon.bmm.backend.club.data.ClubRepository;
 import de.tonypsilon.bmm.backend.exception.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -122,9 +123,9 @@ class ClubServiceTest {
         club1Patched.setName("club1Patched");
         club1Patched.setActive(Boolean.FALSE);
         when(clubRepository.existsById(1L)).thenReturn(Boolean.TRUE);
-        when(clubRepository.getById(1L))
-                .thenReturn(club1)
-                .thenReturn(club1Patched);
+        when(clubRepository.findById(1L))
+                .thenReturn(Optional.of(club1))
+                .thenReturn(Optional.of(club1Patched));
 
         ClubData actual = clubService.patchClub(new ClubData(1L, "club1Patched", 100, Boolean.FALSE));
         verify(clubRepository, times(1)).save(
@@ -133,6 +134,7 @@ class ClubServiceTest {
                         && club.getZps().equals(100)
                         && club.getActive().equals(Boolean.FALSE)
                 ));
+        assertEquals(new ClubData(1L, "club1Patched", 100, Boolean.FALSE), actual);
     }
 
     @Test
@@ -149,7 +151,7 @@ class ClubServiceTest {
     @Test
     void testPatchClubZpsChange() {
         when(clubRepository.existsById(1L)).thenReturn(Boolean.TRUE);
-        when(clubRepository.getById(1L)).thenReturn(club1);
+        when(clubRepository.findById(1L)).thenReturn(Optional.of(club1));
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> clubService.patchClub(new ClubData(1L, "club1", 1000, Boolean.TRUE)));
         assertEquals("Die Eigenschaft zps eines Vereins darf sich nicht ändern!", actualException.getMessage());
@@ -180,7 +182,7 @@ class ClubServiceTest {
         when(clubRepository.findById(-1L)).thenReturn(Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> clubService.deleteClub(-1L));
-        assertEquals("Es gibt keinen Verein mit ID -1!", actualException.getMessage());
+        assertEquals("Es gibt keinen Verein mit der ID -1!", actualException.getMessage());
     }
 
 }

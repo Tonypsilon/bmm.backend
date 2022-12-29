@@ -8,9 +8,9 @@ import java.util.Optional;
 @Repository
 public interface SeasonAdminRepository extends JpaRepository<SeasonAdmin, SeasonAdminKey> {
 
-    public Boolean existsBySeasonIdAndUsername(Long seasonId, String username);
+    Boolean existsBySeasonIdAndUsername(Long seasonId, String username);
 
-    public SeasonAdmin getBySeasonIdAndUsername(Long seasonId, String username);
+    SeasonAdmin getBySeasonIdAndUsername(Long seasonId, String username);
 
-    public Optional<SeasonAdmin> findBySeasonIdAndUsername(Long seasonId, String username);
+    Optional<SeasonAdmin> findBySeasonIdAndUsername(Long seasonId, String username);
 }

@@ -96,11 +96,10 @@ public class ParticipantService {
         Participant participantToDelete = participantRepository.findById(participantId).orElseThrow(
                         () -> new NotFoundException("Es gibt keinen Teilnehmer mit der ID %d!".formatted(participantId))
         );
-        if(!List.of(SeasonStage.REGISTRATION)
-                .contains(seasonService.getStageOfSeason(
+        if(SeasonStage.REGISTRATION !=
+                seasonService.getStageOfSeason(
                         organizationService.getSeasonIdOfOrganization(
                         teamService.getTeamDataById(participantToDelete.getTeamId()).organizationId()))
-                )
         ) {
             throw new SeasonStageException("In dieser Saisonphase kann kein Teilnehmer entfernt werden!");
         }

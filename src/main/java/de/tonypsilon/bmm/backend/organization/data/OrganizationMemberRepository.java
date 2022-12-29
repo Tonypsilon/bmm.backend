@@ -8,7 +8,7 @@ import java.util.Set;
 @Repository
 public interface OrganizationMemberRepository extends JpaRepository<OrganizationMember, Long> {
 
-    public Set<OrganizationMember> findByOrganizationIdIn(Set<Long> organizationIds);
+    Set<OrganizationMember> findByOrganizationIdIn(Set<Long> organizationIds);
 
-    public Set<OrganizationMember> findByOrganization(Organization organization);
+    Set<OrganizationMember> findByOrganization(Organization organization);
 }

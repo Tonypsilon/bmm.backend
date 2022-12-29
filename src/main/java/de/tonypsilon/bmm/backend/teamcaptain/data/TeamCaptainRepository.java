@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TeamCaptainRepository extends JpaRepository<TeamCaptain, Long> {
 
-    public Boolean existsByTeamId(Long teamId);
+    Boolean existsByTeamId(Long teamId);
 
-    public TeamCaptain getByTeamId(Long teamId);
+    TeamCaptain getByTeamId(Long teamId);
 }

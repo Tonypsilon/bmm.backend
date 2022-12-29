@@ -9,13 +9,13 @@ import java.util.Optional;
 @Repository
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
 
-    public Collection<Participant> findByTeamId(Long teamId);
+    Collection<Participant> findByTeamId(Long teamId);
 
-    public Optional<Participant> findByTeamIdAndNumber(Long teamId, Integer number);
+    Optional<Participant> findByTeamIdAndNumber(Long teamId, Integer number);
 
-    public Boolean existsByParticipationEligibilityId(Long participationEligibilityId);
+    Boolean existsByParticipationEligibilityId(Long participationEligibilityId);
 
-    public Participant getByTeamIdAndNumber(Long teamId, Integer number);
+    Participant getByTeamIdAndNumber(Long teamId, Integer number);
 
-    public Boolean existsByTeamIdAndNumber(Long teamId, Integer number);
+    Boolean existsByTeamIdAndNumber(Long teamId, Integer number);
 }

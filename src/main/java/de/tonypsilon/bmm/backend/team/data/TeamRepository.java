@@ -6,7 +6,7 @@ import java.util.Collection;
 
 public interface TeamRepository extends JpaRepository<Team, Long> {
 
-    public Team getByOrganizationIdAndNumber(Long organizationId, Integer number);
+    Team getByOrganizationIdAndNumber(Long organizationId, Integer number);
 
-    public Collection<Team> findByOrganizationId(Long organizationId);
+    Collection<Team> findByOrganizationId(Long organizationId);
 }

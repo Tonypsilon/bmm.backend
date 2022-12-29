@@ -5,7 +5,6 @@ import de.tonypsilon.bmm.backend.referee.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,7 +13,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 class RefereeServiceTest {
@@ -202,8 +200,6 @@ class RefereeServiceTest {
     void testDeleteRefereeOk(SeasonStage stage) {
         when(refereeRepository.findById(1L)).thenReturn(Optional.of(referee1));
         when(seasonService.getStageOfSeason(1L)).thenReturn(stage);
-        CreateRefereeData createRefereeData = new CreateRefereeData(
-                1L, "Forename", "Surname", "fore.sure@name.com");
         refereeService.deleteReferee(refereeData);
         verify(refereeRepository, times(1)).delete(argThat(
                 referee -> referee.getId().equals(1L)
@@ -228,8 +224,7 @@ class RefereeServiceTest {
     void testDeleteRefereeWrongSeasonStage(SeasonStage stage) {
         when(refereeRepository.findById(1L)).thenReturn(Optional.of(referee1));
         when(seasonService.getStageOfSeason(1L)).thenReturn(stage);
-        CreateRefereeData createRefereeData = new CreateRefereeData(
-                1L, "Forename", "Surname", "fore.sure@name.com");
+
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> refereeService.deleteReferee(refereeData));
         assertEquals("In dieser Saisonphase kann kein Schiedsrichter gelöscht werden!",

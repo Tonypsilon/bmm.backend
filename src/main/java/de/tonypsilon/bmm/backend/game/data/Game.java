@@ -83,52 +83,42 @@ public class Game {
         return Optional.of(Result.valueOf(playedResultHome));
     }
 
-    public void setPlayedResultHome(Optional<Result> playedResultHome) {
-        if (playedResultHome.isEmpty()) {
-            this.playedResultHome = null;
-        }
-        this.playedResultHome = playedResultHome.get().toString();
+    public void setPlayedResultHome(Result playedResultHome) {
+        this.playedResultHome = Optional.ofNullable(playedResultHome)
+                .map(Result::toString)
+                .orElse(null);
     }
 
     public Optional<Result> getOverruledResultHome() {
-        if (overruledResultHome == null) {
-            return Optional.empty();
-        }
-        return Optional.of(Result.valueOf(overruledResultHome));
+        return Optional.ofNullable(overruledResultHome)
+                .map(Result::valueOf);
     }
 
-    public void setOverruledResultHome(Optional<Result> judgedResultHome) {
-        if(judgedResultHome.isEmpty()) {
-            this.overruledResultHome = null;
-        }
-        this.overruledResultHome = judgedResultHome.get().toString();
+    public void setOverruledResultHome(Result overruledResultHome) {
+        this.overruledResultHome = Optional.ofNullable(overruledResultHome)
+                .map(Result::toString)
+                .orElse(null);
     }
 
     public Optional<Result> getPlayedResultAway() {
-        if (playedResultAway == null) {
-            return Optional.empty();
-        }
-        return Optional.of(Result.valueOf(playedResultAway));
+        return Optional.ofNullable(playedResultAway)
+                .map(Result::valueOf);
     }
 
-    public void setPlayedResultAway(Optional<Result> playedResultAway) {
-        if (playedResultAway.isEmpty()) {
-            this.playedResultAway = null;
-        }
-        this.playedResultAway = playedResultAway.get().toString();
+    public void setPlayedResultAway(Result playedResultAway) {
+        this.playedResultAway = Optional.ofNullable(playedResultAway)
+                .map(Result::toString)
+                .orElse(null);
     }
 
     public Optional<Result> getOverruledResultAway() {
-        if (overruledResultAway == null) {
-            return Optional.empty();
-        }
-        return Optional.of(Result.valueOf(overruledResultAway));
+        return Optional.ofNullable(overruledResultAway)
+                .map(Result::valueOf);
     }
 
-    public void setOverruledResultAway(Optional<Result> judgedResultAway) {
-        if(judgedResultAway.isEmpty()) {
-            this.overruledResultAway = null;
-        }
-        this.overruledResultAway = judgedResultAway.get().toString();
+    public void setOverruledResultAway(Result overruledResultAway) {
+        this.overruledResultAway = Optional.ofNullable(overruledResultAway)
+                .map(Result::toString)
+                .orElse(null);
     }
 }

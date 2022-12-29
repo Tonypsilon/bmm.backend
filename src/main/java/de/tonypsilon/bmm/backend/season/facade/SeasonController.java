@@ -1,6 +1,5 @@
 package de.tonypsilon.bmm.backend.season.facade;
 
-import com.google.common.base.Preconditions;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.SecurityException;
 import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
@@ -14,8 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
