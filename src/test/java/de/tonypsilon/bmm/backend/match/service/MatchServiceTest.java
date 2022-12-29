@@ -34,7 +34,7 @@ class MatchServiceTest {
     private final DivisionService divisionService = mock(DivisionService.class);
     private final ValidationService validationService = new ValidationService();
     private final MatchData matchData1 = new MatchData(1L, 1L, 1L, 2L, Optional.of("1.1.2001"),
-            2, 0, Optional.empty(), Optional.empty(), Optional.of(1L));
+            2, 0, Optional.empty(), Optional.empty(), Optional.of(1L), Boolean.TRUE);
     private final MatchdayData matchdayData = new MatchdayData(1L, 2L, "1.1.2000", 3);
     private Match match1;
 
@@ -57,6 +57,7 @@ class MatchServiceTest {
         match1.setOverruledHomeBoardHalfPoints(null);
         match1.setOverruledAwayBoardHalfPoints(null);
         match1.setRefereeId(1L);
+        match1.setEditable(Boolean.TRUE);
     }
 
     @Test

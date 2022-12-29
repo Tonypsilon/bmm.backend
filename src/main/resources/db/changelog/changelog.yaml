@@ -659,3 +659,16 @@ databaseChangeLog:
             oldColumnName: away_player_id
             newColumnName: away_participant_id
             columnDataType: int
+  - changeSet:
+      id: 22
+      author: Tonypsilon
+      changes:
+        - addColumn:
+            tableName: match
+            columns:
+              - column:
+                  name: editable
+                  type: boolean
+                  constraints:
+                    unique: false
+                    nullable: false

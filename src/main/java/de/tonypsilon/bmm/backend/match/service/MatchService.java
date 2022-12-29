@@ -79,6 +79,7 @@ public class MatchService {
         createMatchData.refereeId().ifPresent(match::setRefereeId);
         match.setHomeTeamPoints(0);
         match.setAwayTeamPoints(0);
+        match.setEditable(Boolean.TRUE);
 
         matchRepository.save(match);
 
@@ -104,7 +105,8 @@ public class MatchService {
                 match.getAwayTeamPoints(),
                 match.getOverruledHomeBoardHalfPoints(),
                 match.getOverruledAwayBoardHalfPoints(),
-                match.getRefereeId());
+                match.getRefereeId(),
+                match.getEditable());
     }
 
     private void verifyRefereeId(@NonNull Long refereeId, @NonNull Long seasonId) {

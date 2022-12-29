@@ -31,6 +31,9 @@ public class Match {
     @Column(name = "away_team_points", unique = false, nullable = false)
     private Integer awayTeamPoints;
 
+    @Column(unique = false, nullable = false)
+    private Boolean editable;
+
     /**
      * Note: To avoid strange round off behaviour for half points, points are stored
      * at the doubled amount to guarantee that they are integers.
@@ -84,6 +87,7 @@ public class Match {
         this.awayTeamId = awayTeamId;
     }
 
+    @NonNull
     public Optional<String> getDate() {
         return Optional.ofNullable(date);
     }
@@ -110,6 +114,7 @@ public class Match {
         this.awayTeamPoints = awayTeamPoints;
     }
 
+    @NonNull
     public Optional<Integer> getOverruledHomeBoardHalfPoints() {
         return Optional.ofNullable(overruledHomeBoardHalfPoints);
     }
@@ -118,6 +123,7 @@ public class Match {
         this.overruledHomeBoardHalfPoints = overruledHomeBoardHalfPoints;
     }
 
+    @NonNull
     public Optional<Integer> getOverruledAwayBoardHalfPoints() {
         return Optional.ofNullable(overruledAwayBoardHalfPoints);
     }
@@ -126,11 +132,21 @@ public class Match {
         this.overruledAwayBoardHalfPoints = overruledAwayBoardHalfPoints;
     }
 
+    @NonNull
     public Optional<Long> getRefereeId() {
         return Optional.ofNullable(refereeId);
     }
 
     public void setRefereeId(@Nullable Long refereeId) {
         this.refereeId = refereeId;
+    }
+
+    @NonNull
+    public Boolean getEditable() {
+        return editable;
+    }
+
+    public void setEditable(@NonNull Boolean editable) {
+        this.editable = editable;
     }
 }

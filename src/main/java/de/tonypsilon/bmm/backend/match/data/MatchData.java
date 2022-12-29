@@ -11,5 +11,6 @@ public record MatchData(Long id,
                         Integer awayTeamPoints,
                         Optional<Integer> overruledHomeBoardHalfPoints,
                         Optional<Integer> overruledAwayBoardHalfPoints,
-                        Optional<Long> refereeId) {
+                        Optional<Long> refereeId,
+                        Boolean editable) {
 }
