@@ -154,7 +154,8 @@ class ClubServiceTest {
         when(clubRepository.findById(1L)).thenReturn(Optional.of(club1));
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> clubService.patchClub(new ClubData(1L, "club1", 1000, Boolean.TRUE)));
-        assertEquals("Die Eigenschaft zps eines Vereins darf sich nicht ändern!", actualException.getMessage());
+        assertEquals("Die Eigenschaft zps eines Vereins darf sich nicht ändern!",
+                actualException.getMessage());
     }
 
     @Test
