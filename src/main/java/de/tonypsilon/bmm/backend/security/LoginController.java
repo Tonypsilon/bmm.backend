@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.Collections;
-import java.util.List;
 
 @RestController
 public class LoginController {
@@ -20,7 +19,7 @@ public class LoginController {
                 SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList(),
                 Collections.emptyList(),
                 Collections.emptyList(),
-                List.of("test seasons")));
+                Collections.emptyList()));
     }
 
     @GetMapping(value = "/administration/logout")

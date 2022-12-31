@@ -55,6 +55,7 @@ public class BmmApplicationTest {
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "users"));
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "authorities"));
 
+        // step 1: log in and get cookies
         ExtractableResponse<Response> loginResponse = RestAssured
             .given()
                 .auth().preemptive().basic(configuration.adminUsername(), configuration.adminUserPassword())
@@ -65,6 +66,8 @@ public class BmmApplicationTest {
             .extract();
 
         Map<String, String> loginCookies = createCookieMap(loginResponse.response().headers().getValues("Set-Cookie"));
+        assertThat(loginCookies).containsKey("JSESSIONID");
+        assertThat(loginCookies).containsKey("XSRF-TOKEN");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
@@ -73,6 +76,7 @@ public class BmmApplicationTest {
         headers.add("Cookie", "XSRF-TOKEN=" + loginCookies.get("XSRF-TOKEN"));
         headers.add("X-XSRF-TOKEN", loginCookies.get("XSRF-TOKEN"));
 
+        // step 2: create season
         Response postSeasonResponse = RestAssured
             .given()
                 .headers(headers)
@@ -85,9 +89,11 @@ public class BmmApplicationTest {
                 .response();
 
         SeasonData createdSeason = postSeasonResponse.as(SeasonData.class);
-
         assertThat(createdSeason.name()).isEqualTo("test");
         assertThat(createdSeason.stage()).isEqualTo(SeasonStage.REGISTRATION);
+
+        // step 3: create a new user and make it season admin for the season
+
     }
 
     private Map<String, String> createCookieMap(List<String> cookies) {
