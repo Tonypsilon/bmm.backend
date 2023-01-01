@@ -4,6 +4,7 @@ import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.security.SecurityConfiguration;
+import de.tonypsilon.bmm.backend.security.rnr.Role;
 import de.tonypsilon.bmm.backend.security.rnr.data.*;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -25,6 +27,7 @@ class UserServiceTest {
     private final ValidationService validationService = new ValidationService();
     private UserService userService;
     private User user1;
+    private Authority authority1;
     private final PasswordEncoder passwordEncoder = new SecurityConfiguration().encoder();
 
     @BeforeEach
@@ -34,17 +37,21 @@ class UserServiceTest {
         user1.setUsername("user");
         user1.setPassword(passwordEncoder.encode("secret"));
         user1.setEnabled(Boolean.TRUE);
+        authority1 = new Authority();
+        authority1.setUser(user1);
+        authority1.setAuthority(Role.USER);
     }
 
     @Test
     void testCreateUserOk() {
-        UserData createUserData = new UserData("user", "secret");
+        UserData createUserData = new UserData("user", "secret", Set.of(Role.USER));
         when(userRepository.existsById("user")).thenReturn(Boolean.FALSE);
         when(userRepository.findByUsername("user")).thenReturn(Optional.ofNullable(user1));
         UserData actual = userService.createUser(createUserData);
         verify(userRepository).save(argThat(user -> user.getUsername().equals("user")
                 && passwordEncoder.matches("secret", user.getPassword())
-                && user.getEnabled().equals(Boolean.TRUE))
+                && user.getEnabled().equals(Boolean.TRUE)
+                && user.getAuthorities().equals(Set.of(authority1)))
         );
         assertThat(actual.username()).isEqualTo("user");
         assertThat(actual.password()).isNull();
@@ -53,7 +60,7 @@ class UserServiceTest {
     @ParameterizedTest
     @NullAndEmptySource
     void testCreateUserBlankName(String name) {
-        UserData createUserData = new UserData(name, "secret");
+        UserData createUserData = new UserData(name, "secret", null);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> userService.createUser(createUserData));
         assertThat(actualException.getMessage()).isEqualTo("Der Name darf nicht leer sein!");
@@ -61,7 +68,7 @@ class UserServiceTest {
 
     @Test
     void testCreateUserAlreadyExists() {
-        UserData createUserData = new UserData("user", "secret");
+        UserData createUserData = new UserData("user", "secret", null);
         when(userRepository.existsById("user")).thenReturn(Boolean.TRUE);
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> userService.createUser(createUserData));
@@ -72,7 +79,7 @@ class UserServiceTest {
     @ParameterizedTest
     @NullAndEmptySource
     void testCreateUserBlankPassword(String password) {
-        UserData createUserData = new UserData("user", password);
+        UserData createUserData = new UserData("user", password, null);
         when(userRepository.existsById("user")).thenReturn(Boolean.FALSE);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> userService.createUser(createUserData));
@@ -83,7 +90,7 @@ class UserServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"short"})
     void testCreateUserInvalidPassword(String password) {
-        UserData createUserData = new UserData("user", password);
+        UserData createUserData = new UserData("user", password, null);
         when(userRepository.existsById("user")).thenReturn(Boolean.FALSE);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> userService.createUser(createUserData));

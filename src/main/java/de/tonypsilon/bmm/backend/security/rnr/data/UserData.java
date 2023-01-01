@@ -1,4 +1,8 @@
 package de.tonypsilon.bmm.backend.security.rnr.data;
 
-public record UserData(String username, String password) {
+import de.tonypsilon.bmm.backend.security.rnr.Role;
+
+import java.util.Set;
+
+public record UserData(String username, String password, Set<Role> roles) {
 }

@@ -6,14 +6,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record BmmApplicationIntegrationTestConfiguration (
 
     String adminUsername,
-    String adminUserPassword,
+    String adminPassword,
 
     String seasonAdminUsername,
-    String seasonAdminUserPassword,
+    String seasonAdminPassword,
 
     String clubAdminUsername,
-    String clubAdminUserPassword,
+    String clubAdminPassword,
 
     String teamAdminUsername,
-    String teamAdminUserPassword
+    String teamAdminPassword
 ) { }

@@ -3,12 +3,15 @@ package de.tonypsilon.bmm.backend.security.rnr.service;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.security.rnr.Role;
 import de.tonypsilon.bmm.backend.security.rnr.data.*;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -34,10 +37,19 @@ public class UserService {
                     .formatted(createUserData.username()));
         }
         validatePassword(createUserData.password());
+
         User user = new User();
         user.setUsername(createUserData.username());
         user.setPassword(passwordEncoder.encode(createUserData.password()));
         user.setEnabled(Boolean.TRUE);
+        if (createUserData.roles() != null) {
+            for (Role role : createUserData.roles()) {
+                Authority authority = new Authority();
+                authority.setUser(user);
+                authority.setAuthority(role);
+                user.addAuthority(authority);
+            }
+        }
         userRepository.save(user);
 
         return userToUserData(getByUsername(createUserData.username()));
@@ -70,7 +82,12 @@ public class UserService {
      */
     @NonNull
     private UserData userToUserData(@NonNull User user) {
-        return new UserData(user.getUsername(), null);
+        return new UserData(user.getUsername(),
+                null,
+                user.getAuthorities().stream()
+                        .map(Authority::getAuthority)
+                        .collect(Collectors.toSet())
+        );
     }
 
     /**

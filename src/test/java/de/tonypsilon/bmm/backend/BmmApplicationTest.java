@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tonypsilon.bmm.backend.season.data.CreateSeasonData;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
+import de.tonypsilon.bmm.backend.security.rnr.Role;
+import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -20,9 +22,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 
 import javax.sql.DataSource;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,7 +58,7 @@ public class BmmApplicationTest {
         // step 1: log in and get cookies
         ExtractableResponse<Response> loginResponse = RestAssured
             .given()
-                .auth().preemptive().basic(configuration.adminUsername(), configuration.adminUserPassword())
+                .auth().preemptive().basic(configuration.adminUsername(), configuration.adminPassword())
             .when()
                 .get(baseUrl + "/user")
             .then()
@@ -94,6 +94,24 @@ public class BmmApplicationTest {
 
         // step 3: create a new user and make it season admin for the season
 
+        Response postUserResponse = RestAssured
+            .given()
+                .headers(headers)
+                .body(objectMapper.writeValueAsString(
+                        new UserData(configuration.seasonAdminUsername(),
+                                configuration.seasonAdminPassword(),
+                                Set.of(Role.SEASON_ADMIN))))
+            .when()
+                .post(baseUrl + "/users")
+            .then()
+                .statusCode(HttpStatus.CREATED.value())
+            .extract()
+                .response();
+
+        UserData seasonAdmin = postUserResponse.as(UserData.class);
+        assertThat(seasonAdmin.username()).isEqualTo(configuration.seasonAdminUsername());
+        assertThat(seasonAdmin.password()).isNull();
+        assertThat(seasonAdmin.roles()).isEqualTo(Set.of(Role.SEASON_ADMIN));
     }
 
     private Map<String, String> createCookieMap(List<String> cookies) {

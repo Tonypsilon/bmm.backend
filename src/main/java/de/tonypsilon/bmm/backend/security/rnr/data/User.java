@@ -3,6 +3,7 @@ package de.tonypsilon.bmm.backend.security.rnr.data;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -16,6 +17,9 @@ public class User {
 
     @Column(unique = false, nullable = false)
     private Boolean enabled;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Authority> authorities = new HashSet<>();
 
     @NonNull
     public String getUsername() {
@@ -42,5 +46,19 @@ public class User {
 
     public void setEnabled(@NonNull Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public void addAuthority(@NonNull Authority authority) {
+        this.authorities.add(authority);
+        authority.setUser(this);
+    }
+
+    public void removeAuthority(@NonNull Authority authority) {
+        this.authorities.remove(authority);
+    }
+
+    @NonNull
+    public Set<Authority> getAuthorities() {
+        return authorities;
     }
 }

@@ -4,4 +4,4 @@ values
 
 insert into authorities(username, authority)
 values
-('admin', 'admin');
+('admin', 'ADMIN');
