@@ -1,23 +1,22 @@
 package de.tonypsilon.bmm.backend.security.rnr.service;
 
+import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
+import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.security.SecurityConfiguration;
-import de.tonypsilon.bmm.backend.security.rnr.data.User;
-import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
-import de.tonypsilon.bmm.backend.security.rnr.data.UserRepository;
+import de.tonypsilon.bmm.backend.security.rnr.data.*;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class UserServiceTest {
@@ -33,7 +32,7 @@ class UserServiceTest {
         userService = new UserService(userRepository, validationService, passwordEncoder);
         user1 = new User();
         user1.setUsername("user");
-        user1.setPassword("secret");
+        user1.setPassword(passwordEncoder.encode("secret"));
         user1.setEnabled(Boolean.TRUE);
     }
 
@@ -47,6 +46,8 @@ class UserServiceTest {
                 && passwordEncoder.matches("secret", user.getPassword())
                 && user.getEnabled().equals(Boolean.TRUE))
         );
+        assertThat(actual.username()).isEqualTo("user");
+        assertThat(actual.password()).isNull();
     }
 
     @ParameterizedTest
@@ -60,13 +61,94 @@ class UserServiceTest {
 
     @Test
     void testCreateUserAlreadyExists() {
+        UserData createUserData = new UserData("user", "secret");
+        when(userRepository.existsById("user")).thenReturn(Boolean.TRUE);
+        AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
+                () -> userService.createUser(createUserData));
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt bereits einen Benutzer mit dem Benutzernamen user!");
+    }
 
+    @ParameterizedTest
+    @NullAndEmptySource
+    void testCreateUserBlankPassword(String password) {
+        UserData createUserData = new UserData("user", password);
+        when(userRepository.existsById("user")).thenReturn(Boolean.FALSE);
+        BadDataException actualException = assertThrows(BadDataException.class,
+                () -> userService.createUser(createUserData));
+        assertThat(actualException.getMessage()).isEqualTo("Das Passwort darf nicht leer sein!");
+    }
+
+    // Use value source for only one value because in the future, more password rules are likely.
+    @ParameterizedTest
+    @ValueSource(strings = {"short"})
+    void testCreateUserInvalidPassword(String password) {
+        UserData createUserData = new UserData("user", password);
+        when(userRepository.existsById("user")).thenReturn(Boolean.FALSE);
+        BadDataException actualException = assertThrows(BadDataException.class,
+                () -> userService.createUser(createUserData));
+        assertThat(actualException.getMessage())
+                .isEqualTo("Das Passwort muss mindestens sechs Zeichen lang sein!");
     }
 
     @Test
-    void testCreateUserInvalidPassword() {
-
+    void  testChangePasswordOk() {
+        ChangePasswordData changePasswordData = new ChangePasswordData("user", "secret", "secret2");
+        User user2 = new User();
+        user2.setUsername("user");
+        user2.setPassword(passwordEncoder.encode("secret2"));
+        user2.setEnabled(Boolean.TRUE);
+        when(userRepository.findByUsername("user"))
+                .thenReturn(Optional.of(user1))
+                .thenReturn(Optional.of(user2));
+        UserData actual = userService.changePassword(changePasswordData);
+        assertThat(actual.username()).isEqualTo("user");
+        assertThat(actual.password()).isNull();
+        verify(userRepository).save(argThat(user -> user.getUsername().equals("user")
+                && passwordEncoder.matches("secret2", user.getPassword())
+                && user.getEnabled().equals(Boolean.TRUE))
+        );
     }
 
+    @Test
+    void testChangePasswordUserDoesNotExist() {
+        ChangePasswordData changePasswordData = new ChangePasswordData("user", "secret", "secret2");
+        when(userRepository.findByUsername("user")).thenReturn(Optional.empty());
+        NotFoundException actualException = assertThrows(NotFoundException.class,
+                () -> userService.changePassword(changePasswordData));
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keinen Benutzer mit dem Benutzernamen user!");
+    }
+
+    @Test
+    void testChangePasswordOldPasswordDoesNotMatch() {
+        ChangePasswordData changePasswordData = new ChangePasswordData("user", "wrong", "secret2");
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user1));
+        BadDataException actualException = assertThrows(BadDataException.class,
+                () -> userService.changePassword(changePasswordData));
+        assertThat(actualException.getMessage()).isEqualTo("Das alte Passwort ist nicht korrekt!");
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void testChangePasswordBlankPassword(String password) {
+        ChangePasswordData changePasswordData = new ChangePasswordData("user", "secret", password);
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user1));
+        BadDataException actualException = assertThrows(BadDataException.class,
+                () -> userService.changePassword(changePasswordData));
+        assertThat(actualException.getMessage()).isEqualTo("Das Passwort darf nicht leer sein!");
+    }
+
+    // Use value source for only one value because in the future, more password rules are likely.
+    @ParameterizedTest
+    @ValueSource(strings = {"short"})
+    void testChangePasswordInvalidPassword(String password) {
+        ChangePasswordData changePasswordData = new ChangePasswordData("user", "secret", password);
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user1));
+        BadDataException actualException = assertThrows(BadDataException.class,
+                () -> userService.changePassword(changePasswordData));
+        assertThat(actualException.getMessage())
+                .isEqualTo("Das Passwort muss mindestens sechs Zeichen lang sein!");
+    }
 
 }
