@@ -27,6 +27,9 @@ public class User {
     }
 
     public void setUsername(@NonNull String username) {
+        if (this.username != null) {
+            throw new UnsupportedOperationException("Value must not change!");
+        }
         this.username = username;
     }
 
