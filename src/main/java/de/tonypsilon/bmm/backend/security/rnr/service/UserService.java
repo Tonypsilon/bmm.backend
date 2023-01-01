@@ -51,7 +51,7 @@ public class UserService {
             throw new BadDataException("Das alte Passwort ist nicht korrekt!");
         }
         validatePassword(changePasswordData.newPassword());
-        user.setPassword(changePasswordData.newPassword());
+        user.setPassword(passwordEncoder.encode(changePasswordData.newPassword()));
         userRepository.save(user);
 
         return userToUserData(getByUsername(changePasswordData.username()));
