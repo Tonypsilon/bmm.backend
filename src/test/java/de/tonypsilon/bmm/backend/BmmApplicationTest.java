@@ -5,6 +5,7 @@ import de.tonypsilon.bmm.backend.season.data.CreateSeasonData;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.rnr.Role;
+import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -108,10 +109,26 @@ public class BmmApplicationTest {
             .extract()
                 .response();
 
-        UserData seasonAdmin = postUserResponse.as(UserData.class);
-        assertThat(seasonAdmin.username()).isEqualTo(configuration.seasonAdminUsername());
-        assertThat(seasonAdmin.password()).isNull();
-        assertThat(seasonAdmin.roles()).isEqualTo(Set.of(Role.SEASON_ADMIN));
+        UserData seasonAdminUser = postUserResponse.as(UserData.class);
+        assertThat(seasonAdminUser.username()).isEqualTo(configuration.seasonAdminUsername());
+        assertThat(seasonAdminUser.password()).isNull();
+        assertThat(seasonAdminUser.roles()).isEqualTo(Set.of(Role.SEASON_ADMIN));
+
+        Response postSeasonAdminResponse = RestAssured
+            .given()
+                .headers(headers)
+                .body(objectMapper.writeValueAsString(
+                        new SeasonAdminData(createdSeason.id(), seasonAdminUser.username())))
+            .when()
+                .post(baseUrl + "/seasonadmins")
+            .then()
+                .statusCode(HttpStatus.CREATED.value())
+            .extract()
+                .response();
+
+        SeasonAdminData seasonAdminData = postSeasonAdminResponse.as(SeasonAdminData.class);
+        assertThat(seasonAdminData.seasonId()).isEqualTo(createdSeason.id());
+        assertThat(seasonAdminData.username()).isEqualTo(seasonAdminUser.username());
     }
 
     private Map<String, String> createCookieMap(List<String> cookies) {

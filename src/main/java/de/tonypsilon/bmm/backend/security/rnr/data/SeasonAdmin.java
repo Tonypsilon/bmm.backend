@@ -5,6 +5,7 @@ import org.springframework.lang.NonNull;
 
 @Entity
 @IdClass(SeasonAdminKey.class)
+@Table(name = "seasonadmin")
 public class SeasonAdmin {
 
     @Id
