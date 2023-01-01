@@ -1,7 +1,7 @@
 package de.tonypsilon.bmm.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
+import de.tonypsilon.bmm.backend.season.data.CreateSeasonData;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import io.restassured.RestAssured;
@@ -80,7 +80,7 @@ public class BmmApplicationTest {
         Response postSeasonResponse = RestAssured
             .given()
                 .headers(headers)
-                .body(objectMapper.writeValueAsString(new SeasonCreationData("test")))
+                .body(objectMapper.writeValueAsString(new CreateSeasonData("test")))
             .when()
                 .post(baseUrl + "/seasons")
             .then()

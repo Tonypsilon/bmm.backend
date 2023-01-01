@@ -31,8 +31,8 @@ public class SeasonAdminController {
     @PostMapping(value = "/seasonadmins",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SeasonAdminData> createSeasonAdmin(RequestEntity<SeasonAdminData> seasonAdminDataRequestEntity,
-                                                             Principal principal) {
+    public ResponseEntity<SeasonAdminData> createSeasonAdmin(
+            RequestEntity<SeasonAdminData> seasonAdminDataRequestEntity) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(seasonAdminService.createSeasonAdmin(seasonAdminDataRequestEntity.getBody()));

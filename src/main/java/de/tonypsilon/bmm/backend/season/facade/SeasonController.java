@@ -2,7 +2,7 @@ package de.tonypsilon.bmm.backend.season.facade;
 
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.SecurityException;
-import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
+import de.tonypsilon.bmm.backend.season.data.CreateSeasonData;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.data.SeasonStageChangeData;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
@@ -47,11 +47,14 @@ public class SeasonController {
     @PostMapping(value = "/seasons",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SeasonData> createSeason(RequestEntity<SeasonCreationData> seasonCreationDataRequestEntity,
-                                                   Principal principal) {
+    public ResponseEntity<SeasonData> createSeason(RequestEntity<CreateSeasonData> createSeasonDataRequestEntity) {
+        CreateSeasonData createSeasonData = createSeasonDataRequestEntity.getBody();
+        if (createSeasonData == null) {
+            throw new BadDataException("Unvollständige Daten gegeben!");
+        }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(seasonService.createSeason(seasonCreationDataRequestEntity.getBody()));
+                .body(seasonService.createSeason(createSeasonData));
     }
 
     @RolesAllowed(Roles.SEASON_ADMIN)
@@ -61,7 +64,11 @@ public class SeasonController {
     public ResponseEntity<SeasonData> changeSeasonState(RequestEntity<SeasonStageChangeData> patchedSeasonRequestEntity,
                                                         @NonNull @PathVariable String seasonName,
                                                         Principal principal) {
-        if (!seasonName.equals(patchedSeasonRequestEntity.getBody().seasonName())) {
+        SeasonStageChangeData seasonStageChangeData = patchedSeasonRequestEntity.getBody();
+        if(seasonStageChangeData == null) {
+            throw new BadDataException("Unvollständige Daten gegeben!");
+        }
+        if (!seasonName.equals(seasonStageChangeData.seasonName())) {
             throw new BadDataException("Der Saisonname im Request passt nicht zum Requestbody.");
         }
         if (!seasonAdminService.isSeasonAdmin(seasonName, principal.getName())) {
