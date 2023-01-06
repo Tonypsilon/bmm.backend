@@ -151,6 +151,21 @@ public class BmmApplicationTest {
         assertThat(clubSingle.name()).isEqualTo("clubSingle1");
         assertThat(clubSingle.zps()).isEqualTo(3);
         assertThat(clubSingle.active()).isTrue();
+
+        ClubAdminData clubAdminClubOrga1 = createClubAdminForClub(
+                new ClubAdminData(clubOrga1.id(), "clubAdminClubOrga1"), headers);
+        assertThat(clubAdminClubOrga1.clubId()).isEqualTo(clubOrga1.id());
+        assertThat(clubAdminClubOrga1.username()).isEqualTo("clubAdminClubOrga1");
+
+        ClubAdminData clubAdminClubOrga2 = createClubAdminForClub(
+                new ClubAdminData(clubOrga2.id(), "clubAdminClubOrga2"), headers);
+        assertThat(clubAdminClubOrga2.clubId()).isEqualTo(clubOrga2.id());
+        assertThat(clubAdminClubOrga2.username()).isEqualTo("clubAdminClubOrga2");
+
+        ClubAdminData clubAdminSingle = createClubAdminForClub(
+                new ClubAdminData(clubSingle.id(), "clubAdminSingle"), headers);
+        assertThat(clubAdminSingle.clubId()).isEqualTo(clubSingle.id());
+        assertThat(clubAdminSingle.username()).isEqualTo("clubAdminSingle");
     }
 
     private Map<String, String> createCookieMap(List<String> cookies) {
@@ -192,7 +207,7 @@ public class BmmApplicationTest {
                 .response()
                 .as(UserData.class);
 
-        ClubAdminData clubAdminData = RestAssured
+        return RestAssured
             .given()
                 .headers(headers)
                 .body(objectMapper.writeValueAsString(clubAdminCreationData))
@@ -203,7 +218,5 @@ public class BmmApplicationTest {
             .extract()
                 .response()
                 .as(ClubAdminData.class);
-
-        return clubAdminData;
     }
 }
