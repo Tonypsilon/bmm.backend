@@ -35,7 +35,7 @@ public class ClubService {
         Club club = new Club();
         club.setName(clubCreationData.name());
         club.setZps(clubCreationData.zps());
-        club.setActive(clubCreationData.active() == null ? true : clubCreationData.active());
+        club.setActive(clubCreationData.active() == null || clubCreationData.active());
         clubRepository.save(club);
         return clubToClubData(clubRepository.getByName(clubCreationData.name()));
     }

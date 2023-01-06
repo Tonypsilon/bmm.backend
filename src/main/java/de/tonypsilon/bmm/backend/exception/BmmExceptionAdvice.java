@@ -15,4 +15,10 @@ public class BmmExceptionAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorData(exception.getMessage()));
     }
 
+    @ResponseBody
+    @ExceptionHandler(NullPointerException.class)
+    ResponseEntity<ErrorData> nullPointerExceptionHandler(NullPointerException exception) {
+        return ResponseEntity.badRequest().body(new ErrorData(exception.getMessage()));
+    }
+
 }

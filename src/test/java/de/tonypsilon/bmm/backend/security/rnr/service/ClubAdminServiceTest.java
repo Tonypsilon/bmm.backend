@@ -6,6 +6,7 @@ import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdmin;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminRepository;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -86,7 +87,7 @@ class ClubAdminServiceTest {
     @Test
     void testDeleteClubAdminOk() {
         when(clubAdminRepository.findByClubIdAndUsername(1L, "user1")).thenReturn(Optional.of(clubAdmin1));
-        clubAdminService.deleteClubAdmin(1L, "user1");
+        clubAdminService.deleteClubAdmin(new ClubAdminData(1L, "user1"));
         verify(clubAdminRepository, times(1)).delete(
                 argThat(clubAdmin -> clubAdmin.getClubId().equals(1L)
                 && clubAdmin.getUsername().equals("user1"))
@@ -96,8 +97,9 @@ class ClubAdminServiceTest {
     @Test
     void testDeleteClubAdminThatDoesNotExist() {
         when(clubAdminRepository.findByClubIdAndUsername(1L, "user3")).thenReturn(Optional.empty());
+        ClubAdminData clubAdminDeletionData = new ClubAdminData(1L, "user3");
         NotFoundException actualException = assertThrows(NotFoundException.class,
-                () -> clubAdminService.deleteClubAdmin(1L, "user3"));
+                () -> clubAdminService.deleteClubAdmin(clubAdminDeletionData));
         assertEquals("Benutzer user3 ist kein Administrator für den Verein mit ID 1!", actualException.getMessage());
     }
 

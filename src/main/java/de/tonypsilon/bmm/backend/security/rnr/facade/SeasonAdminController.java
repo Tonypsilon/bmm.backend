@@ -7,8 +7,8 @@ import javax.annotation.security.RolesAllowed;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.Collection;
+import java.util.Objects;
 
 
 @RestController
@@ -35,15 +35,15 @@ public class SeasonAdminController {
             RequestEntity<SeasonAdminData> seasonAdminDataRequestEntity) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(seasonAdminService.createSeasonAdmin(seasonAdminDataRequestEntity.getBody()));
+                .body(seasonAdminService.createSeasonAdmin(
+                        Objects.requireNonNull(Objects.requireNonNull(seasonAdminDataRequestEntity).getBody())));
     }
 
     @RolesAllowed(Roles.ADMIN)
-    @DeleteMapping(value = "/seasonadmins")
-    public ResponseEntity<Void> deleteSeasonAdmin(RequestEntity<SeasonAdminData> seasonAdminDataRequestEntity,
-                                  Principal principal) {
-        seasonAdminService.deleteSeasonAdmin(seasonAdminDataRequestEntity.getBody().seasonId(),
-                seasonAdminDataRequestEntity.getBody().username());
+    @DeleteMapping(value = "/seasonadmins", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> deleteSeasonAdmin(RequestEntity<SeasonAdminData> seasonAdminDataRequestEntity) {
+        seasonAdminService.deleteSeasonAdmin(
+                Objects.requireNonNull(Objects.requireNonNull(seasonAdminDataRequestEntity).getBody()));
         return ResponseEntity.noContent().build();
     }
 }

@@ -71,11 +71,12 @@ public class SeasonAdminService {
     }
 
     @Transactional
-    public void deleteSeasonAdmin(Long seasonId, String username) {
-        SeasonAdmin seasonAdminToDelete = seasonAdminRepository.findBySeasonIdAndUsername(seasonId, username)
+    public void deleteSeasonAdmin(@NonNull SeasonAdminData seasonAdminData) {
+        SeasonAdmin seasonAdminToDelete = seasonAdminRepository.findBySeasonIdAndUsername(
+                seasonAdminData.seasonId(), seasonAdminData.username())
                         .orElseThrow(() -> new NotFoundException(
                                 "Benutzer %s ist kein Administrator für die Saison mit ID %d!"
-                                        .formatted(username, seasonId)));
+                                        .formatted(seasonAdminData.username(), seasonAdminData.seasonId())));
         seasonAdminRepository.delete(seasonAdminToDelete);
     }
 

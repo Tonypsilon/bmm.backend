@@ -52,10 +52,11 @@ public class ClubAdminService {
     }
 
     @Transactional
-    public void deleteClubAdmin(Long clubId, String username) {
-        ClubAdmin clubAdminToDelete = clubAdminRepository.findByClubIdAndUsername(clubId, username)
+    public void deleteClubAdmin(@NonNull ClubAdminData clubAdminData) {
+        ClubAdmin clubAdminToDelete = clubAdminRepository.findByClubIdAndUsername(
+                clubAdminData.clubId(), clubAdminData.username())
                 .orElseThrow(() -> new NotFoundException("Benutzer %s ist kein Administrator für den Verein mit ID %d!"
-                        .formatted(username, clubId)));
+                        .formatted(clubAdminData.username(), clubAdminData.clubId())));
         clubAdminRepository.delete(clubAdminToDelete);
     }
 

@@ -86,7 +86,7 @@ class SeasonAdminServiceTest {
     @Test
     void testDeleteSeasonAdminOk() {
         when(seasonAdminRepository.findBySeasonIdAndUsername(1L, "user1")).thenReturn(Optional.of(seasonAdmin1));
-        seasonAdminService.deleteSeasonAdmin(1L, "user1");
+        seasonAdminService.deleteSeasonAdmin(new SeasonAdminData(1L, "user1"));
         verify(seasonAdminRepository, times(1)).delete(
                 argThat(seasonAdmin -> seasonAdmin.getSeasonId().equals(1L)
                 && seasonAdmin.getUsername().equals("user1"))
@@ -96,8 +96,9 @@ class SeasonAdminServiceTest {
     @Test
     void testDeleteSeasonAdminThatDoesNotExist() {
         when(seasonAdminRepository.findBySeasonIdAndUsername(3L, "user1")).thenReturn(Optional.empty());
+        SeasonAdminData seasonAdminDeletionData = new SeasonAdminData(3L, "user1");
         NotFoundException actualException = assertThrows(NotFoundException.class,
-                () -> seasonAdminService.deleteSeasonAdmin(3L, "user1"));
+                () -> seasonAdminService.deleteSeasonAdmin(seasonAdminDeletionData));
         assertEquals("Benutzer user1 ist kein Administrator für die Saison mit ID 3!", actualException.getMessage());
     }
 }

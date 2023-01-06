@@ -672,3 +672,11 @@ databaseChangeLog:
                   constraints:
                     unique: false
                     nullable: false
+  - changeSet:
+      id: 23
+      author: Tonypsilon
+      changes:
+        - addAutoIncrement:
+            tableName: club
+            columnName: id
+            columnDataType: int

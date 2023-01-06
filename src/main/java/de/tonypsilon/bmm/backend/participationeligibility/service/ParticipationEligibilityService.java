@@ -36,6 +36,7 @@ public class ParticipationEligibilityService {
     }
 
     @Transactional
+    @NonNull
     public ParticipationEligibilityData createParticipationEligibility(
             ParticipationEligibilityCreationData participationEligibilityCreationData) {
         if (Boolean.FALSE.equals(seasonService.seasonExistsById(participationEligibilityCreationData.seasonId()))) {
@@ -77,7 +78,8 @@ public class ParticipationEligibilityService {
                         participationEligibility.getPkz()));
     }
 
-    public Collection<ParticipationEligibilityData> getAllParticipationEligibilitiesForSeason(Long seasonId) {
+    @NonNull
+    public Collection<ParticipationEligibilityData> getAllParticipationEligibilitiesForSeason(@NonNull Long seasonId) {
         return participationEligibilityRepository
                 .getBySeasonId(seasonId)
                 .stream()
@@ -85,8 +87,9 @@ public class ParticipationEligibilityService {
                 .toList();
     }
 
+    @NonNull
     public Collection<ParticipationEligibilityData> getAllParticipationEligibilitiesForSeasonAndClub(
-            Long seasonId, Long clubId) {
+            @NonNull Long seasonId, @NonNull Long clubId) {
         return participationEligibilityRepository
                 .getBySeasonIdAndClubId(seasonId, clubId)
                 .stream()
@@ -95,7 +98,7 @@ public class ParticipationEligibilityService {
     }
 
     @Transactional
-    public void deleteParticipationEligibility(Long participationEligibilityId) {
+    public void deleteParticipationEligibility(@NonNull Long participationEligibilityId) {
         participationEligibilityRepository.delete(
                 participationEligibilityRepository.findById(participationEligibilityId)
                         .orElseThrow(() -> new NotFoundException("Es gibt keine Spielberechtigung mit der ID %d!"
@@ -103,7 +106,7 @@ public class ParticipationEligibilityService {
     }
 
     @NonNull
-    public Boolean existsById(Long participationEligibilityId) {
+    public Boolean existsById(@NonNull Long participationEligibilityId) {
         return participationEligibilityRepository.existsById(participationEligibilityId);
     }
 
