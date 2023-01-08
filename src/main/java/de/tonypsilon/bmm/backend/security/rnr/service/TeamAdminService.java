@@ -52,10 +52,10 @@ public class TeamAdminService {
     }
 
     @Transactional
-    public void deleteTeamAdmin(Long teamId, String username) {
-        TeamAdmin teamAdminToDelete = teamAdminRepository.findByTeamIdAndUsername(teamId, username)
+    public void deleteTeamAdmin(@NonNull TeamAdminData teamAdminData) {
+        TeamAdmin teamAdminToDelete = teamAdminRepository.findByTeamIdAndUsername(teamAdminData.teamId(), teamAdminData.username())
                 .orElseThrow(() -> new NotFoundException("Benutzer %s ist kein Administrator für das Team mit ID %d!"
-                        .formatted(username, teamId)));
+                        .formatted(teamAdminData.username(), teamAdminData.teamId())));
         teamAdminRepository.delete(teamAdminToDelete);
 
     }

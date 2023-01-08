@@ -5,6 +5,7 @@ import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.organization.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
+import de.tonypsilon.bmm.backend.security.rnr.service.ClubAdminService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,15 +24,18 @@ public class OrganizationService {
     private final OrganizationMemberRepository organizationMemberRepository;
     private final SeasonService seasonService;
     private final ClubService clubService;
+    private final ClubAdminService clubAdminService;
 
     public OrganizationService(final OrganizationRepository organizationRepository,
                                final OrganizationMemberRepository organizationMemberRepository,
                                final SeasonService seasonService,
-                               final ClubService clubService) {
+                               final ClubService clubService,
+                               final ClubAdminService clubAdminService) {
         this.organizationRepository = organizationRepository;
         this.organizationMemberRepository = organizationMemberRepository;
         this.seasonService = seasonService;
         this.clubService = clubService;
+        this.clubAdminService = clubAdminService;
     }
 
     @Transactional
@@ -99,11 +103,28 @@ public class OrganizationService {
         return organizationMember;
     }
 
+    @Transactional
     @NonNull
     public Long getSeasonIdOfOrganization(Long organizationId) {
         return organizationRepository.findById(organizationId)
                 .map(Organization::getSeasonId)
                 .orElseThrow(() -> new NotFoundException("Es gibt keine Organisation mit der ID %s!"
+                        .formatted(organizationId)));
+    }
+
+    @Transactional
+    @NonNull
+    public Boolean isClubAdminOfOrganization(@NonNull String username, @NonNull Long organizationId) {
+        return getById(organizationId).getOrganizationMembers().stream()
+                .map(OrganizationMember::getClubId)
+                .map(clubAdminService::getAdminsOfClub)
+                .flatMap(Set::stream)
+                .anyMatch(username::equals);
+    }
+
+    private Organization getById(Long organizationId) {
+        return organizationRepository.findById(organizationId).orElseThrow(
+                () -> new NotFoundException("Es gibt keine Organisation mit der ID %d!"
                         .formatted(organizationId)));
     }
 

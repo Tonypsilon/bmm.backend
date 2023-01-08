@@ -135,8 +135,7 @@ public class BmmApplicationTest {
         assertThat(seasonAdminData.seasonId()).isEqualTo(createdSeason.id());
         assertThat(seasonAdminData.username()).isEqualTo(seasonAdminUser.username());
 
-        // step 4: Create 3 clubs and a club admin for each. Combine 2 of them to a single
-        //         organization. The 3rd one will become an organization on its own.
+        // step 4: Create 3 clubs and a club admin for each.
         ClubData clubOrga1 = createClub(new ClubCreationData("clubOrga1", 1, Boolean.TRUE), headers);
         assertThat(clubOrga1.name()).isEqualTo("clubOrga1");
         assertThat(clubOrga1.zps()).isEqualTo(1);
@@ -166,6 +165,8 @@ public class BmmApplicationTest {
                 new ClubAdminData(clubSingle.id(), "clubAdminSingle"), headers);
         assertThat(clubAdminSingle.clubId()).isEqualTo(clubSingle.id());
         assertThat(clubAdminSingle.username()).isEqualTo("clubAdminSingle");
+
+        // step 5: Create 2 organizations for the season. One with 2 clubs, one with a single one.
     }
 
     private Map<String, String> createCookieMap(List<String> cookies) {

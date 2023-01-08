@@ -86,7 +86,7 @@ class TeamAdminServiceTest {
     @Test
     void testDeleteTeamAdminOk() {
         when(teamAdminRepository.findByTeamIdAndUsername(1L, "user1")).thenReturn(Optional.of(teamAdmin1));
-        teamAdminService.deleteTeamAdmin(1L, "user1");
+        teamAdminService.deleteTeamAdmin(new TeamAdminData(1L, "user1"));
         verify(teamAdminRepository, times(1)).delete(
                 argThat(teamAdmin -> teamAdmin.getTeamId().equals(1L)
                 && teamAdmin.getUsername().equals("user1"))
@@ -96,8 +96,9 @@ class TeamAdminServiceTest {
     @Test
     void testDeleteTeamAdminThatDoesNotExist() {
         when(teamAdminRepository.findByTeamIdAndUsername(3L, "user3")).thenReturn(Optional.empty());
+        TeamAdminData teamAdminData = new TeamAdminData(3L, "user3");
         NotFoundException actualException = assertThrows(NotFoundException.class,
-                () -> teamAdminService.deleteTeamAdmin(3L, "user3"));
+                () -> teamAdminService.deleteTeamAdmin(teamAdminData));
         assertEquals("Benutzer user3 ist kein Administrator für das Team mit ID 3!", actualException.getMessage());
     }
 

@@ -11,6 +11,9 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 public class ClubAdminService {
 
@@ -27,6 +30,7 @@ public class ClubAdminService {
     }
 
     @Transactional
+    @NonNull
     public ClubAdminData createClubAdmin(ClubAdminData clubAdminCreateData) {
         if(!userDetailsManager.userExists(clubAdminCreateData.username())) {
             throw new NotFoundException("Es gibt keinen Benutzer mit dem Namen %s!".formatted(clubAdminCreateData.username()));
@@ -44,6 +48,14 @@ public class ClubAdminService {
         clubAdminRepository.save(clubAdmin);
         return clubAdminToClubAdminData(
                 clubAdminRepository.getByClubIdAndUsername(clubAdminCreateData.clubId(), clubAdminCreateData.username()));
+    }
+
+    @NonNull
+    public Set<String> getAdminsOfClub(Long clubId) {
+        return clubAdminRepository.findByClubId(clubId)
+                .stream()
+                .map(ClubAdmin::getUsername)
+                .collect(Collectors.toSet());
     }
 
     @NonNull

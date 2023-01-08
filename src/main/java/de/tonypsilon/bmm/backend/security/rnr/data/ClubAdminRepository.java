@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface ClubAdminRepository extends JpaRepository<ClubAdmin, ClubAdminKey> {
@@ -13,4 +14,6 @@ public interface ClubAdminRepository extends JpaRepository<ClubAdmin, ClubAdminK
     ClubAdmin getByClubIdAndUsername(Long clubId, String username);
 
     Optional<ClubAdmin> findByClubIdAndUsername(Long clubId, String username);
+
+    Set<ClubAdmin> findByClubId(Long clubId);
 }
