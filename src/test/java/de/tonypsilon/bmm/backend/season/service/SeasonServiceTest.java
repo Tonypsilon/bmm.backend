@@ -59,7 +59,7 @@ class SeasonServiceTest {
     void testCreateSeasonOk() {
         when(seasonRepository.existsByName("Saison-Registration")).thenReturn(Boolean.FALSE);
         when(seasonRepository.getByName("Saison-Registration")).thenReturn(seasonRegistration);
-        SeasonData actual = seasonService.createSeason(new CreateSeasonData("Saison-Registration"));
+        SeasonData actual = seasonService.createSeason(new SeasonCreationData("Saison-Registration"));
         assertEquals(seasonRegistrationData, actual);
         verify(seasonRepository, times(1)).save(
                 argThat(season -> season.getName().equals("Saison-Registration")
@@ -70,17 +70,17 @@ class SeasonServiceTest {
     void testCreateSeasonWhereSeasonNameAlreadyExists() {
         when(seasonRepository.existsByName("name")).thenReturn(Boolean.TRUE);
         AlreadyExistsException exception = assertThrows(AlreadyExistsException.class,
-                () -> seasonService.createSeason(new CreateSeasonData("name")));
+                () -> seasonService.createSeason(new SeasonCreationData("name")));
         assertEquals("Saison mit dem Namen name existiert bereits!", exception.getMessage());
     }
 
     @Test
     void testCreateSeasonWithEmptyName() {
         NameBlankException exceptionNameBlank = assertThrows(NameBlankException.class,
-                () -> seasonService.createSeason(new CreateSeasonData("")));
+                () -> seasonService.createSeason(new SeasonCreationData("")));
         assertEquals("Der Name der Saison darf nicht leer sein!", exceptionNameBlank.getMessage());
         NameBlankException exceptionNameNull = assertThrows(NameBlankException.class,
-                () -> seasonService.createSeason(new CreateSeasonData(null)));
+                () -> seasonService.createSeason(new SeasonCreationData(null)));
         assertEquals("Der Name der Saison darf nicht leer sein!", exceptionNameNull.getMessage());
     }
 

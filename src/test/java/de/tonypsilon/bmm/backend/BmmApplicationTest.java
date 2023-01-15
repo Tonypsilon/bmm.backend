@@ -3,7 +3,9 @@ package de.tonypsilon.bmm.backend;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tonypsilon.bmm.backend.club.data.ClubCreationData;
 import de.tonypsilon.bmm.backend.club.data.ClubData;
-import de.tonypsilon.bmm.backend.season.data.CreateSeasonData;
+import de.tonypsilon.bmm.backend.organization.data.OrganizationCreationData;
+import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
+import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.rnr.Role;
@@ -32,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class BmmApplicationTest {
+class BmmApplicationTest {
 
     @LocalServerPort
     private Integer port;
@@ -62,31 +64,13 @@ public class BmmApplicationTest {
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "authorities"));
 
         // step 1: log in and get cookies
-        ExtractableResponse<Response> loginResponse = RestAssured
-            .given()
-                .auth().preemptive().basic(configuration.adminUsername(), configuration.adminPassword())
-            .when()
-                .get(baseUrl + "/user")
-            .then()
-                .statusCode(HttpStatus.OK.value())
-            .extract();
-
-        Map<String, String> loginCookies = createCookieMap(loginResponse.response().headers().getValues("Set-Cookie"));
-        assertThat(loginCookies).containsKey("JSESSIONID");
-        assertThat(loginCookies).containsKey("XSRF-TOKEN");
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Cookie", "JSESSIONID=" + loginCookies.get("JSESSIONID"));
-        headers.add("Cookie", "XSRF-TOKEN=" + loginCookies.get("XSRF-TOKEN"));
-        headers.add("X-XSRF-TOKEN", loginCookies.get("XSRF-TOKEN"));
+        HttpHeaders headersAdmin = login(configuration.adminUsername(), configuration.adminPassword());
 
         // step 2: create season
         Response postSeasonResponse = RestAssured
             .given()
-                .headers(headers)
-                .body(objectMapper.writeValueAsString(new CreateSeasonData("test")))
+                .headers(headersAdmin)
+                .body(objectMapper.writeValueAsString(new SeasonCreationData("test")))
             .when()
                 .post(baseUrl + "/seasons")
             .then()
@@ -94,15 +78,14 @@ public class BmmApplicationTest {
             .extract()
                 .response();
 
-        SeasonData createdSeason = postSeasonResponse.as(SeasonData.class);
-        assertThat(createdSeason.name()).isEqualTo("test");
-        assertThat(createdSeason.stage()).isEqualTo(SeasonStage.REGISTRATION);
+        SeasonData theSeason = postSeasonResponse.as(SeasonData.class);
+        assertThat(theSeason.name()).isEqualTo("test");
+        assertThat(theSeason.stage()).isEqualTo(SeasonStage.REGISTRATION);
 
         // step 3: create a new user and make it season admin for the season
-
         Response postUserResponse = RestAssured
             .given()
-                .headers(headers)
+                .headers(headersAdmin)
                 .body(objectMapper.writeValueAsString(
                         new UserData(configuration.seasonAdminUsername(),
                                 configuration.seasonAdminPassword(),
@@ -121,9 +104,9 @@ public class BmmApplicationTest {
 
         Response postSeasonAdminResponse = RestAssured
             .given()
-                .headers(headers)
+                .headers(headersAdmin)
                 .body(objectMapper.writeValueAsString(
-                        new SeasonAdminData(createdSeason.id(), seasonAdminUser.username())))
+                        new SeasonAdminData(theSeason.id(), seasonAdminUser.username())))
             .when()
                 .post(baseUrl + "/seasonadmins")
             .then()
@@ -132,41 +115,61 @@ public class BmmApplicationTest {
                 .response();
 
         SeasonAdminData seasonAdminData = postSeasonAdminResponse.as(SeasonAdminData.class);
-        assertThat(seasonAdminData.seasonId()).isEqualTo(createdSeason.id());
+        assertThat(seasonAdminData.seasonId()).isEqualTo(theSeason.id());
         assertThat(seasonAdminData.username()).isEqualTo(seasonAdminUser.username());
 
         // step 4: Create 3 clubs and a club admin for each.
-        ClubData clubOrga1 = createClub(new ClubCreationData("clubOrga1", 1, Boolean.TRUE), headers);
+        ClubData clubOrga1 = createClub(new ClubCreationData("clubOrga1", 1, Boolean.TRUE), headersAdmin);
         assertThat(clubOrga1.name()).isEqualTo("clubOrga1");
         assertThat(clubOrga1.zps()).isEqualTo(1);
         assertThat(clubOrga1.active()).isTrue();
 
-        ClubData clubOrga2 = createClub(new ClubCreationData("clubOrga2", 2, Boolean.TRUE), headers);
+        ClubData clubOrga2 = createClub(new ClubCreationData("clubOrga2", 2, Boolean.TRUE), headersAdmin);
         assertThat(clubOrga2.name()).isEqualTo("clubOrga2");
         assertThat(clubOrga2.zps()).isEqualTo(2);
         assertThat(clubOrga2.active()).isTrue();
 
-        ClubData clubSingle = createClub(new ClubCreationData("clubSingle1", 3, Boolean.TRUE), headers);
+        ClubData clubSingle = createClub(new ClubCreationData("clubSingle1", 3, Boolean.TRUE), headersAdmin);
         assertThat(clubSingle.name()).isEqualTo("clubSingle1");
         assertThat(clubSingle.zps()).isEqualTo(3);
         assertThat(clubSingle.active()).isTrue();
 
         ClubAdminData clubAdminClubOrga1 = createClubAdminForClub(
-                new ClubAdminData(clubOrga1.id(), "clubAdminClubOrga1"), headers);
+                new ClubAdminData(clubOrga1.id(), "clubAdminClubOrga1"), headersAdmin);
         assertThat(clubAdminClubOrga1.clubId()).isEqualTo(clubOrga1.id());
         assertThat(clubAdminClubOrga1.username()).isEqualTo("clubAdminClubOrga1");
 
         ClubAdminData clubAdminClubOrga2 = createClubAdminForClub(
-                new ClubAdminData(clubOrga2.id(), "clubAdminClubOrga2"), headers);
+                new ClubAdminData(clubOrga2.id(), "clubAdminClubOrga2"), headersAdmin);
         assertThat(clubAdminClubOrga2.clubId()).isEqualTo(clubOrga2.id());
         assertThat(clubAdminClubOrga2.username()).isEqualTo("clubAdminClubOrga2");
 
         ClubAdminData clubAdminSingle = createClubAdminForClub(
-                new ClubAdminData(clubSingle.id(), "clubAdminSingle"), headers);
+                new ClubAdminData(clubSingle.id(), "clubAdminSingle"), headersAdmin);
         assertThat(clubAdminSingle.clubId()).isEqualTo(clubSingle.id());
         assertThat(clubAdminSingle.username()).isEqualTo("clubAdminSingle");
 
         // step 5: Create 2 organizations for the season. One with 2 clubs, one with a single one.
+        // substeps: log in as club admin of a respective clubs and fetch headers
+        HttpHeaders headersClubAdminClubOrga1 = login("clubAdminClubOrga1", configuration.clubAdminPassword());
+        OrganizationData organizationTwoClubs = createOrganization(
+                new OrganizationCreationData(theSeason.id(),
+                        "Organization Two Clubs",
+                        Set.of(clubOrga1.id(), clubOrga2.id())),
+                headersClubAdminClubOrga1);
+        assertThat(organizationTwoClubs.seasonId()).isEqualTo(theSeason.id());
+        assertThat(organizationTwoClubs.name()).isEqualTo("Organization Two Clubs");
+        assertThat(organizationTwoClubs.clubIds()).containsExactly(clubOrga1.id(), clubOrga2.id());
+
+        HttpHeaders headersClubAdminSingleClub = login("clubAdminSingle", configuration.clubAdminPassword());
+        OrganizationData organizationSingleClub = createOrganization(
+                new OrganizationCreationData(theSeason.id(),
+                        clubSingle.name(),
+                        Set.of(clubSingle.id())),
+                headersClubAdminSingleClub);
+        assertThat(organizationSingleClub.seasonId()).isEqualTo(theSeason.id());
+        assertThat(organizationSingleClub.name()).isEqualTo(clubSingle.name());
+        assertThat(organizationSingleClub.clubIds()).containsExactly(clubSingle.id());
     }
 
     private Map<String, String> createCookieMap(List<String> cookies) {
@@ -219,5 +222,44 @@ public class BmmApplicationTest {
             .extract()
                 .response()
                 .as(ClubAdminData.class);
+    }
+
+    private OrganizationData createOrganization(OrganizationCreationData organizationCreationData,
+                                                HttpHeaders headers) throws Exception {
+        return RestAssured
+            .given()
+                .headers(headers)
+                .body(objectMapper.writeValueAsString(organizationCreationData))
+            .when()
+                .post(baseUrl + "/organizations")
+            .then()
+                .statusCode(HttpStatus.CREATED.value())
+            .extract()
+                .response()
+                .as(OrganizationData.class);
+    }
+
+    private HttpHeaders login(String username, String password) {
+        Response loginResponse = RestAssured
+                .given()
+                .auth().preemptive().basic(username, password)
+                .when()
+                .get(baseUrl + "/user")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract().response();
+
+        Map<String, String> loginCookies = createCookieMap(
+                loginResponse.headers().getValues("Set-Cookie"));
+        assertThat(loginCookies).containsKey("JSESSIONID")
+                .containsKey("XSRF-TOKEN");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Cookie", "JSESSIONID=" + loginCookies.get("JSESSIONID"));
+        headers.add("Cookie", "XSRF-TOKEN=" + loginCookies.get("XSRF-TOKEN"));
+        headers.add("X-XSRF-TOKEN", loginCookies.get("XSRF-TOKEN"));
+        return headers;
     }
 }

@@ -552,6 +552,10 @@ databaseChangeLog:
                   constraints:
                     unique: false
                     nullable: false
+        - addAutoIncrement:
+            tableName: organization
+            columnName: id
+            columnDataType: int
         - createTable:
             tableName: organizationmember
             columns:
@@ -573,6 +577,10 @@ databaseChangeLog:
                   constraints:
                     unique: false
                     nullable: false
+        - addAutoIncrement:
+            tableName: organizationmember
+            columnName: id
+            columnDataType: int
         - addForeignKeyConstraint:
             constraintName: fk_organizationmember_organization
             baseTableName: organizationmember

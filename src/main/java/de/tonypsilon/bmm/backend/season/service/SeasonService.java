@@ -36,7 +36,7 @@ public class SeasonService {
 
     @Transactional
     @NonNull
-    public SeasonData createSeason(@NonNull CreateSeasonData seasonCreationData) {
+    public SeasonData createSeason(@NonNull SeasonCreationData seasonCreationData) {
         if(seasonCreationData.name() == null || seasonCreationData.name().isBlank()) {
             throw new NameBlankException("Der Name der Saison darf nicht leer sein!");
         }

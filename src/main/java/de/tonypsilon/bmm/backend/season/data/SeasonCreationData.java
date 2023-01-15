@@ -1,4 +1,4 @@
 package de.tonypsilon.bmm.backend.season.data;
 
-public record CreateSeasonData(String name) {
+public record SeasonCreationData(String name) {
 }

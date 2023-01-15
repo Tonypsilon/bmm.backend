@@ -2,7 +2,7 @@ package de.tonypsilon.bmm.backend.season.facade;
 
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.SecurityException;
-import de.tonypsilon.bmm.backend.season.data.CreateSeasonData;
+import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.data.SeasonStageChangeData;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
@@ -47,14 +47,14 @@ public class SeasonController {
     @PostMapping(value = "/seasons",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SeasonData> createSeason(RequestEntity<CreateSeasonData> createSeasonDataRequestEntity) {
-        CreateSeasonData createSeasonData = createSeasonDataRequestEntity.getBody();
-        if (createSeasonData == null) {
+    public ResponseEntity<SeasonData> createSeason(RequestEntity<SeasonCreationData> createSeasonDataRequestEntity) {
+        SeasonCreationData seasonCreationData = createSeasonDataRequestEntity.getBody();
+        if (seasonCreationData == null) {
             throw new BadDataException("Unvollständige Daten gegeben!");
         }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(seasonService.createSeason(createSeasonData));
+                .body(seasonService.createSeason(seasonCreationData));
     }
 
     @RolesAllowed(Roles.SEASON_ADMIN)

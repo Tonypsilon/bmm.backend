@@ -3,6 +3,7 @@ package de.tonypsilon.bmm.backend.organization.data;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "organizationmember")
 public class OrganizationMember {
 
     @Id

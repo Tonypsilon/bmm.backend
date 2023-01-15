@@ -45,7 +45,7 @@ public class TeamAdminController {
         verifyUserIsClubAdminOfOrganization(principal.getName(), teamData.organizationId());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(teamAdminService.createTeamAdmin(teamAdminDataRequestEntity.getBody()));
+                .body(teamAdminService.createTeamAdmin(teamAdminData));
     }
 
     @RolesAllowed(Roles.CLUB_ADMIN)
