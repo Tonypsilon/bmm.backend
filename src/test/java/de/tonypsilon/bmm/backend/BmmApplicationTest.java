@@ -13,7 +13,6 @@ import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
 import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,7 +149,7 @@ class BmmApplicationTest {
         assertThat(clubAdminSingle.username()).isEqualTo("clubAdminSingle");
 
         // step 5: Create 2 organizations for the season. One with 2 clubs, one with a single one.
-        // substeps: log in as club admin of a respective clubs and fetch headers
+        // sub steps: log in as club admin of a respective clubs and fetch headers
         HttpHeaders headersClubAdminClubOrga1 = login("clubAdminClubOrga1", configuration.clubAdminPassword());
         OrganizationData organizationTwoClubs = createOrganization(
                 new OrganizationCreationData(theSeason.id(),
@@ -170,14 +169,20 @@ class BmmApplicationTest {
         assertThat(organizationSingleClub.seasonId()).isEqualTo(theSeason.id());
         assertThat(organizationSingleClub.name()).isEqualTo(clubSingle.name());
         assertThat(organizationSingleClub.clubIds()).containsExactly(clubSingle.id());
-    }
 
-    private Map<String, String> createCookieMap(List<String> cookies) {
-        Map<String, String> cookieMap = new HashMap<>();
-        for (String cookie : cookies) {
-            cookieMap.put(cookie.split("=")[0], cookie.split("=")[1].split(";")[0]);
-        }
-        return cookieMap;
+        // step 6: Create 2 teams of each organization.
+
+        // step 7: Move season to preparation stage.
+
+        // step 8: Create a division for the season.
+
+        // step 9: Assign all 4 teams of the 2 organizations to the division.
+
+        // step 10: Create 3 matchdays for the division and matches with the respective teams
+
+        // TODO: Referees? Playing venues?
+
+        // step 11: Move season to in progress stage.
     }
 
     private ClubData createClub(ClubCreationData clubCreationData, HttpHeaders headers) throws Exception {
@@ -261,5 +266,13 @@ class BmmApplicationTest {
         headers.add("Cookie", "XSRF-TOKEN=" + loginCookies.get("XSRF-TOKEN"));
         headers.add("X-XSRF-TOKEN", loginCookies.get("XSRF-TOKEN"));
         return headers;
+    }
+
+    private Map<String, String> createCookieMap(List<String> cookies) {
+        Map<String, String> cookieMap = new HashMap<>();
+        for (String cookie : cookies) {
+            cookieMap.put(cookie.split("=")[0], cookie.split("=")[1].split(";")[0]);
+        }
+        return cookieMap;
     }
 }
