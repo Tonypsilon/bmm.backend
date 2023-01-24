@@ -7,6 +7,7 @@ import de.tonypsilon.bmm.backend.organization.data.OrganizationCreationData;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
+import de.tonypsilon.bmm.backend.season.data.SeasonStageChangeData;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.rnr.Role;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminData;
@@ -198,6 +199,21 @@ class BmmApplicationTest {
         assertThat(organizationSingleTeam2.divisionId()).isEmpty();
 
         // step 7: Move season to preparation stage.
+        // substep: Log in as season admin and fetch headers
+        HttpHeaders seasonAdminHeaders = login(seasonAdminUser.username(), configuration.seasonAdminPassword());
+        SeasonData theSeasonInPreparation = RestAssured
+                .given()
+                .headers(seasonAdminHeaders)
+                .body(objectMapper.writeValueAsString(
+                        new SeasonStageChangeData(theSeason.name(), SeasonStage.PREPARATION)))
+                .when()
+                .patch(baseUrl + "/seasons/" + theSeason.name())
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract().response().as(SeasonData.class);
+        assertThat(theSeasonInPreparation.id()).isEqualTo(theSeason.id());
+        assertThat(theSeasonInPreparation.name()).isEqualTo(theSeason.name());
+        assertThat(theSeasonInPreparation.stage()).isEqualTo(SeasonStage.PREPARATION);
 
         // step 8: Create a division for the season.
 
