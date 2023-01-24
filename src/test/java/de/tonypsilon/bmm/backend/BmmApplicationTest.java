@@ -12,6 +12,8 @@ import de.tonypsilon.bmm.backend.security.rnr.Role;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
+import de.tonypsilon.bmm.backend.team.data.TeamCreationData;
+import de.tonypsilon.bmm.backend.team.data.TeamData;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
@@ -171,6 +173,29 @@ class BmmApplicationTest {
         assertThat(organizationSingleClub.clubIds()).containsExactly(clubSingle.id());
 
         // step 6: Create 2 teams of each organization.
+        TeamData organizationTwoClubsTeam1 = createTeam(
+                new TeamCreationData(organizationTwoClubs.id(), 1), headersClubAdminClubOrga1);
+        assertThat(organizationTwoClubsTeam1.organizationId()).isEqualTo(organizationTwoClubs.id());
+        assertThat(organizationTwoClubsTeam1.number()).isEqualTo(1);
+        assertThat(organizationTwoClubsTeam1.divisionId()).isEmpty();
+
+        TeamData organizationTwoClubsTeam2 = createTeam(
+                new TeamCreationData(organizationTwoClubs.id(), 2), headersClubAdminClubOrga1);
+        assertThat(organizationTwoClubsTeam2.organizationId()).isEqualTo(organizationTwoClubs.id());
+        assertThat(organizationTwoClubsTeam2.number()).isEqualTo(2);
+        assertThat(organizationTwoClubsTeam2.divisionId()).isEmpty();
+
+        TeamData organizationSingleTeam1 = createTeam(
+                new TeamCreationData(organizationSingleClub.id(), 1), headersClubAdminSingleClub);
+        assertThat(organizationSingleTeam1.organizationId()).isEqualTo(organizationSingleClub.id());
+        assertThat(organizationSingleTeam1.number()).isEqualTo(1);
+        assertThat(organizationSingleTeam1.divisionId()).isEmpty();
+
+        TeamData organizationSingleTeam2 = createTeam(
+                new TeamCreationData(organizationSingleClub.id(), 2), headersClubAdminSingleClub);
+        assertThat(organizationSingleTeam2.organizationId()).isEqualTo(organizationSingleClub.id());
+        assertThat(organizationSingleTeam2.number()).isEqualTo(2);
+        assertThat(organizationSingleTeam2.divisionId()).isEmpty();
 
         // step 7: Move season to preparation stage.
 
@@ -242,6 +267,20 @@ class BmmApplicationTest {
             .extract()
                 .response()
                 .as(OrganizationData.class);
+    }
+
+    private TeamData createTeam(TeamCreationData teamCreationData, HttpHeaders headers) throws Exception {
+        return RestAssured
+            .given()
+                .headers(headers)
+                .body(objectMapper.writeValueAsString(teamCreationData))
+            .when()
+                .post(baseUrl + "/teams")
+            .then()
+                .statusCode(HttpStatus.CREATED.value())
+            .extract()
+                .response()
+                .as(TeamData.class);
     }
 
     private HttpHeaders login(String username, String password) {

@@ -688,3 +688,35 @@ databaseChangeLog:
             tableName: club
             columnName: id
             columnDataType: int
+  - changeSet:
+      id: 24
+      author: Tonypsilon
+      changes:
+        - addAutoIncrement:
+            tableName: team
+            columnName: id
+            columnDataType: int
+        - addAutoIncrement:
+            tableName: teamcaptain
+            columnName: id
+            columnDataType: int
+        - addAutoIncrement:
+            tableName: participationeligibility
+            columnName: id
+            columnDataType: int
+        - addAutoIncrement:
+            tableName: matchday
+            columnName: id
+            columnDataType: int
+        - addAutoIncrement:
+            tableName: match
+            columnName: id
+            columnDataType: int
+        - addAutoIncrement:
+            tableName: participant
+            columnName: id
+            columnDataType: int
+        - addAutoIncrement:
+            tableName: game
+            columnName: id
+            columnDataType: int
