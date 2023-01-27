@@ -18,7 +18,7 @@ public class Organization {
     @Column(unique = false, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "organization")
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
     private Set<OrganizationMember> organizationMembers;
 
     @NonNull

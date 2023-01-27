@@ -720,3 +720,11 @@ databaseChangeLog:
             tableName: game
             columnName: id
             columnDataType: int
+  - changeSet:
+      id: 25
+      author: Tonypsilon
+      changes:
+        - addAutoIncrement:
+            tableName: division
+            columnName: id
+            columnDataType: int

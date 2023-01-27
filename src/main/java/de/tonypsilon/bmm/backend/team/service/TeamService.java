@@ -1,15 +1,13 @@
 package de.tonypsilon.bmm.backend.team.service;
 
+import de.tonypsilon.bmm.backend.division.service.DivisionService;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.exception.SeasonStageException;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
-import de.tonypsilon.bmm.backend.team.data.Team;
-import de.tonypsilon.bmm.backend.team.data.TeamCreationData;
-import de.tonypsilon.bmm.backend.team.data.TeamData;
-import de.tonypsilon.bmm.backend.team.data.TeamRepository;
+import de.tonypsilon.bmm.backend.team.data.*;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,13 +19,16 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final SeasonService seasonService;
+    private final DivisionService divisionService;
     private final OrganizationService organizationService;
 
     public TeamService(final TeamRepository teamRepository,
                        SeasonService seasonService,
+                       DivisionService divisionService,
                        OrganizationService organizationService) {
         this.teamRepository = teamRepository;
         this.seasonService = seasonService;
+        this.divisionService = divisionService;
         this.organizationService = organizationService;
     }
 
@@ -85,8 +86,35 @@ public class TeamService {
 
     @NonNull
     public TeamData getTeamDataById(@NonNull Long teamId) {
-        return teamToTeamData(teamRepository.findById(teamId).orElseThrow(
-                () -> new NotFoundException("Es gibt keine Mannschaft mit der ID %d".formatted(teamId))));
+        return teamToTeamData(getById(teamId));
+    }
+
+    @NonNull
+    private Team getById(@NonNull Long teamId) {
+        return teamRepository.findById(teamId).orElseThrow(
+                () -> new NotFoundException("Es gibt keine Mannschaft mit der ID %d".formatted(teamId)));
+    }
+
+    /**
+     * It is not checked if the team already is assigned to a division.
+     * @param teamDivisionAssignmentData teamId and divisionId
+     * @return teamData of the patched team
+     */
+    @NonNull
+    public TeamData assignTeamToDivision(@NonNull TeamDivisionAssignmentData teamDivisionAssignmentData) {
+        Team teamToBePatched = getById(teamDivisionAssignmentData.teamId());
+        if(seasonService.getStageOfSeason(
+                divisionService.getSeasonIdByDivisionId(teamDivisionAssignmentData.divisionId()))
+                != SeasonStage.PREPARATION) {
+            throw new SeasonStageException("Saison ist nicht in der Vorbereitungsphase!");
+        }
+        if(!divisionService.divisionExistsById(teamDivisionAssignmentData.divisionId())) {
+            throw new BadDataException("Es gibt keine Staffel mit der ID %d!"
+                    .formatted(teamDivisionAssignmentData.divisionId()));
+        }
+        teamToBePatched.setDivisionId(teamDivisionAssignmentData.divisionId());
+        teamRepository.save(teamToBePatched);
+        return getTeamDataById(teamDivisionAssignmentData.teamId());
     }
 
     private void verifyTeamNumber(TeamCreationData teamCreationData) {
@@ -113,4 +141,5 @@ public class TeamService {
                 team.getNumber(),
                 team.getDivisionId());
     }
+
 }

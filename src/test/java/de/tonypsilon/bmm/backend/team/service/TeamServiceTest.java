@@ -1,5 +1,6 @@
 package de.tonypsilon.bmm.backend.team.service;
 
+import de.tonypsilon.bmm.backend.division.service.DivisionService;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.exception.SeasonStageException;
@@ -23,6 +24,7 @@ class TeamServiceTest {
 
     private final TeamRepository teamRepository = mock(TeamRepository.class);
     private final SeasonService seasonService = mock(SeasonService.class);
+    private final DivisionService divisionService = mock(DivisionService.class);
     private final OrganizationService organizationService = mock(OrganizationService.class);
     private TeamService teamService;
     private Team team1, team2;
@@ -30,7 +32,7 @@ class TeamServiceTest {
 
     @BeforeEach
     void setUp() {
-        teamService = new TeamService(teamRepository, seasonService, organizationService);
+        teamService = new TeamService(teamRepository, seasonService, divisionService, organizationService);
         team1 = new Team();
         team1.setId(1L);
         team1.setOrganizationId(1L);

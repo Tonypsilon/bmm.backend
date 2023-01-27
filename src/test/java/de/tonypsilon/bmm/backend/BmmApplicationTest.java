@@ -3,6 +3,8 @@ package de.tonypsilon.bmm.backend;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tonypsilon.bmm.backend.club.data.ClubCreationData;
 import de.tonypsilon.bmm.backend.club.data.ClubData;
+import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
+import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationCreationData;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
@@ -15,6 +17,7 @@ import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
 import de.tonypsilon.bmm.backend.team.data.TeamCreationData;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
+import de.tonypsilon.bmm.backend.team.data.TeamDivisionAssignmentData;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
@@ -161,7 +164,7 @@ class BmmApplicationTest {
                 headersClubAdminClubOrga1);
         assertThat(organizationTwoClubs.seasonId()).isEqualTo(theSeason.id());
         assertThat(organizationTwoClubs.name()).isEqualTo("Organization Two Clubs");
-        assertThat(organizationTwoClubs.clubIds()).containsExactly(clubOrga1.id(), clubOrga2.id());
+        assertThat(organizationTwoClubs.clubIds()).containsExactlyInAnyOrder(clubOrga1.id(), clubOrga2.id());
 
         HttpHeaders headersClubAdminSingleClub = login("clubAdminSingle", configuration.clubAdminPassword());
         OrganizationData organizationSingleClub = createOrganization(
@@ -171,7 +174,7 @@ class BmmApplicationTest {
                 headersClubAdminSingleClub);
         assertThat(organizationSingleClub.seasonId()).isEqualTo(theSeason.id());
         assertThat(organizationSingleClub.name()).isEqualTo(clubSingle.name());
-        assertThat(organizationSingleClub.clubIds()).containsExactly(clubSingle.id());
+        assertThat(organizationSingleClub.clubIds()).containsExactlyInAnyOrder(clubSingle.id());
 
         // step 6: Create 2 teams of each organization.
         TeamData organizationTwoClubsTeam1 = createTeam(
@@ -202,22 +205,38 @@ class BmmApplicationTest {
         // substep: Log in as season admin and fetch headers
         HttpHeaders seasonAdminHeaders = login(seasonAdminUser.username(), configuration.seasonAdminPassword());
         SeasonData theSeasonInPreparation = RestAssured
-                .given()
+            .given()
                 .headers(seasonAdminHeaders)
                 .body(objectMapper.writeValueAsString(
                         new SeasonStageChangeData(theSeason.name(), SeasonStage.PREPARATION)))
-                .when()
+            .when()
                 .patch(baseUrl + "/seasons/" + theSeason.name())
-                .then()
+            .then()
                 .statusCode(HttpStatus.OK.value())
-                .extract().response().as(SeasonData.class);
+            .extract().response().as(SeasonData.class);
         assertThat(theSeasonInPreparation.id()).isEqualTo(theSeason.id());
         assertThat(theSeasonInPreparation.name()).isEqualTo(theSeason.name());
         assertThat(theSeasonInPreparation.stage()).isEqualTo(SeasonStage.PREPARATION);
 
         // step 8: Create a division for the season.
+        DivisionData divisionData = RestAssured
+            .given()
+                .headers(seasonAdminHeaders)
+                .body(objectMapper.writeValueAsString(new DivisionCreationData("the division", 1, 8, theSeason.id())))
+            .when()
+                .post(baseUrl + "/divisions")
+            .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract().response().as(DivisionData.class);
+        assertThat(divisionData.name()).isEqualTo("the division");
+        assertThat(divisionData.level()).isEqualTo(1);
+        assertThat(divisionData.seasonId()).isEqualTo(theSeason.id());
 
         // step 9: Assign all 4 teams of the 2 organizations to the division.
+        TeamData organizationTwoClubsTeam1Assigned =
+                assignTeamToDivision(organizationTwoClubsTeam1.id(), divisionData.id(), seasonAdminHeaders);
+        assertThat(organizationTwoClubsTeam1Assigned.id()).isEqualTo(organizationTwoClubsTeam1.id());
+        assertThat(organizationTwoClubsTeam1Assigned.divisionId()).isPresent().get().isEqualTo(divisionData.id());
 
         // step 10: Create 3 matchdays for the division and matches with the respective teams
 
@@ -297,6 +316,19 @@ class BmmApplicationTest {
             .extract()
                 .response()
                 .as(TeamData.class);
+    }
+
+    private TeamData assignTeamToDivision(Long teamId, Long divisionId, HttpHeaders headers) throws Exception {
+        return RestAssured
+            .given()
+                .headers(headers)
+                .body(new TeamDivisionAssignmentData(teamId, divisionId))
+            .when()
+                .patch(baseUrl + "/teams/" + teamId)
+            .then()
+                .statusCode(HttpStatus.OK.value())
+            .extract()
+                .response().as(TeamData.class);
     }
 
     private HttpHeaders login(String username, String password) {
