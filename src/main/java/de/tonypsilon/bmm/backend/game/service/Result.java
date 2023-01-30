@@ -7,6 +7,13 @@ public enum Result {
     WIN_FORFEIT(2),
     LOSS_FORFEIT(0);
 
+    private final Integer doubledValue;
+
     Result(Integer doubledValue) {
+        this.doubledValue = doubledValue;
+    }
+
+    public Integer getDoubledValue() {
+        return doubledValue;
     }
 }

@@ -7,7 +7,6 @@ import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdmin;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminRepository;
 import org.springframework.lang.NonNull;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,18 +77,4 @@ public class ClubAdminService {
         return new ClubAdminData(clubAdmin.getClubId(), clubAdmin.getUsername());
     }
 
-    /**
-     * Throws an AccessDeniedException in case the given user is no club admin for any of the given clubs.
-     * @param username
-     * @param clubIds
-     */
-    public void verifyUserIsClubAdminOfAnyOrganizationMember(@NonNull String username, @NonNull Set<Long> clubIds) {
-        if(clubIds.stream()
-                .map(this::getAdminsOfClub)
-                .flatMap(Set::stream)
-                .noneMatch(username::equals)) {
-            throw new AccessDeniedException("Benutzer %s ist kein Admin für einen der gegebenen Vereine!"
-                    .formatted(username));
-        }
-    }
 }

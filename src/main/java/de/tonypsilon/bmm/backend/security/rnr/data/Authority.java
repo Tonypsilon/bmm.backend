@@ -1,7 +1,6 @@
 package de.tonypsilon.bmm.backend.security.rnr.data;
 
 import de.tonypsilon.bmm.backend.security.rnr.Role;
-import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;

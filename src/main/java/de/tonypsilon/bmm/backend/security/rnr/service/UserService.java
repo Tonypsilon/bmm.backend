@@ -7,6 +7,7 @@ import de.tonypsilon.bmm.backend.security.rnr.Role;
 import de.tonypsilon.bmm.backend.security.rnr.data.*;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,7 +95,7 @@ public class UserService {
      * For now, the only restriction is that the password must have at least length 6.
      * @param password
      */
-    private void validatePassword(@NonNull String password) {
+    private void validatePassword(@Nullable String password) {
         if (password == null || password.isBlank()) {
             throw new BadDataException("Das Passwort darf nicht leer sein!");
         }

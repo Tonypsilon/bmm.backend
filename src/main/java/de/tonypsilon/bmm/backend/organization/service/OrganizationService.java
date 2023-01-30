@@ -122,6 +122,11 @@ public class OrganizationService {
                 .anyMatch(username::equals);
     }
 
+    @NonNull
+    public OrganizationData getOrganizationById(@NonNull Long organizationId) {
+        return toOrganizationData(getById(organizationId));
+    }
+
     private Organization getById(Long organizationId) {
         return organizationRepository.findById(organizationId).orElseThrow(
                 () -> new NotFoundException("Es gibt keine Organisation mit der ID %d!"

@@ -8,12 +8,11 @@ import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import javax.annotation.security.RolesAllowed;
 
-import de.tonypsilon.bmm.backend.security.rnr.service.SeasonAdminService;
+import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,14 +26,14 @@ public class DivisionController {
 
     private final DivisionService divisionService;
     private final SeasonService seasonService;
-    private final SeasonAdminService seasonAdminService;
+    private final AuthorizationService authorizationService;
 
     public DivisionController(final DivisionService divisionService,
                               final SeasonService seasonService,
-                              final SeasonAdminService seasonAdminService) {
+                              final AuthorizationService authorizationService) {
         this.divisionService = divisionService;
         this.seasonService = seasonService;
-        this.seasonAdminService = seasonAdminService;
+        this.authorizationService = authorizationService;
     }
 
     @GetMapping(value = "/divisions/{seasonName}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,9 +52,7 @@ public class DivisionController {
     public ResponseEntity<DivisionData> createDivision(RequestEntity<DivisionCreationData> divisionCreationDataRequestEntity,
                                                        Principal principal) {
         DivisionCreationData divisionCreationData = Objects.requireNonNull(divisionCreationDataRequestEntity.getBody());
-        if(!seasonAdminService.isSeasonAdmin(Objects.requireNonNull(divisionCreationData.seasonId()), principal.getName())) {
-            throw new AccessDeniedException("Der Benutzer hat nicht ausreichend Saisonadministrationsrechte!");
-        }
+        authorizationService.verifyUserIsSeasonAdminOfSeason(principal.getName(), Objects.requireNonNull(divisionCreationData.seasonId()));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(divisionService.createDivision(divisionCreationData));

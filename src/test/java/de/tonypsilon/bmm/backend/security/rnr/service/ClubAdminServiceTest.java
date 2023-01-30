@@ -6,7 +6,6 @@ import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdmin;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminRepository;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.provisioning.UserDetailsManager;

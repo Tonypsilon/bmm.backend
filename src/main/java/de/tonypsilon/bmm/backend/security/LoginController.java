@@ -24,6 +24,6 @@ public class LoginController {
 
     @GetMapping(value = "/administration/logout")
     public void logout() {
-
+        // Actual logout handled by Spring framework.
     }
 }

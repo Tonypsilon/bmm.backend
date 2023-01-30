@@ -4,7 +4,7 @@ import de.tonypsilon.bmm.backend.organization.data.OrganizationCreationData;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
-import de.tonypsilon.bmm.backend.security.rnr.service.ClubAdminService;
+import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,12 +17,12 @@ import java.util.Objects;
 public class OrganizationController {
 
     private final OrganizationService organizationService;
-    private final ClubAdminService clubAdminService;
+    private final AuthorizationService authorizationService;
 
     public OrganizationController(final OrganizationService organizationService,
-                                  final ClubAdminService clubAdminService) {
+                                  final AuthorizationService authorizationService) {
         this.organizationService = organizationService;
-        this.clubAdminService = clubAdminService;
+        this.authorizationService = authorizationService;
     }
 
     @RolesAllowed(Roles.CLUB_ADMIN)
@@ -34,8 +34,7 @@ public class OrganizationController {
             Principal principal) {
         OrganizationCreationData organizationCreationData =
                 Objects.requireNonNull(organizationCreationDataRequestEntity.getBody());
-        clubAdminService.verifyUserIsClubAdminOfAnyOrganizationMember(principal.getName(),
-                organizationCreationData.clubIds());
+        authorizationService.verifyUserIsClubAdminOfAnyClub(principal.getName(), organizationCreationData.clubIds());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(organizationService.createOrganization(organizationCreationData));
