@@ -88,6 +88,7 @@ public class SeasonService {
         return seasonRepository.existsById(seasonId);
     }
 
+    @NonNull
     public SeasonStage getStageOfSeason(Long seasonId) {
         return seasonRepository.findById(seasonId).orElseThrow(
                 () -> new NotFoundException("Saison mit ID %d existiert nicht!".formatted(seasonId))

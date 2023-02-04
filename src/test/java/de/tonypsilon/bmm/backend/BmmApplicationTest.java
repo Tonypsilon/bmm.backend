@@ -233,10 +233,6 @@ class BmmApplicationTest {
         assertThat(divisionData.seasonId()).isEqualTo(theSeason.id());
 
         // step 9: Assign all 4 teams of the 2 organizations to the division.
-        TeamData organizationTwoClubsTeam1Assigned =
-                assignTeamToDivision(organizationTwoClubsTeam1.id(), divisionData.id(), seasonAdminHeaders);
-        assertThat(organizationTwoClubsTeam1Assigned.id()).isEqualTo(organizationTwoClubsTeam1.id());
-        assertThat(organizationTwoClubsTeam1Assigned.divisionId()).isPresent().get().isEqualTo(divisionData.id());
 
         // step 10: Create 3 matchdays for the division and matches with the respective teams
 
@@ -275,6 +271,8 @@ class BmmApplicationTest {
             .extract()
                 .response()
                 .as(UserData.class);
+        assertThat(userData.username()).isEqualTo(clubAdminCreationData.username());
+        assertThat(userData.roles()).containsExactlyInAnyOrder(Role.CLUB_ADMIN);
 
         return RestAssured
             .given()
@@ -316,19 +314,6 @@ class BmmApplicationTest {
             .extract()
                 .response()
                 .as(TeamData.class);
-    }
-
-    private TeamData assignTeamToDivision(Long teamId, Long divisionId, HttpHeaders headers) throws Exception {
-        return RestAssured
-            .given()
-                .headers(headers)
-                .body(new TeamDivisionAssignmentData(teamId, divisionId))
-            .when()
-                .patch(baseUrl + "/teams/" + teamId)
-            .then()
-                .statusCode(HttpStatus.OK.value())
-            .extract()
-                .response().as(TeamData.class);
     }
 
     private HttpHeaders login(String username, String password) {

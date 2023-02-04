@@ -117,6 +117,11 @@ public class TeamService {
         return getTeamDataById(teamDivisionAssignmentData.teamId());
     }
 
+    @NonNull
+    public Long getSeasonIdByTeamId(@NonNull Long teamId) {
+        return organizationService.getSeasonIdOfOrganization(getById(teamId).getOrganizationId());
+    }
+
     private void verifyTeamNumber(TeamCreationData teamCreationData) {
         Integer maxTeamNumber = getMaxTeamNumberForTeamsOfOrganization(teamCreationData.organizationId());
         if (!teamCreationData.number().equals(maxTeamNumber+1)) {
