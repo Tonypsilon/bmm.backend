@@ -10,6 +10,7 @@ import de.tonypsilon.bmm.backend.team.data.TeamDivisionAssignment;
 import de.tonypsilon.bmm.backend.team.data.TeamDivisionAssignmentData;
 import de.tonypsilon.bmm.backend.team.data.TeamDivisionAssignmentRepository;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +65,13 @@ public class TeamDivisionAssignmentService {
         teamDivisionAssignmentRepository.save(teamDivisionAssignment);
         return teamDivisionAssignmentToDivisionAssignmentData(
                 getByKey(creationData.teamId(), creationData.divisionId()));
+    }
+
+    @Nullable
+    public Long getDivisionIdOfTeam(Long teamId) {
+        return teamDivisionAssignmentRepository.findByTeamId(teamId)
+                .map(TeamDivisionAssignment::getDivisionId)
+                .orElse(null);
     }
 
     @NonNull

@@ -1,14 +1,11 @@
 package de.tonypsilon.bmm.backend.team.facade;
 
-import de.tonypsilon.bmm.backend.division.service.DivisionService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
 import de.tonypsilon.bmm.backend.team.data.TeamCreationData;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
-import de.tonypsilon.bmm.backend.team.data.TeamDivisionAssignmentData;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 import org.springframework.http.*;
-import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -19,14 +16,11 @@ import java.util.Objects;
 public class TeamController {
 
     private final TeamService teamService;
-    private final DivisionService divisionService;
     private final AuthorizationService authorizationService;
 
     public TeamController(final TeamService teamService,
-                          final DivisionService divisionService,
                           final AuthorizationService authorizationService) {
         this.teamService = teamService;
-        this.divisionService = divisionService;
         this.authorizationService = authorizationService;
     }
 
@@ -44,17 +38,4 @@ public class TeamController {
                 .body(teamService.createTeam(teamCreationData));
     }
 
-    @RolesAllowed(Roles.SEASON_ADMIN)
-    @PatchMapping(value = "/teams/{id}")
-    public ResponseEntity<TeamData> assignTeamToDivision(
-            RequestEntity<TeamDivisionAssignmentData> teamDivisionAssignmentDataRequestEntity,
-            @NonNull @PathVariable Long id,
-            Principal principal) {
-        TeamDivisionAssignmentData teamDivisionAssignmentData =
-                Objects.requireNonNull(teamDivisionAssignmentDataRequestEntity.getBody());
-        authorizationService.verifyUserIsSeasonAdminOfSeason(principal.getName(),
-                divisionService.getSeasonIdByDivisionId(Objects.requireNonNull(teamDivisionAssignmentData.divisionId())));
-        return ResponseEntity
-                .ok(teamService.assignTeamToDivision(teamDivisionAssignmentData));
-    }
 }

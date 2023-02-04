@@ -64,7 +64,7 @@ class AuthorizationServiceTest {
         when(clubAdminService.getAdminsOfClub(1L)).thenReturn(Set.of("some user", "another user"));
         when(clubAdminService.getAdminsOfClub(2L)).thenReturn(Set.of("username", "some user"));
         when(organizationService.getOrganizationById(3L))
-                .thenReturn(new OrganizationData(3L, 1L, "organization", Set.of(1L, 2L)));
+                .thenReturn(new OrganizationData(3L, 1L, "organization", clubIds));
 
         ArgumentCaptor<Long> clubIdArgumentCaptor = ArgumentCaptor.forClass(Long.class);
         authorizationService.verifyUserIsClubAdminOfOrganization(username, 3L);
@@ -80,7 +80,7 @@ class AuthorizationServiceTest {
         when(clubAdminService.getAdminsOfClub(1L)).thenReturn(Set.of("some user", "another user"));
         when(clubAdminService.getAdminsOfClub(2L)).thenReturn(Set.of("username2", "some user"));
         when(organizationService.getOrganizationById(3L))
-                .thenReturn(new OrganizationData(3L, 1L, "organization", Set.of(1L, 2L)));
+                .thenReturn(new OrganizationData(3L, 1L, "organization", clubIds));
 
         ArgumentCaptor<Long> clubIdArgumentCaptor = ArgumentCaptor.forClass(Long.class);
         AccessDeniedException actualException = assertThrows(AccessDeniedException.class,

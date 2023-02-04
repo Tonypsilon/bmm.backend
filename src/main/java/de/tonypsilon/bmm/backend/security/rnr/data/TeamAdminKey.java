@@ -7,7 +7,12 @@ import java.util.Objects;
 
 public class TeamAdminKey implements Serializable {
 
-    private String username;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private String username;
 
     private Long teamId;
 

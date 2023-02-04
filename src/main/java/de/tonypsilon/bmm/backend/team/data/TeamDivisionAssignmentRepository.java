@@ -15,4 +15,6 @@ public interface TeamDivisionAssignmentRepository
     boolean existsByTeamId(@NonNull Long teamId);
 
     Optional<TeamDivisionAssignment> findByTeamIdAndDivisionId(@NonNull Long teamId, @NonNull Long divisionId);
+
+    Optional<TeamDivisionAssignment> findByTeamId(@NonNull Long teamId);
 }

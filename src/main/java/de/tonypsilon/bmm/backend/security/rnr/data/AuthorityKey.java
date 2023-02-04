@@ -8,7 +8,12 @@ import java.util.Objects;
 
 public class AuthorityKey implements Serializable {
 
-    private User user;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private User user;
 
     private Role authority;
 

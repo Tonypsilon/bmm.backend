@@ -5,7 +5,12 @@ import java.util.Objects;
 
 public class TeamDivisionAssignmentKey implements Serializable {
 
-    private Long teamId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private Long teamId;
 
     private Long divisionId;
 

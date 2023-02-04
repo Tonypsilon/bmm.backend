@@ -13,11 +13,14 @@ import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.referee.data.RefereeData;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
+import de.tonypsilon.bmm.backend.team.service.TeamDivisionAssignmentService;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 
 @Service
@@ -28,6 +31,7 @@ public class MatchService {
     private final TeamService teamService;
     private final RefereeService refereeService;
     private final DivisionService divisionService;
+    private final TeamDivisionAssignmentService teamDivisionAssignmentService;
     private final ValidationService validationService;
 
     public MatchService(final MatchRepository matchRepository,
@@ -35,12 +39,14 @@ public class MatchService {
                         final TeamService teamService,
                         final RefereeService refereeService,
                         final DivisionService divisionService,
+                        final TeamDivisionAssignmentService teamDivisionAssignmentService,
                         final ValidationService validationService) {
         this.matchRepository = matchRepository;
         this.matchdayService = matchdayService;
         this.teamService = teamService;
         this.refereeService = refereeService;
         this.divisionService = divisionService;
+        this.teamDivisionAssignmentService = teamDivisionAssignmentService;
         this.validationService = validationService;
     }
 
@@ -51,10 +57,15 @@ public class MatchService {
         TeamData homeTeamData = teamService.getTeamDataById(createMatchData.homeTeamId());
         TeamData awayTeamData = teamService.getTeamDataById(createMatchData.awayTeamId());
 
-        if (homeTeamData.divisionId().isEmpty()
-        || awayTeamData.divisionId().isEmpty()
-        || !homeTeamData.divisionId().get().equals(matchdayData.divisionId())
-        || !awayTeamData.divisionId().get().equals(matchdayData.divisionId())) {
+        Optional<Long> divisionIdHomeTeam =
+                Optional.ofNullable(teamDivisionAssignmentService.getDivisionIdOfTeam(homeTeamData.id()));
+        Optional<Long> divisionIdAwayTeam =
+                Optional.ofNullable(teamDivisionAssignmentService.getDivisionIdOfTeam(awayTeamData.id()));
+
+        if (divisionIdHomeTeam.isEmpty()
+        || divisionIdAwayTeam.isEmpty()
+        || divisionIdHomeTeam.get().equals(matchdayData.divisionId())
+        || divisionIdAwayTeam.get().equals(matchdayData.divisionId())) {
             throw new BadDataException("Mindestens eine der beiden Mannschaften gehört nicht zur richtigen Staffel!");
         }
 

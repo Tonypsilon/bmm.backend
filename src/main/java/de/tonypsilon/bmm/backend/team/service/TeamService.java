@@ -1,6 +1,5 @@
 package de.tonypsilon.bmm.backend.team.service;
 
-import de.tonypsilon.bmm.backend.division.service.DivisionService;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.exception.SeasonStageException;
@@ -19,16 +18,13 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final SeasonService seasonService;
-    private final DivisionService divisionService;
     private final OrganizationService organizationService;
 
     public TeamService(final TeamRepository teamRepository,
                        SeasonService seasonService,
-                       DivisionService divisionService,
                        OrganizationService organizationService) {
         this.teamRepository = teamRepository;
         this.seasonService = seasonService;
-        this.divisionService = divisionService;
         this.organizationService = organizationService;
     }
 
@@ -47,7 +43,6 @@ public class TeamService {
         Team team = new Team();
         team.setOrganizationId(teamCreationData.organizationId());
         team.setNumber(teamCreationData.number());
-        team.setDivisionId(null);
 
         teamRepository.save(team);
 
@@ -95,28 +90,6 @@ public class TeamService {
                 () -> new NotFoundException("Es gibt keine Mannschaft mit der ID %d".formatted(teamId)));
     }
 
-    /**
-     * It is not checked if the team already is assigned to a division.
-     * @param teamDivisionAssignmentData teamId and divisionId
-     * @return teamData of the patched team
-     */
-    @NonNull
-    public TeamData assignTeamToDivision(@NonNull TeamDivisionAssignmentData teamDivisionAssignmentData) {
-        Team teamToBePatched = getById(teamDivisionAssignmentData.teamId());
-        if(seasonService.getStageOfSeason(
-                divisionService.getSeasonIdByDivisionId(teamDivisionAssignmentData.divisionId()))
-                != SeasonStage.PREPARATION) {
-            throw new SeasonStageException("Saison ist nicht in der Vorbereitungsphase!");
-        }
-        if(!divisionService.divisionExistsById(teamDivisionAssignmentData.divisionId())) {
-            throw new BadDataException("Es gibt keine Staffel mit der ID %d!"
-                    .formatted(teamDivisionAssignmentData.divisionId()));
-        }
-        teamToBePatched.setDivisionId(teamDivisionAssignmentData.divisionId());
-        teamRepository.save(teamToBePatched);
-        return getTeamDataById(teamDivisionAssignmentData.teamId());
-    }
-
     @NonNull
     public Long getSeasonIdByTeamId(@NonNull Long teamId) {
         return organizationService.getSeasonIdOfOrganization(getById(teamId).getOrganizationId());
@@ -143,8 +116,7 @@ public class TeamService {
     private TeamData teamToTeamData(Team team) {
         return new TeamData(team.getId(),
                 team.getOrganizationId(),
-                team.getNumber(),
-                team.getDivisionId());
+                team.getNumber());
     }
 
 }
