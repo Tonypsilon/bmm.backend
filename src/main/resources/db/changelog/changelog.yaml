@@ -728,3 +728,30 @@ databaseChangeLog:
             tableName: division
             columnName: id
             columnDataType: int
+  - changeSet:
+      id: 26
+      author: Tonypsilon
+      changes:
+        - dropColumn:
+            tableName: team
+            columnName: division_id
+        - createTable:
+            tableName: teamdivisionassignment
+            columns:
+              - column:
+                  name: team_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: division_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: number
+                  type: int
+                  constraints:
+                    nullable: false
