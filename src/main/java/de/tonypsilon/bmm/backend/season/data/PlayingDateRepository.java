@@ -11,5 +11,7 @@ public interface PlayingDateRepository extends JpaRepository<PlayingDate, Long> 
 	
 	Optional<PlayingDate> findBySeasonIdAndNumber(Long seasonId, Integer number);
 	
+	boolean existsBySeasonIdAndNumber(Long seasonId, Integer number);
+	
 	Set<PlayingDate> findBySeasonId(Long seasonId);
 }
