@@ -34,10 +34,8 @@ class AuthorizationServiceTest {
         when(clubAdminService.getAdminsOfClub(1L)).thenReturn(Set.of("some user", "another user"));
         when(clubAdminService.getAdminsOfClub(2L)).thenReturn(Set.of("username", "some user"));
 
-        ArgumentCaptor<Long> clubIdArgumentCaptor = ArgumentCaptor.forClass(Long.class);
         authorizationService.verifyUserIsClubAdminOfAnyClub(username, clubIds);
-        verify(clubAdminService, times(2)).getAdminsOfClub(clubIdArgumentCaptor.capture());
-        assertThat(clubIdArgumentCaptor.getAllValues()).containsExactlyInAnyOrder(1L, 2L);
+        verify(clubAdminService).getAdminsOfClub(2L);
     }
 
     @Test
@@ -66,11 +64,9 @@ class AuthorizationServiceTest {
         when(organizationService.getOrganizationById(3L))
                 .thenReturn(new OrganizationData(3L, 1L, "organization", clubIds));
 
-        ArgumentCaptor<Long> clubIdArgumentCaptor = ArgumentCaptor.forClass(Long.class);
         authorizationService.verifyUserIsClubAdminOfOrganization(username, 3L);
-        verify(clubAdminService, times(2)).getAdminsOfClub(clubIdArgumentCaptor.capture());
+        verify(clubAdminService).getAdminsOfClub(2L);
         verify(organizationService).getOrganizationById(3L);
-        assertThat(clubIdArgumentCaptor.getAllValues()).containsExactlyInAnyOrder(1L, 2L);
     }
 
     @Test

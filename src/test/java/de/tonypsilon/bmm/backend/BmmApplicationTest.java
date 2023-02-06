@@ -257,11 +257,9 @@ class BmmApplicationTest {
         assertThat(team4Assignment.divisionId()).isEqualTo(divisionData.id());
         assertThat(team4Assignment.number()).isEqualTo(4);
 
-        // step 10: Create 3 matchdays for the division and matches with the respective teams
-
         // TODO: Referees? Playing venues?
 
-        // step 11: Move season to in progress stage.
+        // step 10: Move season to in progress stage. Verify that all matchdays are created properly.
     }
 
     private ClubData createClub(ClubCreationData clubCreationData, HttpHeaders headers) throws Exception {

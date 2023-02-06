@@ -755,3 +755,38 @@ databaseChangeLog:
                   type: int
                   constraints:
                     nullable: false
+  - changeSet:
+      id: 27
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: playingdate
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: season_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: number
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: date
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
+        - addAutoIncrement:
+            tableName: playingdate
+            columnName: id
+            columnDataType: int
