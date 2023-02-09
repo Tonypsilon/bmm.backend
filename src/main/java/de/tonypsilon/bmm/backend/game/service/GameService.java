@@ -32,27 +32,28 @@ public class GameService {
 
     @Transactional
     @NonNull
-    public GameData createGame(CreateGameData createGameData) {
-        MatchData matchData = matchService.getMatchById(createGameData.matchId());
-        ParticipantData homeParticipantData = participantService.getParticipantById(createGameData.homeParticipantId());
-        ParticipantData awayParticipantData = participantService.getParticipantById(createGameData.awayParticipantId());
+    public GameData createGame(GameCreationData gameCreationData) {
+        MatchData matchData = matchService.getMatchById(gameCreationData.matchId());
+        ParticipantData homeParticipantData = participantService.getParticipantById(gameCreationData.homeParticipantId());
+        ParticipantData awayParticipantData = participantService.getParticipantById(gameCreationData.awayParticipantId());
 
         verifyPlayerMatchesTeam(homeParticipantData, matchData.homeTeamId());
         verifyPlayerMatchesTeam(awayParticipantData, matchData.awayTeamId());
 
         Integer numberOfBoardsOfDivision = matchdayService.getNumberOfBoardsForMatchday(matchData.matchdayId());
-        if(createGameData.boardNumber() == null
-                || createGameData.boardNumber() < 1
-                || createGameData.boardNumber() >= numberOfBoardsOfDivision) {
-            throw new BadDataException("Die Brettnummer ist ungültig: %d".formatted(createGameData.boardNumber()));
+        if(gameCreationData.boardNumber() == null
+                || gameCreationData.boardNumber() < 1
+                || gameCreationData.boardNumber() >= numberOfBoardsOfDivision) {
+            throw new BadDataException("Die Brettnummer ist ungültig!");
         }
 
-        if(gameRepository.existsByMatchIdAndBoardNumber(createGameData.matchId(), createGameData.boardNumber())) {
+        if(gameRepository.existsByMatchIdAndBoardNumber(gameCreationData.matchId(), gameCreationData.boardNumber())) {
             throw new AlreadyExistsException(
                     "Es gibt für den Mannschaftskampf mit der ID %d bereits ein Spiel für Brett Nummer %d!"
-                            .formatted(createGameData.matchId(), createGameData.boardNumber()));
+                            .formatted(gameCreationData.matchId(), gameCreationData.boardNumber()));
         }
-        return gameToGameData(gameRepository.getByMatchIdAndBoardNumber(createGameData.matchId(), createGameData.boardNumber()));
+
+        return gameToGameData(gameRepository.getByMatchIdAndBoardNumber(gameCreationData.matchId(), gameCreationData.boardNumber()));
     }
 
     private void verifyPlayerMatchesTeam(ParticipantData participantData, Long teamId) {

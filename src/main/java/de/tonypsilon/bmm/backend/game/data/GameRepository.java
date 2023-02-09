@@ -17,5 +17,5 @@ public interface GameRepository extends JpaRepository<Game, Long> {
 
     Game getByMatchIdAndBoardNumber(Long matchId, Integer boardNumber);
 
-    Boolean existsByMatchIdAndBoardNumber(Long matchId, Integer boardNumber);
+    boolean existsByMatchIdAndBoardNumber(Long matchId, Integer boardNumber);
 }

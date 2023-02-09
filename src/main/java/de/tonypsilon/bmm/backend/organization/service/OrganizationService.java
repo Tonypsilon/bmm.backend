@@ -112,16 +112,6 @@ public class OrganizationService {
                         .formatted(organizationId)));
     }
 
-    @Transactional
-    @NonNull
-    public Boolean isClubAdminOfOrganization(@NonNull String username, @NonNull Long organizationId) {
-        return getById(organizationId).getOrganizationMembers().stream()
-                .map(OrganizationMember::getClubId)
-                .map(clubAdminService::getAdminsOfClub)
-                .flatMap(Set::stream)
-                .anyMatch(username::equals);
-    }
-
     @NonNull
     public OrganizationData getOrganizationById(@NonNull Long organizationId) {
         return toOrganizationData(getById(organizationId));
