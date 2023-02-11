@@ -87,7 +87,7 @@ class BmmApplicationTest {
         assertThat(theSeason.name()).isEqualTo("test");
         assertThat(theSeason.stage()).isEqualTo(SeasonStage.REGISTRATION);
 
-        // step 3: create a new user and make it season admin for the season
+        // step 3: create a new user and make it season admin for the season.
         Response postUserResponse = RestAssured
             .given()
                 .headers(headersAdmin)
@@ -123,7 +123,10 @@ class BmmApplicationTest {
         assertThat(seasonAdminData.seasonId()).isEqualTo(theSeason.id());
         assertThat(seasonAdminData.username()).isEqualTo(seasonAdminUser.username());
 
-        // step 4: Create 3 clubs and a club admin for each.
+        // step 4: Create a playing date for the season.
+
+
+        // step 5: Create 3 clubs and a club admin for each.
         ClubData clubOrga1 = createClub(new ClubCreationData("clubOrga1", 1, Boolean.TRUE), headersAdmin);
         assertThat(clubOrga1.name()).isEqualTo("clubOrga1");
         assertThat(clubOrga1.zps()).isEqualTo(1);
@@ -154,7 +157,7 @@ class BmmApplicationTest {
         assertThat(clubAdminSingle.clubId()).isEqualTo(clubSingle.id());
         assertThat(clubAdminSingle.username()).isEqualTo("clubAdminSingle");
 
-        // step 5: Create 2 organizations for the season. One with 2 clubs, one with a single one.
+        // step 6: Create 2 organizations for the season. One with 2 clubs, one with a single one.
         // sub steps: log in as club admin of a respective clubs and fetch headers
         HttpHeaders headersClubAdminClubOrga1 = login("clubAdminClubOrga1", configuration.clubAdminPassword());
         OrganizationData organizationTwoClubs = createOrganization(
@@ -176,7 +179,7 @@ class BmmApplicationTest {
         assertThat(organizationSingleClub.name()).isEqualTo(clubSingle.name());
         assertThat(organizationSingleClub.clubIds()).containsExactlyInAnyOrder(clubSingle.id());
 
-        // step 6: Create 2 teams of each organization.
+        // step 7: Create 2 teams of each organization.
         TeamData organizationTwoClubsTeam1 = createTeam(
                 new TeamCreationData(organizationTwoClubs.id(), 1), headersClubAdminClubOrga1);
         assertThat(organizationTwoClubsTeam1.organizationId()).isEqualTo(organizationTwoClubs.id());
@@ -197,7 +200,7 @@ class BmmApplicationTest {
         assertThat(organizationSingleTeam2.organizationId()).isEqualTo(organizationSingleClub.id());
         assertThat(organizationSingleTeam2.number()).isEqualTo(2);
 
-        // step 7: Move season to preparation stage.
+        // step 8: Move season to preparation stage.
         // substep: Log in as season admin and fetch headers
         HttpHeaders seasonAdminHeaders = login(seasonAdminUser.username(), configuration.seasonAdminPassword());
         SeasonData theSeasonInPreparation = RestAssured
@@ -214,7 +217,7 @@ class BmmApplicationTest {
         assertThat(theSeasonInPreparation.name()).isEqualTo(theSeason.name());
         assertThat(theSeasonInPreparation.stage()).isEqualTo(SeasonStage.PREPARATION);
 
-        // step 8: Create a division for the season.
+        // step 9: Create a division for the season.
         DivisionData divisionData = RestAssured
             .given()
                 .headers(seasonAdminHeaders)
@@ -228,7 +231,7 @@ class BmmApplicationTest {
         assertThat(divisionData.level()).isEqualTo(1);
         assertThat(divisionData.seasonId()).isEqualTo(theSeason.id());
 
-        // step 9: Assign all 4 teams of the 2 organizations to the division.
+        // step 10: Assign all 4 teams of the 2 organizations to the division.
         TeamDivisionAssignmentData team1Assignment = createTeamDivisionAssignment(
         		new TeamDivisionAssignmentData(organizationTwoClubsTeam1.id(), divisionData.id(), 1),
         		seasonAdminHeaders);
@@ -259,7 +262,7 @@ class BmmApplicationTest {
 
         // TODO: Referees? Playing venues?
 
-        // step 10: Move season to in progress stage. Verify that all matchdays are created properly.
+        // step 11: Move season to in progress stage. Verify that all matchdays are created properly.
     }
 
     private ClubData createClub(ClubCreationData clubCreationData, HttpHeaders headers) throws Exception {

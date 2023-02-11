@@ -790,3 +790,38 @@ databaseChangeLog:
             tableName: playingdate
             columnName: id
             columnDataType: int
+  - changeSet:
+      id: 28
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: venue
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: club_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: address
+                  type: varchar(128)
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: hints
+                  type: varchar(256)
+                  constraints:
+                    unique: false
+                    nullable: true
+        - addAutoIncrement:
+            tableName: venue
+            columnName: id
+            columnDataType: int

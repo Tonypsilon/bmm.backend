@@ -55,7 +55,7 @@ public class ClubService {
     }
 
     @NonNull
-    public Boolean clubExistsById(@NonNull Long clubId) {
+    public boolean clubExistsById(@NonNull Long clubId) {
         return clubRepository.existsById(clubId);
     }
 
