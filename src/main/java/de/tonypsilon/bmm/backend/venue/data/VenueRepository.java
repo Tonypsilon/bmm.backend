@@ -1,4 +1,4 @@
-package de.tonypsilon.bmm.backend.club.data;
+package de.tonypsilon.bmm.backend.venue.data;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

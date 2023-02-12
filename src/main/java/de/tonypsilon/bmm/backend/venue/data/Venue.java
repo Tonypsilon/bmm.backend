@@ -1,4 +1,4 @@
-package de.tonypsilon.bmm.backend.club.data;
+package de.tonypsilon.bmm.backend.venue.data;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;

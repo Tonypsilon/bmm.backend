@@ -6,27 +6,27 @@ import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.exception.SeasonStageException;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
-import de.tonypsilon.bmm.backend.team.data.TeamDivisionAssignment;
-import de.tonypsilon.bmm.backend.team.data.TeamDivisionAssignmentData;
-import de.tonypsilon.bmm.backend.team.data.TeamDivisionAssignmentRepository;
+import de.tonypsilon.bmm.backend.team.data.TeamDivisionLink;
+import de.tonypsilon.bmm.backend.team.data.TeamDivisionLinkData;
+import de.tonypsilon.bmm.backend.team.data.TeamDivisionLinkRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class TeamDivisionAssignmentService {
+public class TeamDivisionLinkService {
 
-    private final TeamDivisionAssignmentRepository teamDivisionAssignmentRepository;
+    private final TeamDivisionLinkRepository teamDivisionLinkRepository;
     private final TeamService teamService;
     private final DivisionService divisionService;
     private final SeasonService seasonService;
 
-    public TeamDivisionAssignmentService(final TeamDivisionAssignmentRepository teamDivisionAssignmentRepository,
-                                         final TeamService teamService,
-                                         final DivisionService divisionService,
-                                         final SeasonService seasonService) {
-        this.teamDivisionAssignmentRepository = teamDivisionAssignmentRepository;
+    public TeamDivisionLinkService(final TeamDivisionLinkRepository teamDivisionLinkRepository,
+                                   final TeamService teamService,
+                                   final DivisionService divisionService,
+                                   final SeasonService seasonService) {
+        this.teamDivisionLinkRepository = teamDivisionLinkRepository;
         this.teamService = teamService;
         this.divisionService = divisionService;
         this.seasonService = seasonService;
@@ -34,19 +34,19 @@ public class TeamDivisionAssignmentService {
 
     @Transactional
     @NonNull
-    public TeamDivisionAssignmentData createTeamDivisionAssignment(
-            TeamDivisionAssignmentData creationData) {
+    public TeamDivisionLinkData createTeamDivisionLink(
+            TeamDivisionLinkData creationData) {
         if (seasonService.getStageOfSeason(divisionService.getSeasonIdByDivisionId(creationData.divisionId()))
                 != SeasonStage.PREPARATION) {
             throw new SeasonStageException("Saison ist nicht in der Vorbereitungsphase!");
         }
-        if (teamDivisionAssignmentRepository.existsByDivisionIdAndNumber(
+        if (teamDivisionLinkRepository.existsByDivisionIdAndNumber(
                 creationData.divisionId(), creationData.number())) {
             throw new BadDataException(
                     "Es wurde für die Staffel %d bereits eine Mannschaft auf Platz %d gesetzt!"
                             .formatted(creationData.divisionId(), creationData.number()));
         }
-        if (teamDivisionAssignmentRepository.existsByTeamId(creationData.teamId())) {
+        if (teamDivisionLinkRepository.existsByTeamId(creationData.teamId())) {
             throw new BadDataException("Die Mannschaft %d ist bereits einer Staffel zugeordnet!"
                     .formatted(creationData.teamId()));
         }
@@ -58,35 +58,35 @@ public class TeamDivisionAssignmentService {
             throw new BadDataException("Mannschaft %d und Staffel %d gehören nicht zur gleichen Saison!"
                     .formatted(creationData.teamId(), creationData.divisionId()));
         }
-        TeamDivisionAssignment teamDivisionAssignment = new TeamDivisionAssignment();
-        teamDivisionAssignment.setTeamId(creationData.teamId());
-        teamDivisionAssignment.setDivisionId(creationData.divisionId());
-        teamDivisionAssignment.setNumber(creationData.number());
-        teamDivisionAssignmentRepository.save(teamDivisionAssignment);
-        return teamDivisionAssignmentToDivisionAssignmentData(
+        TeamDivisionLink teamDivisionLink = new TeamDivisionLink();
+        teamDivisionLink.setTeamId(creationData.teamId());
+        teamDivisionLink.setDivisionId(creationData.divisionId());
+        teamDivisionLink.setNumber(creationData.number());
+        teamDivisionLinkRepository.save(teamDivisionLink);
+        return teamDivisionLinkToTeamDivisionLinkData(
                 getByKey(creationData.teamId(), creationData.divisionId()));
     }
 
     @Nullable
     public Long getDivisionIdOfTeam(Long teamId) {
-        return teamDivisionAssignmentRepository.findByTeamId(teamId)
-                .map(TeamDivisionAssignment::getDivisionId)
+        return teamDivisionLinkRepository.findByTeamId(teamId)
+                .map(TeamDivisionLink::getDivisionId)
                 .orElse(null);
     }
 
     @NonNull
-    private TeamDivisionAssignment getByKey(Long teamId, Long divisionId) {
-        return teamDivisionAssignmentRepository.findByTeamIdAndDivisionId(teamId, divisionId)
+    private TeamDivisionLink getByKey(Long teamId, Long divisionId) {
+        return teamDivisionLinkRepository.findByTeamIdAndDivisionId(teamId, divisionId)
                 .orElseThrow(() -> new NotFoundException("Mannschaft %d ist nicht Staffel %d zugeordnet!"
                         .formatted(teamId, divisionId)));
     }
 
     @NonNull
-    private TeamDivisionAssignmentData teamDivisionAssignmentToDivisionAssignmentData(
-            @NonNull TeamDivisionAssignment teamDivisionAssignment) {
-        return new TeamDivisionAssignmentData(teamDivisionAssignment.getTeamId(),
-                teamDivisionAssignment.getDivisionId(),
-                teamDivisionAssignment.getNumber());
+    private TeamDivisionLinkData teamDivisionLinkToTeamDivisionLinkData(
+            @NonNull TeamDivisionLink teamDivisionLink) {
+        return new TeamDivisionLinkData(teamDivisionLink.getTeamId(),
+                teamDivisionLink.getDivisionId(),
+                teamDivisionLink.getNumber());
     }
 
 }

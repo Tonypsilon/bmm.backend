@@ -3,7 +3,7 @@ package de.tonypsilon.bmm.backend.team.data;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class TeamDivisionAssignmentKey implements Serializable {
+public class TeamDivisionLinkKey implements Serializable {
 
     /**
 	 * 
@@ -34,7 +34,7 @@ public class TeamDivisionAssignmentKey implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TeamDivisionAssignmentKey that = (TeamDivisionAssignmentKey) o;
+        TeamDivisionLinkKey that = (TeamDivisionLinkKey) o;
         return teamId.equals(that.teamId) && divisionId.equals(that.divisionId);
     }
 

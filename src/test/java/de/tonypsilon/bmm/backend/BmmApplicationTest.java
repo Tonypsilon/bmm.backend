@@ -17,7 +17,7 @@ import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
 import de.tonypsilon.bmm.backend.team.data.TeamCreationData;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
-import de.tonypsilon.bmm.backend.team.data.TeamDivisionAssignmentData;
+import de.tonypsilon.bmm.backend.team.data.TeamDivisionLinkData;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
@@ -232,33 +232,33 @@ class BmmApplicationTest {
         assertThat(divisionData.seasonId()).isEqualTo(theSeason.id());
 
         // step 10: Assign all 4 teams of the 2 organizations to the division.
-        TeamDivisionAssignmentData team1Assignment = createTeamDivisionAssignment(
-        		new TeamDivisionAssignmentData(organizationTwoClubsTeam1.id(), divisionData.id(), 1),
+        TeamDivisionLinkData team1Link = createTeamDivisionLink(
+        		new TeamDivisionLinkData(organizationTwoClubsTeam1.id(), divisionData.id(), 1),
         		seasonAdminHeaders);
-        assertThat(team1Assignment.teamId()).isEqualTo(organizationTwoClubsTeam1.id());
-        assertThat(team1Assignment.divisionId()).isEqualTo(divisionData.id());
-        assertThat(team1Assignment.number()).isEqualTo(1);
+        assertThat(team1Link.teamId()).isEqualTo(organizationTwoClubsTeam1.id());
+        assertThat(team1Link.divisionId()).isEqualTo(divisionData.id());
+        assertThat(team1Link.number()).isEqualTo(1);
         
-        TeamDivisionAssignmentData team2Assignment = createTeamDivisionAssignment(
-        		new TeamDivisionAssignmentData(organizationTwoClubsTeam2.id(), divisionData.id(), 2),
+        TeamDivisionLinkData team2Link = createTeamDivisionLink(
+        		new TeamDivisionLinkData(organizationTwoClubsTeam2.id(), divisionData.id(), 2),
         		seasonAdminHeaders);
-        assertThat(team2Assignment.teamId()).isEqualTo(organizationTwoClubsTeam2.id());
-        assertThat(team2Assignment.divisionId()).isEqualTo(divisionData.id());
-        assertThat(team2Assignment.number()).isEqualTo(2);
+        assertThat(team2Link.teamId()).isEqualTo(organizationTwoClubsTeam2.id());
+        assertThat(team2Link.divisionId()).isEqualTo(divisionData.id());
+        assertThat(team2Link.number()).isEqualTo(2);
         
-        TeamDivisionAssignmentData team3Assignment = createTeamDivisionAssignment(
-        		new TeamDivisionAssignmentData(organizationSingleTeam1.id(), divisionData.id(), 3),
+        TeamDivisionLinkData team3Link = createTeamDivisionLink(
+        		new TeamDivisionLinkData(organizationSingleTeam1.id(), divisionData.id(), 3),
         		seasonAdminHeaders);
-        assertThat(team3Assignment.teamId()).isEqualTo(organizationSingleTeam1.id());
-        assertThat(team3Assignment.divisionId()).isEqualTo(divisionData.id());
-        assertThat(team3Assignment.number()).isEqualTo(3);
+        assertThat(team3Link.teamId()).isEqualTo(organizationSingleTeam1.id());
+        assertThat(team3Link.divisionId()).isEqualTo(divisionData.id());
+        assertThat(team3Link.number()).isEqualTo(3);
         
-        TeamDivisionAssignmentData team4Assignment = createTeamDivisionAssignment(
-        		new TeamDivisionAssignmentData(organizationSingleTeam2.id(), divisionData.id(), 4),
+        TeamDivisionLinkData team4Link = createTeamDivisionLink(
+        		new TeamDivisionLinkData(organizationSingleTeam2.id(), divisionData.id(), 4),
         		seasonAdminHeaders);
-        assertThat(team4Assignment.teamId()).isEqualTo(organizationSingleTeam2.id());
-        assertThat(team4Assignment.divisionId()).isEqualTo(divisionData.id());
-        assertThat(team4Assignment.number()).isEqualTo(4);
+        assertThat(team4Link.teamId()).isEqualTo(organizationSingleTeam2.id());
+        assertThat(team4Link.divisionId()).isEqualTo(divisionData.id());
+        assertThat(team4Link.number()).isEqualTo(4);
 
         // TODO: Referees? Playing venues?
 
@@ -340,19 +340,19 @@ class BmmApplicationTest {
                 .as(TeamData.class);
     }
     
-    private TeamDivisionAssignmentData createTeamDivisionAssignment(
-    		TeamDivisionAssignmentData teamDivisionAssignmentData, HttpHeaders headers)  throws Exception {
+    private TeamDivisionLinkData createTeamDivisionLink(
+            TeamDivisionLinkData teamDivisionLinkData, HttpHeaders headers)  throws Exception {
     	return RestAssured
     		.given()
     			.headers(headers)
-    			.body(objectMapper.writeValueAsString(teamDivisionAssignmentData))
+    			.body(objectMapper.writeValueAsString(teamDivisionLinkData))
     		.when()
-    		    .post(baseUrl + "/teamdivisionassignments")
+    		    .post(baseUrl + "/teamdivisionlinks")
     		.then()
     		    .statusCode(HttpStatus.CREATED.value())
     		.extract()
     		    .response()
-    		    .as(TeamDivisionAssignmentData.class);
+    		    .as(TeamDivisionLinkData.class);
     }
 
     private HttpHeaders login(String username, String password) {

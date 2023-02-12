@@ -5,9 +5,9 @@ import org.springframework.lang.NonNull;
 import javax.persistence.*;
 
 @Entity
-@IdClass(TeamDivisionAssignmentKey.class)
-@Table(name = "teamdivisionassignment")
-public class TeamDivisionAssignment {
+@IdClass(TeamDivisionLinkKey.class)
+@Table(name = "teamdivisionlink")
+public class TeamDivisionLink {
 
     @Id
     @Column(name = "team_id", nullable = false)

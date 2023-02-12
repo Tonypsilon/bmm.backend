@@ -1,8 +1,10 @@
-package de.tonypsilon.bmm.backend.club.service;
+package de.tonypsilon.bmm.backend.venue.service;
 
-import de.tonypsilon.bmm.backend.club.data.*;
+import de.tonypsilon.bmm.backend.club.service.ClubService;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
+import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.venue.data.*;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +54,16 @@ public class VenueService {
 
         return venueToVenueData(
                 venueRepository.getByClubIdAndAddress(creationData.clubId(), creationData.address()));
+    }
+
+    public void verifyVenueExistsById(@NonNull Long venueId) {
+        getById(venueId);
+    }
+
+    @NonNull
+    private Venue getById(@NonNull Long venueId) {
+        return venueRepository.findById(venueId).orElseThrow(
+                () -> new NotFoundException("Es gibt keine Spielort mit ID %d!".formatted(venueId)));
     }
 
     @NonNull

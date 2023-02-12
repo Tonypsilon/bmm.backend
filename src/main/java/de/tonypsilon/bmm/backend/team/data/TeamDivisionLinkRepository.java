@@ -7,14 +7,14 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface TeamDivisionAssignmentRepository
-        extends JpaRepository<TeamDivisionAssignment, TeamDivisionAssignmentKey> {
+public interface TeamDivisionLinkRepository
+        extends JpaRepository<TeamDivisionLink, TeamDivisionLinkKey> {
 
     boolean existsByDivisionIdAndNumber(@NonNull Long divisionId, @NonNull Integer number);
 
     boolean existsByTeamId(@NonNull Long teamId);
 
-    Optional<TeamDivisionAssignment> findByTeamIdAndDivisionId(@NonNull Long teamId, @NonNull Long divisionId);
+    Optional<TeamDivisionLink> findByTeamIdAndDivisionId(@NonNull Long teamId, @NonNull Long divisionId);
 
-    Optional<TeamDivisionAssignment> findByTeamId(@NonNull Long teamId);
+    Optional<TeamDivisionLink> findByTeamId(@NonNull Long teamId);
 }

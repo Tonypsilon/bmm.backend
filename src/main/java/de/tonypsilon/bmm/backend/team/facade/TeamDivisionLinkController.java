@@ -14,41 +14,41 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
-import de.tonypsilon.bmm.backend.team.data.TeamDivisionAssignmentData;
-import de.tonypsilon.bmm.backend.team.service.TeamDivisionAssignmentService;
+import de.tonypsilon.bmm.backend.team.data.TeamDivisionLinkData;
+import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 
 @RestController
-public class TeamDivisionAssignmentController {
+public class TeamDivisionLinkController {
 	
-	private final TeamDivisionAssignmentService teamDivisionAssignmentService;
+	private final TeamDivisionLinkService teamDivisionLinkService;
 	private final AuthorizationService authorizationService;
 	private final TeamService teamService;
 	
-	public TeamDivisionAssignmentController(
-			final TeamDivisionAssignmentService teamDivisionAssignmentService,
+	public TeamDivisionLinkController(
+			final TeamDivisionLinkService teamDivisionLinkService,
 			final AuthorizationService authorizationService,
 			final TeamService teamService) {
-		this.teamDivisionAssignmentService = teamDivisionAssignmentService;
+		this.teamDivisionLinkService = teamDivisionLinkService;
 		this.authorizationService = authorizationService;
 		this.teamService = teamService;
 	}
 	
 	@RolesAllowed(Roles.SEASON_ADMIN)
-	@PostMapping(value = "/teamdivisionassignments", 
+	@PostMapping(value = "/teamdivisionlinks",
 	        consumes = MediaType.APPLICATION_JSON_VALUE,
 	        produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<TeamDivisionAssignmentData> createTeamDivisionAssignment(
-			RequestEntity<TeamDivisionAssignmentData> teamDivisionAssignmentDataRequestEntity,
+	public ResponseEntity<TeamDivisionLinkData> createTeamDivisionLink(
+			RequestEntity<TeamDivisionLinkData> teamDivisionLinkDataRequestEntity,
 			Principal principal) {
-		TeamDivisionAssignmentData teamDivisionAssignmentData =
-				Objects.requireNonNull(teamDivisionAssignmentDataRequestEntity).getBody();
-		Objects.requireNonNull(teamDivisionAssignmentData);
+		TeamDivisionLinkData teamDivisionLinkData =
+				Objects.requireNonNull(teamDivisionLinkDataRequestEntity).getBody();
+		Objects.requireNonNull(teamDivisionLinkData);
 		authorizationService.verifyUserIsSeasonAdminOfSeason(principal.getName(),
-				teamService.getSeasonIdByTeamId(Objects.requireNonNull(teamDivisionAssignmentData.teamId())));
+				teamService.getSeasonIdByTeamId(Objects.requireNonNull(teamDivisionLinkData.teamId())));
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
-				.body(teamDivisionAssignmentService.createTeamDivisionAssignment(teamDivisionAssignmentData));
+				.body(teamDivisionLinkService.createTeamDivisionLink(teamDivisionLinkData));
 	}
 	
 

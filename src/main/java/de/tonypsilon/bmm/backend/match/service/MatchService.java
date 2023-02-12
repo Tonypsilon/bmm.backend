@@ -13,7 +13,7 @@ import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.referee.data.RefereeData;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
-import de.tonypsilon.bmm.backend.team.service.TeamDivisionAssignmentService;
+import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.springframework.lang.NonNull;
@@ -31,7 +31,7 @@ public class MatchService {
     private final TeamService teamService;
     private final RefereeService refereeService;
     private final DivisionService divisionService;
-    private final TeamDivisionAssignmentService teamDivisionAssignmentService;
+    private final TeamDivisionLinkService teamDivisionLinkService;
     private final ValidationService validationService;
 
     public MatchService(final MatchRepository matchRepository,
@@ -39,14 +39,14 @@ public class MatchService {
                         final TeamService teamService,
                         final RefereeService refereeService,
                         final DivisionService divisionService,
-                        final TeamDivisionAssignmentService teamDivisionAssignmentService,
+                        final TeamDivisionLinkService teamDivisionLinkService,
                         final ValidationService validationService) {
         this.matchRepository = matchRepository;
         this.matchdayService = matchdayService;
         this.teamService = teamService;
         this.refereeService = refereeService;
         this.divisionService = divisionService;
-        this.teamDivisionAssignmentService = teamDivisionAssignmentService;
+        this.teamDivisionLinkService = teamDivisionLinkService;
         this.validationService = validationService;
     }
 
@@ -58,9 +58,9 @@ public class MatchService {
         TeamData awayTeamData = teamService.getTeamDataById(createMatchData.awayTeamId());
 
         Optional<Long> divisionIdHomeTeam =
-                Optional.ofNullable(teamDivisionAssignmentService.getDivisionIdOfTeam(homeTeamData.id()));
+                Optional.ofNullable(teamDivisionLinkService.getDivisionIdOfTeam(homeTeamData.id()));
         Optional<Long> divisionIdAwayTeam =
-                Optional.ofNullable(teamDivisionAssignmentService.getDivisionIdOfTeam(awayTeamData.id()));
+                Optional.ofNullable(teamDivisionLinkService.getDivisionIdOfTeam(awayTeamData.id()));
 
         if (divisionIdHomeTeam.isEmpty()
         || divisionIdAwayTeam.isEmpty()

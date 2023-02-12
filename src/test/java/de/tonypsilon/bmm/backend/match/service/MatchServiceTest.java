@@ -13,7 +13,7 @@ import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.referee.data.RefereeData;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
-import de.tonypsilon.bmm.backend.team.service.TeamDivisionAssignmentService;
+import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,8 +33,8 @@ class MatchServiceTest {
     private final TeamService teamService = mock(TeamService.class);
     private final RefereeService refereeService = mock(RefereeService.class);
     private final DivisionService divisionService = mock(DivisionService.class);
-    private final TeamDivisionAssignmentService teamDivisionAssignmentService = 
-    		mock(TeamDivisionAssignmentService.class);
+    private final TeamDivisionLinkService teamDivisionLinkService =
+    		mock(TeamDivisionLinkService.class);
     private final ValidationService validationService = new ValidationService();
     private final MatchData matchData1 = new MatchData(1L, 1L, 1L, 2L, Optional.of("1.1.2001"),
             2, 0, Optional.empty(), Optional.empty(), Optional.of(1L), Boolean.TRUE);
@@ -48,7 +48,7 @@ class MatchServiceTest {
                 teamService,
                 refereeService,
                 divisionService,
-                teamDivisionAssignmentService,
+                teamDivisionLinkService,
                 validationService);
         match1 = new Match();
         match1.setId(1L);
@@ -107,8 +107,8 @@ class MatchServiceTest {
         when(matchdayService.getMatchdayDataById(1L)).thenReturn(matchdayData);
         when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 1L, 1));
         when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(2L, 2L, 2));
-        when(teamDivisionAssignmentService.getDivisionIdOfTeam(1L)).thenReturn(2L);
-        when(teamDivisionAssignmentService.getDivisionIdOfTeam(2L)).thenReturn(5L);
+        when(teamDivisionLinkService.getDivisionIdOfTeam(1L)).thenReturn(2L);
+        when(teamDivisionLinkService.getDivisionIdOfTeam(2L)).thenReturn(5L);
         CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L,
                 Optional.empty(), Optional.empty());
         BadDataException actualException = assertThrows(BadDataException.class,

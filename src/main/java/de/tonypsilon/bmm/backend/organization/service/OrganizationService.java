@@ -105,11 +105,12 @@ public class OrganizationService {
 
     @Transactional
     @NonNull
-    public Long getSeasonIdOfOrganization(Long organizationId) {
-        return organizationRepository.findById(organizationId)
-                .map(Organization::getSeasonId)
-                .orElseThrow(() -> new NotFoundException("Es gibt keine Organisation mit der ID %s!"
-                        .formatted(organizationId)));
+    public Long getSeasonIdOfOrganization(@NonNull Long organizationId) {
+        return getById(organizationId).getSeasonId();
+    }
+
+    public void verifyOrganizationExistsById(@NonNull Long organizationId) {
+        getById(organizationId);
     }
 
     @NonNull

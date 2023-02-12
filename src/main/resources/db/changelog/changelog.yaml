@@ -825,3 +825,25 @@ databaseChangeLog:
             tableName: venue
             columnName: id
             columnDataType: int
+  - changeSet:
+      id: 29
+      author: Tonypsilon
+      changes:
+        - renameTable:
+            newTableName: teamdivisionlink
+            oldTableName: teamdivisionassignment
+        - createTable:
+            tableName: venueorganizationlink
+            columns:
+              - column:
+                  name: venue_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: organization_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
