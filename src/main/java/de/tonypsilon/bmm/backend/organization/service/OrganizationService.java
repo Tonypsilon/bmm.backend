@@ -74,12 +74,7 @@ public class OrganizationService {
 
     // checks if clubs exist and also ensures they are not yet part of another organization for that season.
     private void validateClubIds(Collection<Long> clubIds, Long seasonId) {
-        clubIds.stream()
-                .filter(not(clubService::clubExistsById))
-                .findFirst()
-                .ifPresent(id -> {
-                    throw new NotFoundException("Es gibt keinen Verein mit der ID %d!".formatted(id));
-                });
+        clubIds.stream().forEach(clubService::verifyClubExistsById);
         Set<Long> organizationIdsOfCurrentSeason = organizationRepository.findBySeasonId(seasonId)
                 .stream()
                 .map(Organization::getId)

@@ -59,6 +59,10 @@ public class ClubService {
         return clubRepository.existsById(clubId);
     }
 
+    public void verifyClubExistsById(@NonNull Long clubId) {
+        getById(clubId);
+    }
+
     @Transactional
     public void deleteClub(@NonNull Long clubId) {
         clubRepository.delete(getById(clubId));

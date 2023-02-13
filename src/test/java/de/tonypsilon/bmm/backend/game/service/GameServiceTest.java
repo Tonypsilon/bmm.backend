@@ -36,7 +36,7 @@ class GameServiceTest {
             Optional.of(Result.WIN),Optional.empty(),
             Optional.of(Result.LOSS),Optional.empty());
     private final MatchData matchData = new MatchData(matchId, 5L, homeTeamId, awayTeamId, Optional.empty(),
-            5, 3, Optional.empty(), Optional.empty(), Optional.empty(), Boolean.TRUE);
+            5, 3, Optional.empty(), Optional.empty(), Optional.empty(), Boolean.TRUE, null);
     private Game game;
 
     @BeforeEach

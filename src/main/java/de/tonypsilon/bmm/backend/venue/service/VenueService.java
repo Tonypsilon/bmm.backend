@@ -27,10 +27,7 @@ public class VenueService {
         if(creationData.clubId() == null) {
             throw new BadDataException("Es muss ein Verein gegeben sein!");
         }
-        if(!clubService.clubExistsById(creationData.clubId())) {
-            throw new BadDataException("Es gibt keinen Verein mit der ID %d!"
-                    .formatted(creationData.clubId()));
-        }
+        clubService.verifyClubExistsById(creationData.clubId());
         if(creationData.address() == null || creationData.address().isBlank()) {
             throw new BadDataException("Es muss eine Adresse gegeben sein!");
         }
@@ -63,7 +60,7 @@ public class VenueService {
     @NonNull
     private Venue getById(@NonNull Long venueId) {
         return venueRepository.findById(venueId).orElseThrow(
-                () -> new NotFoundException("Es gibt keine Spielort mit ID %d!".formatted(venueId)));
+                () -> new NotFoundException("Es gibt keinen Spielort mit ID %d!".formatted(venueId)));
     }
 
     @NonNull

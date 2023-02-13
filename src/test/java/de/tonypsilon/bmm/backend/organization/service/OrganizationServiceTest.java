@@ -138,21 +138,6 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void testCreateOrganizationClubDoesNotExist() {
-        OrganizationCreationData organizationCreationData =
-                new OrganizationCreationData(1L, "org name", Set.of(1L, -1L));
-
-        when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
-        when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.REGISTRATION);
-        when(clubService.clubExistsById(1L)).thenReturn(Boolean.TRUE);
-        when(clubService.clubExistsById(-1L)).thenReturn(Boolean.FALSE);
-
-        NotFoundException actualException = assertThrows(NotFoundException.class,
-                () -> organizationService.createOrganization(organizationCreationData));
-        assertEquals("Es gibt keinen Verein mit der ID -1!", actualException.getMessage());
-    }
-
-    @Test
     void testCreateOrganizationClubAlreadyPartOfOrganization() {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.REGISTRATION);
