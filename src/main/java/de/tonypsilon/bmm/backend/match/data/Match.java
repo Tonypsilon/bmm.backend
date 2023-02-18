@@ -34,6 +34,9 @@ public class Match {
     @Column(unique = false, nullable = false)
     private Boolean editable;
 
+    @Column
+    private Long venueId;
+
     /**
      * Note: To avoid strange round off behaviour for half points, points are stored
      * at the doubled amount to guarantee that they are integers.
@@ -148,5 +151,14 @@ public class Match {
 
     public void setEditable(@NonNull Boolean editable) {
         this.editable = editable;
+    }
+
+    @NonNull
+    public Optional<Long> getVenueId() {
+        return Optional.ofNullable(venueId);
+    }
+
+    public void setVenueId(@Nullable Long venueId) {
+        this.venueId = venueId;
     }
 }

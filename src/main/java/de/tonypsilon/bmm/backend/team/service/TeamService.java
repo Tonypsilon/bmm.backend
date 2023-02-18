@@ -7,6 +7,7 @@ import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.team.data.*;
+import de.tonypsilon.bmm.backend.venue.service.VenueService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,13 +20,16 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final SeasonService seasonService;
     private final OrganizationService organizationService;
+    private final VenueService venueService;
 
     public TeamService(final TeamRepository teamRepository,
-                       SeasonService seasonService,
-                       OrganizationService organizationService) {
+                       final SeasonService seasonService,
+                       final OrganizationService organizationService,
+                       final VenueService venueService) {
         this.teamRepository = teamRepository;
         this.seasonService = seasonService;
         this.organizationService = organizationService;
+        this.venueService = venueService;
     }
 
     @Transactional
@@ -36,6 +40,11 @@ public class TeamService {
                 organizationService.getSeasonIdOfOrganization(teamCreationData.organizationId()))
                 .equals(SeasonStage.REGISTRATION)) {
             throw new SeasonStageException("Saison ist nicht in der Registrierungsphase!");
+        }
+
+        if(!organizationService.getOrganizationById(teamCreationData.organizationId()).clubIds()
+                .contains(venueService.getClubIdByVenueId(teamCreationData.venueId()))) {
+            throw new BadDataException("Das Spiellokal gehört zu keinem Verein der Organisation!");
         }
 
         verifyTeamNumber(teamCreationData);
@@ -116,7 +125,8 @@ public class TeamService {
     private TeamData teamToTeamData(Team team) {
         return new TeamData(team.getId(),
                 team.getOrganizationId(),
-                team.getNumber());
+                team.getNumber(),
+                team.getVenueId());
     }
 
 }

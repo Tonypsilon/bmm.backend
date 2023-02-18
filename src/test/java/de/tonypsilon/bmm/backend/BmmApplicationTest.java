@@ -179,24 +179,27 @@ class BmmApplicationTest {
         assertThat(organizationSingleClub.name()).isEqualTo(clubSingle.name());
         assertThat(organizationSingleClub.clubIds()).containsExactlyInAnyOrder(clubSingle.id());
 
+        // step 7a: create playing venues
+
+
         // step 7: Create 2 teams of each organization.
         TeamData organizationTwoClubsTeam1 = createTeam(
-                new TeamCreationData(organizationTwoClubs.id(), 1), headersClubAdminClubOrga1);
+                new TeamCreationData(organizationTwoClubs.id(), 1, 1L), headersClubAdminClubOrga1);
         assertThat(organizationTwoClubsTeam1.organizationId()).isEqualTo(organizationTwoClubs.id());
         assertThat(organizationTwoClubsTeam1.number()).isEqualTo(1);
 
         TeamData organizationTwoClubsTeam2 = createTeam(
-                new TeamCreationData(organizationTwoClubs.id(), 2), headersClubAdminClubOrga1);
+                new TeamCreationData(organizationTwoClubs.id(), 2, 1L), headersClubAdminClubOrga1);
         assertThat(organizationTwoClubsTeam2.organizationId()).isEqualTo(organizationTwoClubs.id());
         assertThat(organizationTwoClubsTeam2.number()).isEqualTo(2);
 
         TeamData organizationSingleTeam1 = createTeam(
-                new TeamCreationData(organizationSingleClub.id(), 1), headersClubAdminSingleClub);
+                new TeamCreationData(organizationSingleClub.id(), 1, 2L), headersClubAdminSingleClub);
         assertThat(organizationSingleTeam1.organizationId()).isEqualTo(organizationSingleClub.id());
         assertThat(organizationSingleTeam1.number()).isEqualTo(1);
 
         TeamData organizationSingleTeam2 = createTeam(
-                new TeamCreationData(organizationSingleClub.id(), 2), headersClubAdminSingleClub);
+                new TeamCreationData(organizationSingleClub.id(), 2, 2L), headersClubAdminSingleClub);
         assertThat(organizationSingleTeam2.organizationId()).isEqualTo(organizationSingleClub.id());
         assertThat(organizationSingleTeam2.number()).isEqualTo(2);
 

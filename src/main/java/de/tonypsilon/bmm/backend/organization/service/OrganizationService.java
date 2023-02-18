@@ -104,10 +104,6 @@ public class OrganizationService {
         return getById(organizationId).getSeasonId();
     }
 
-    public void verifyOrganizationExistsById(@NonNull Long organizationId) {
-        getById(organizationId);
-    }
-
     @NonNull
     public OrganizationData getOrganizationById(@NonNull Long organizationId) {
         return toOrganizationData(getById(organizationId));

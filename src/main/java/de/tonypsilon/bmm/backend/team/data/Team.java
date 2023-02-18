@@ -16,6 +16,9 @@ public class Team {
     @Column(unique = false, nullable = false)
     private Integer number;
 
+    @Column(nullable = false)
+    private Long venueId;
+
     @NonNull
     public Long getId() {
         return id;
@@ -43,4 +46,12 @@ public class Team {
         this.number = number;
     }
 
+    @NonNull
+    public Long getVenueId() {
+        return venueId;
+    }
+
+    public void setVenueId(@NonNull Long venueId) {
+        this.venueId = venueId;
+    }
 }

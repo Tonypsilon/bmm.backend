@@ -3,6 +3,7 @@ package de.tonypsilon.bmm.backend.team.service;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.exception.SeasonStageException;
+import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
@@ -10,11 +11,13 @@ import de.tonypsilon.bmm.backend.team.data.Team;
 import de.tonypsilon.bmm.backend.team.data.TeamCreationData;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.data.TeamRepository;
+import de.tonypsilon.bmm.backend.venue.service.VenueService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -24,13 +27,14 @@ class TeamServiceTest {
     private final TeamRepository teamRepository = mock(TeamRepository.class);
     private final SeasonService seasonService = mock(SeasonService.class);
     private final OrganizationService organizationService = mock(OrganizationService.class);
+    private final VenueService venueService = mock(VenueService.class);
     private TeamService teamService;
     private Team team1, team2;
-    private final TeamData team2Data = new TeamData(2L, 1L, 2);
+    private final TeamData team2Data = new TeamData(2L, 1L, 2, 1L);
 
     @BeforeEach
     void setUp() {
-        teamService = new TeamService(teamRepository, seasonService, organizationService);
+        teamService = new TeamService(teamRepository, seasonService, organizationService, venueService);
         team1 = new Team();
         team1.setId(1L);
         team1.setOrganizationId(1L);
@@ -39,6 +43,7 @@ class TeamServiceTest {
         team2.setId(2L);
         team2.setOrganizationId(1L);
         team2.setNumber(2);
+        team2.setVenueId(1L);
     }
 
     @Test
@@ -48,8 +53,10 @@ class TeamServiceTest {
         when(organizationService.getSeasonIdOfOrganization(1L)).thenReturn(1L);
         when(teamRepository.findByOrganizationId(1L)).thenReturn(List.of(team1));
         when(teamRepository.getByOrganizationIdAndNumber(1L, 2)).thenReturn(team2);
+        when(organizationService.getOrganizationById(1L)).thenReturn(new OrganizationData(1L, 1L, "org", Set.of(2L)));
+        when(venueService.getClubIdByVenueId(1L)).thenReturn(2L);
 
-        TeamData actual = teamService.createTeam(new TeamCreationData(1L, 2));
+        TeamData actual = teamService.createTeam(new TeamCreationData(1L, 2, 1L));
         assertEquals(actual, team2Data);
         verify(teamRepository, times(1)).save(
                 argThat(team -> team.getOrganizationId().equals(1L)
@@ -62,7 +69,7 @@ class TeamServiceTest {
         when(organizationService.getSeasonIdOfOrganization(-1L))
                 .thenThrow(new NotFoundException("Es gibt keine Organisation mit der ID -1!"));
         NotFoundException actualException = assertThrows(NotFoundException.class,
-                () -> teamService.createTeam(new TeamCreationData(-1L, 1)));
+                () -> teamService.createTeam(new TeamCreationData(-1L, 1, 1L)));
         assertEquals("Es gibt keine Organisation mit der ID -1!", actualException.getMessage());
     }
 
@@ -71,7 +78,7 @@ class TeamServiceTest {
         when(organizationService.getSeasonIdOfOrganization(1L)).thenReturn(1L);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.RUNNING);
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
-                () -> teamService.createTeam(new TeamCreationData(1L, 1)));
+                () -> teamService.createTeam(new TeamCreationData(1L, 1, 1L)));
         assertEquals("Saison ist nicht in der Registrierungsphase!", actualException.getMessage());
     }
 
@@ -81,9 +88,11 @@ class TeamServiceTest {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.REGISTRATION);
         when(teamRepository.findByOrganizationId(1L)).thenReturn(List.of(team1));
+        when(organizationService.getOrganizationById(1L)).thenReturn(new OrganizationData(1L, 1L, "org", Set.of(2L)));
+        when(venueService.getClubIdByVenueId(1L)).thenReturn(2L);
 
         BadDataException actualException = assertThrows(BadDataException.class,
-                () -> teamService.createTeam(new TeamCreationData(1L, 3)));
+                () -> teamService.createTeam(new TeamCreationData(1L, 3, 1L)));
         assertEquals("Das neue Team hat nicht die passende Teamnummer. Erwartet: 2. Tatsächlich: 3.",
                 actualException.getMessage());
     }

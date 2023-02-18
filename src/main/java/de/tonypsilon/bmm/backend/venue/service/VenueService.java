@@ -58,6 +58,11 @@ public class VenueService {
     }
 
     @NonNull
+    public Long getClubIdByVenueId(@NonNull Long venueId) {
+        return getById(venueId).getClubId();
+    }
+
+    @NonNull
     private Venue getById(@NonNull Long venueId) {
         return venueRepository.findById(venueId).orElseThrow(
                 () -> new NotFoundException("Es gibt keinen Spielort mit ID %d!".formatted(venueId)));

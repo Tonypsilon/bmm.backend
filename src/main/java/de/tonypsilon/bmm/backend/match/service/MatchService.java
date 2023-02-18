@@ -118,7 +118,7 @@ public class MatchService {
                 match.getOverruledAwayBoardHalfPoints(),
                 match.getRefereeId(),
                 match.getEditable(),
-                null);
+                match.getVenueId());
     }
 
     private void verifyRefereeId(@NonNull Long refereeId, @NonNull Long seasonId) {
