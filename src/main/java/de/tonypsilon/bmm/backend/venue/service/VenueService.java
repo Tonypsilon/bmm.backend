@@ -9,6 +9,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class VenueService {
 
@@ -34,7 +36,7 @@ public class VenueService {
         if(creationData.address().length() > 128) {
             throw new BadDataException("Die Adresse darf höchstens 128 Zeichen lang sein!");
         }
-        creationData.hints().ifPresent(hints -> {
+        Optional.ofNullable(creationData.hints()).ifPresent(hints -> {
             if (hints.length() > 256) {
                 throw new BadDataException("Die Adresshinweise dürfen höchstens 256 Zeichen lang sein!");
             }
@@ -46,7 +48,7 @@ public class VenueService {
         Venue venue = new Venue();
         venue.setClubId(creationData.clubId());
         venue.setAddress(creationData.address());
-        creationData.hints().ifPresent(venue::setHints);
+        Optional.ofNullable(creationData.hints()).ifPresent(venue::setHints);
         venueRepository.save(venue);
 
         return venueToVenueData(

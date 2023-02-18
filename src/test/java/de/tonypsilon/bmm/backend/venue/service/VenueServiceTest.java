@@ -37,7 +37,7 @@ class VenueServiceTest {
 
     @Test
     void testCreateVenueClubNull() {
-        VenueCreationData creationData = new VenueCreationData(null, "address", Optional.empty());
+        VenueCreationData creationData = new VenueCreationData(null, "address", null);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> venueService.createVenue(creationData));
     }
@@ -45,7 +45,7 @@ class VenueServiceTest {
     @ParameterizedTest
     @NullAndEmptySource
     void testCreateVenueAddressMissing(String address) {
-        VenueCreationData creationData = new VenueCreationData(1L, address, Optional.empty());
+        VenueCreationData creationData = new VenueCreationData(1L, address, null);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> venueService.createVenue(creationData));
         assertThat(actualException).hasMessage("Es muss eine Adresse gegeben sein!");
@@ -53,7 +53,7 @@ class VenueServiceTest {
 
     @Test
     void testCreateVenueTooLongAddress() {
-        VenueCreationData creationData = new VenueCreationData(1L, stringOfLength128+"x", Optional.empty());
+        VenueCreationData creationData = new VenueCreationData(1L, stringOfLength128+"x", null);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> venueService.createVenue(creationData));
         assertThat(actualException).hasMessage("Die Adresse darf höchstens 128 Zeichen lang sein!");
@@ -62,7 +62,7 @@ class VenueServiceTest {
     @Test
     void testCreateVenueTooLongHints() {
         VenueCreationData creationData = new VenueCreationData(1L, "address",
-                Optional.of(stringOfLength128 + stringOfLength128 + "x"));
+                stringOfLength128 + stringOfLength128 + "x");
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> venueService.createVenue(creationData));
         assertThat(actualException).hasMessage("Die Adresshinweise dürfen höchstens 256 Zeichen lang sein!");
@@ -70,7 +70,7 @@ class VenueServiceTest {
 
     @Test
     void testCreateVenueAlreadyExists() {
-        VenueCreationData creationData = new VenueCreationData(1L, "address", Optional.empty());
+        VenueCreationData creationData = new VenueCreationData(1L, "address", null);
         when(venueRepository.existsByClubIdAndAddress(1L, "address")).thenReturn(Boolean.TRUE);
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> venueService.createVenue(creationData));
@@ -80,7 +80,7 @@ class VenueServiceTest {
 
     @Test
     void testCreateVenueOk() {
-        VenueCreationData creationData = new VenueCreationData(1L, "address", Optional.of("hints"));
+        VenueCreationData creationData = new VenueCreationData(1L, "address", "hints");
         when(venueRepository.existsByClubIdAndAddress(1L, "address")).thenReturn(Boolean.FALSE);
         when(venueRepository.getByClubIdAndAddress(1L, "address")).thenReturn(venue);
         VenueData actual = venueService.createVenue(creationData);

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -80,6 +81,22 @@ class TeamServiceTest {
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> teamService.createTeam(new TeamCreationData(1L, 1, 1L)));
         assertEquals("Saison ist nicht in der Registrierungsphase!", actualException.getMessage());
+    }
+
+    @Test
+    void testCreateTeamWrongPlayingVenue() {
+        when(organizationService.getSeasonIdOfOrganization(1L)).thenReturn(1L);
+        when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
+        when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.REGISTRATION);
+        when(teamRepository.findByOrganizationId(1L)).thenReturn(List.of(team1));
+        when(organizationService.getOrganizationById(1L)).thenReturn(new OrganizationData(1L, 1L, "org", Set.of(5L)));
+
+        TeamCreationData creationData = new TeamCreationData(1L, 3, 1L);
+
+        BadDataException actualException = assertThrows(BadDataException.class,
+                () -> teamService.createTeam(creationData));
+
+        assertThat(actualException).hasMessage("Das Spiellokal gehört zu keinem Verein der Organisation!");
     }
 
     @Test

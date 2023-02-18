@@ -7,9 +7,7 @@ import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
 import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationCreationData;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
-import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
-import de.tonypsilon.bmm.backend.season.data.SeasonData;
-import de.tonypsilon.bmm.backend.season.data.SeasonStageChangeData;
+import de.tonypsilon.bmm.backend.season.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.rnr.Role;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminData;
@@ -18,6 +16,8 @@ import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
 import de.tonypsilon.bmm.backend.team.data.TeamCreationData;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.data.TeamDivisionLinkData;
+import de.tonypsilon.bmm.backend.venue.data.VenueCreationData;
+import de.tonypsilon.bmm.backend.venue.data.VenueData;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
@@ -35,6 +35,7 @@ import javax.sql.DataSource;
 
 import java.util.*;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -124,7 +125,23 @@ class BmmApplicationTest {
         assertThat(seasonAdminData.username()).isEqualTo(seasonAdminUser.username());
 
         // step 4: Create a playing date for the season.
-
+        // substep: Log in as season admin and fetch headers
+        HttpHeaders seasonAdminHeaders = login(seasonAdminUser.username(), configuration.seasonAdminPassword());
+        PlayingDateData playingDateData = RestAssured
+                .given()
+                .headers(seasonAdminHeaders)
+                .body(objectMapper.writeValueAsString(
+                        new PlayingDateCreationData(theSeason.id(), 1, "1.1.2024")))
+                .when()
+                .post(baseUrl + "/playingdates")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .response()
+                .as(PlayingDateData.class);
+        assertThat(playingDateData.seasonId()).isEqualTo(theSeason.id());
+        assertThat(playingDateData.number()).isEqualTo(1);
+        assertThat(playingDateData.date()).isEqualTo("1.1.2024");
 
         // step 5: Create 3 clubs and a club admin for each.
         ClubData clubOrga1 = createClub(new ClubCreationData("clubOrga1", 1, Boolean.TRUE), headersAdmin);
@@ -180,32 +197,60 @@ class BmmApplicationTest {
         assertThat(organizationSingleClub.clubIds()).containsExactlyInAnyOrder(clubSingle.id());
 
         // step 7a: create playing venues
+        VenueData venueClubOrga1 = RestAssured
+                .given()
+                .headers(headersClubAdminClubOrga1)
+                .body(objectMapper.writeValueAsString(
+                        new VenueCreationData(clubOrga1.id(), "Musterstraße 1", "Hello world!")))
+                .when()
+                .post(baseUrl + "/venues")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .response()
+                .as(VenueData.class);
+        assertThat(venueClubOrga1.clubId()).isEqualTo(clubOrga1.id());
+        assertThat(venueClubOrga1.address()).isEqualTo("Musterstraße 1");
+        assertThat(venueClubOrga1.hints()).isEqualTo(Optional.of("Hello world!"));
 
+        VenueData venueClubSingle = RestAssured
+                .given()
+                .headers(headersClubAdminSingleClub)
+                .body(objectMapper.writeValueAsString(
+                        new VenueCreationData(clubSingle.id(), "Musterstraße 2", null)))
+                .when()
+                .post(baseUrl + "/venues")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .response()
+                .as(VenueData.class);
+        assertThat(venueClubSingle.clubId()).isEqualTo(clubSingle.id());
+        assertThat(venueClubSingle.address()).isEqualTo("Musterstraße 2");
+        assertThat(venueClubSingle.hints()).isEmpty();
 
         // step 7: Create 2 teams of each organization.
         TeamData organizationTwoClubsTeam1 = createTeam(
-                new TeamCreationData(organizationTwoClubs.id(), 1, 1L), headersClubAdminClubOrga1);
+                new TeamCreationData(organizationTwoClubs.id(), 1, venueClubOrga1.id()), headersClubAdminClubOrga1);
         assertThat(organizationTwoClubsTeam1.organizationId()).isEqualTo(organizationTwoClubs.id());
         assertThat(organizationTwoClubsTeam1.number()).isEqualTo(1);
 
         TeamData organizationTwoClubsTeam2 = createTeam(
-                new TeamCreationData(organizationTwoClubs.id(), 2, 1L), headersClubAdminClubOrga1);
+                new TeamCreationData(organizationTwoClubs.id(), 2, venueClubOrga1.id()), headersClubAdminClubOrga1);
         assertThat(organizationTwoClubsTeam2.organizationId()).isEqualTo(organizationTwoClubs.id());
         assertThat(organizationTwoClubsTeam2.number()).isEqualTo(2);
 
         TeamData organizationSingleTeam1 = createTeam(
-                new TeamCreationData(organizationSingleClub.id(), 1, 2L), headersClubAdminSingleClub);
+                new TeamCreationData(organizationSingleClub.id(), 1, venueClubSingle.id()), headersClubAdminSingleClub);
         assertThat(organizationSingleTeam1.organizationId()).isEqualTo(organizationSingleClub.id());
         assertThat(organizationSingleTeam1.number()).isEqualTo(1);
 
         TeamData organizationSingleTeam2 = createTeam(
-                new TeamCreationData(organizationSingleClub.id(), 2, 2L), headersClubAdminSingleClub);
+                new TeamCreationData(organizationSingleClub.id(), 2, venueClubSingle.id()), headersClubAdminSingleClub);
         assertThat(organizationSingleTeam2.organizationId()).isEqualTo(organizationSingleClub.id());
         assertThat(organizationSingleTeam2.number()).isEqualTo(2);
 
         // step 8: Move season to preparation stage.
-        // substep: Log in as season admin and fetch headers
-        HttpHeaders seasonAdminHeaders = login(seasonAdminUser.username(), configuration.seasonAdminPassword());
         SeasonData theSeasonInPreparation = RestAssured
             .given()
                 .headers(seasonAdminHeaders)

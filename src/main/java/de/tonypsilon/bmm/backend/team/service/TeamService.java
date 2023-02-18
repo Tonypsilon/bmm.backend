@@ -52,6 +52,7 @@ public class TeamService {
         Team team = new Team();
         team.setOrganizationId(teamCreationData.organizationId());
         team.setNumber(teamCreationData.number());
+        team.setVenueId(teamCreationData.venueId());
 
         teamRepository.save(team);
 

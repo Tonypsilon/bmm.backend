@@ -16,7 +16,7 @@ public class Team {
     @Column(unique = false, nullable = false)
     private Integer number;
 
-    @Column(nullable = false)
+    @Column(name = "venue_id", nullable = false)
     private Long venueId;
 
     @NonNull

@@ -832,3 +832,25 @@ databaseChangeLog:
         - renameTable:
             newTableName: teamdivisionlink
             oldTableName: teamdivisionassignment
+  - changeSet:
+      id: 30
+      author: Tonypsilon
+      changes:
+        - addColumn:
+            tableName: match
+            columns:
+              - column:
+                  name: venue_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: true
+        - addColumn:
+            tableName: team
+            columns:
+              - column:
+                  name: venue_id
+                  type: int
+                  constraints:
+                    unique: false
+                    nullable: false

@@ -34,7 +34,7 @@ public class Match {
     @Column(unique = false, nullable = false)
     private Boolean editable;
 
-    @Column
+    @Column(name = "venue_id")
     private Long venueId;
 
     /**
