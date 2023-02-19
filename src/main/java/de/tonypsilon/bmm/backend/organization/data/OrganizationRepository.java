@@ -8,8 +8,6 @@ import java.util.Set;
 @Repository
 public interface OrganizationRepository extends JpaRepository<Organization, Long> {
 
-    Boolean existsByIdAndSeasonId(Long id, Long seasonId);
-
     Organization getBySeasonIdAndName(Long seasonId, String name);
 
     Set<Organization> findBySeasonId(Long seasonId);

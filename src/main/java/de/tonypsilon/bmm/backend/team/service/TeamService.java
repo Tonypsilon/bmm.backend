@@ -12,7 +12,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Column;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TeamService {
@@ -92,6 +96,13 @@ public class TeamService {
     @NonNull
     public TeamData getTeamDataById(@NonNull Long teamId) {
         return teamToTeamData(getById(teamId));
+    }
+
+    @NonNull
+    public Set<TeamData> getTeamsByOrganizationIdIn(Set<Long> organizationIds) {
+        return teamRepository.findByOrganizationIdIn(organizationIds).stream()
+                .map(this::teamToTeamData)
+                .collect(Collectors.toSet());
     }
 
     @NonNull

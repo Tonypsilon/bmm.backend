@@ -308,7 +308,7 @@ class BmmApplicationTest {
         assertThat(team4Link.divisionId()).isEqualTo(divisionData.id());
         assertThat(team4Link.number()).isEqualTo(4);
 
-        // TODO: Referees? Playing venues?
+        // TODO: Referees?
 
         // step 11: Move season to in progress stage. Verify that all matchdays are created properly.
     }

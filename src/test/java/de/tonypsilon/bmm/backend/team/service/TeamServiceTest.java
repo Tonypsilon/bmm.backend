@@ -52,7 +52,7 @@ class TeamServiceTest {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.REGISTRATION);
         when(organizationService.getSeasonIdOfOrganization(1L)).thenReturn(1L);
-        when(teamRepository.findByOrganizationId(1L)).thenReturn(List.of(team1));
+        when(teamRepository.findByOrganizationId(1L)).thenReturn(Set.of(team1));
         when(teamRepository.getByOrganizationIdAndNumber(1L, 2)).thenReturn(team2);
         when(organizationService.getOrganizationById(1L)).thenReturn(new OrganizationData(1L, 1L, "org", Set.of(2L)));
         when(venueService.getClubIdByVenueId(1L)).thenReturn(2L);
@@ -88,7 +88,7 @@ class TeamServiceTest {
         when(organizationService.getSeasonIdOfOrganization(1L)).thenReturn(1L);
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.REGISTRATION);
-        when(teamRepository.findByOrganizationId(1L)).thenReturn(List.of(team1));
+        when(teamRepository.findByOrganizationId(1L)).thenReturn(Set.of(team1));
         when(organizationService.getOrganizationById(1L)).thenReturn(new OrganizationData(1L, 1L, "org", Set.of(5L)));
 
         TeamCreationData creationData = new TeamCreationData(1L, 3, 1L);
@@ -104,7 +104,7 @@ class TeamServiceTest {
         when(organizationService.getSeasonIdOfOrganization(1L)).thenReturn(1L);
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.REGISTRATION);
-        when(teamRepository.findByOrganizationId(1L)).thenReturn(List.of(team1));
+        when(teamRepository.findByOrganizationId(1L)).thenReturn(Set.of(team1));
         when(organizationService.getOrganizationById(1L)).thenReturn(new OrganizationData(1L, 1L, "org", Set.of(2L)));
         when(venueService.getClubIdByVenueId(1L)).thenReturn(2L);
 
@@ -119,7 +119,7 @@ class TeamServiceTest {
         when(teamRepository.findById(2L)).thenReturn(Optional.of(team2));
         when(organizationService.getSeasonIdOfOrganization(1L)).thenReturn(1L);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.REGISTRATION);
-        when(teamRepository.findByOrganizationId(1L)).thenReturn(List.of(team1, team2));
+        when(teamRepository.findByOrganizationId(1L)).thenReturn(Set.of(team1, team2));
 
         teamService.deleteTeam(2L);
         verify(teamRepository, times(1)).delete(
@@ -152,7 +152,7 @@ class TeamServiceTest {
         when(teamRepository.findById(1L)).thenReturn(Optional.of(team1));
         when(organizationService.getSeasonIdOfOrganization(1L)).thenReturn(1L);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.REGISTRATION);
-        when(teamRepository.findByOrganizationId(1L)).thenReturn(List.of(team1, team2));
+        when(teamRepository.findByOrganizationId(1L)).thenReturn(Set.of(team1, team2));
 
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> teamService.deleteTeam(1L));

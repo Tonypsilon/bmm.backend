@@ -25,7 +25,6 @@ class OrganizationServiceTest {
             mock(OrganizationMemberRepository.class);
     private final SeasonService seasonService = mock(SeasonService.class);
     private final ClubService clubService = mock(ClubService.class);
-    private final ClubAdminService clubAdminService = mock(ClubAdminService.class);
     private OrganizationService organizationService;
     private Organization existingOrganization, newOrganization;
     private OrganizationMember existingOrganizationMember, newOrganizationMember;
@@ -35,8 +34,7 @@ class OrganizationServiceTest {
         organizationService = new OrganizationService(organizationRepository,
                 organizationMemberRepository,
                 seasonService,
-                clubService,
-                clubAdminService);
+                clubService);
         existingOrganizationMember = new OrganizationMember();
         existingOrganizationMember.setId(2L);
         existingOrganizationMember.setClubId(3L);

@@ -5,7 +5,6 @@ import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.organization.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
-import de.tonypsilon.bmm.backend.security.rnr.service.ClubAdminService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.function.Predicate.not;
-
 @Service
 public class OrganizationService {
 
@@ -24,18 +21,15 @@ public class OrganizationService {
     private final OrganizationMemberRepository organizationMemberRepository;
     private final SeasonService seasonService;
     private final ClubService clubService;
-    private final ClubAdminService clubAdminService;
 
     public OrganizationService(final OrganizationRepository organizationRepository,
                                final OrganizationMemberRepository organizationMemberRepository,
                                final SeasonService seasonService,
-                               final ClubService clubService,
-                               final ClubAdminService clubAdminService) {
+                               final ClubService clubService) {
         this.organizationRepository = organizationRepository;
         this.organizationMemberRepository = organizationMemberRepository;
         this.seasonService = seasonService;
         this.clubService = clubService;
-        this.clubAdminService = clubAdminService;
     }
 
     @Transactional
@@ -74,11 +68,8 @@ public class OrganizationService {
 
     // checks if clubs exist and also ensures they are not yet part of another organization for that season.
     private void validateClubIds(Collection<Long> clubIds, Long seasonId) {
-        clubIds.stream().forEach(clubService::verifyClubExistsById);
-        Set<Long> organizationIdsOfCurrentSeason = organizationRepository.findBySeasonId(seasonId)
-                .stream()
-                .map(Organization::getId)
-                .collect(Collectors.toSet());
+        clubIds.forEach(clubService::verifyClubExistsById);
+        Set<Long> organizationIdsOfCurrentSeason = getOrganizationIdsOfSeason(seasonId);
         organizationMemberRepository.findByOrganizationIdIn(organizationIdsOfCurrentSeason)
                 .stream()
                 .map(OrganizationMember::getClubId)
@@ -96,6 +87,14 @@ public class OrganizationService {
         organizationMember.setOrganization(organization);
         organizationMember.setClubId(clubId);
         return organizationMember;
+    }
+
+    @NonNull
+    public Set<Long> getOrganizationIdsOfSeason(@NonNull Long seasonId) {
+        return organizationRepository.findBySeasonId(seasonId)
+                .stream()
+                .map(Organization::getId)
+                .collect(Collectors.toSet());
     }
 
     @Transactional
