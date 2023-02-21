@@ -7,7 +7,7 @@ import java.io.Serial;
 
 public class BmmException extends RuntimeException {
 
-    Logger logger = LoggerFactory.getLogger(BmmException.class);
+    final transient Logger logger = LoggerFactory.getLogger(BmmException.class);
 
 	@Serial
     private static final long serialVersionUID = 1L;

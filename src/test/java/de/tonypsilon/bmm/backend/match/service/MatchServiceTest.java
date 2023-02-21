@@ -37,7 +37,7 @@ class MatchServiceTest {
     		mock(TeamDivisionLinkService.class);
     private final ValidationService validationService = new ValidationService();
     private final MatchData matchData1 = new MatchData(1L, 1L, 1L, 2L, Optional.of("1.1.2001"),
-            2, 0, Optional.empty(), Optional.empty(), Optional.of(1L), Boolean.TRUE, null);
+            2, 0, Optional.empty(), Optional.empty(), Optional.of(1L), Boolean.TRUE, Optional.empty());
     private final MatchdayData matchdayData = new MatchdayData(1L, 2L, "1.1.2000", 3);
     private Match match1;
 

@@ -117,7 +117,7 @@ public class TeamService {
     }
 
     private void verifyTeamNumber(TeamCreationData teamCreationData) {
-        Integer maxTeamNumber = getMaxTeamNumberForTeamsOfOrganization(teamCreationData.organizationId());
+        int maxTeamNumber = getMaxTeamNumberForTeamsOfOrganization(teamCreationData.organizationId());
         if (!teamCreationData.number().equals(maxTeamNumber+1)) {
             throw new BadDataException(
                     "Das neue Team hat nicht die passende Teamnummer. Erwartet: %d. Tatsächlich: %d."
@@ -126,12 +126,11 @@ public class TeamService {
     }
 
     private Integer getMaxTeamNumberForTeamsOfOrganization(Long organizationId) {
-        List<Integer> teamNumbers = teamRepository.findByOrganizationId(organizationId)
+        return  teamRepository.findByOrganizationId(organizationId)
                 .stream()
                 .map(Team::getNumber)
-                .toList();
-        // TODO Log if team number sequence is not good.
-        return teamNumbers.stream().max(Integer::compareTo).orElse(0);
+                .max(Integer::compareTo)
+                .orElse(0);
     }
 
     private TeamData teamToTeamData(Team team) {

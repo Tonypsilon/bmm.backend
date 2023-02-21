@@ -115,6 +115,13 @@ public class ParticipantService {
                         .formatted(participantId)));
     }
 
+    @NonNull
+    public List<ParticipantData> getParticipantsOfTeamOrderedByNumberAsc(Long teamId) {
+        return participantRepository.getByTeamIdOrderByNumberAsc(teamId).stream()
+                .map(this::participantToParticipantData)
+                .toList();
+    }
+
     private void validateParticipantsNumbersOfTeam(Long teamId) {
         List<Integer> currentTeamNumbers = participantRepository.findByTeamId(teamId)
                 .stream()
