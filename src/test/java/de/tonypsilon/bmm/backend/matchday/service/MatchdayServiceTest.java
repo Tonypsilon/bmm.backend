@@ -162,7 +162,7 @@ class MatchdayServiceTest {
     void testGetMatchdaysOfDivisionOrderedByRound() {
         when(matchdayRepository.findByDivisionIdOrderByRoundAsc(1L)).thenReturn(List.of(matchday1, matchday2));
         List<MatchdayData> actual = matchdayService.getMatchdaysOfDivisionOrderedByRound(1L);
-        assertThat(actual.size()).isEqualTo(2);
+        assertThat(actual).hasSize(2);
         assertTrue(actual.containsAll(List.of(matchdayData1, matchdayData2)));
     }
 
