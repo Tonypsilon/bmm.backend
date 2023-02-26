@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -76,7 +77,7 @@ class MatchServiceTest {
         when(matchRepository.getByMatchdayIdAndHomeTeamIdAndAwayTeamId(1L, 1L, 2L)).thenReturn(match1);
         CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L, Optional.of("1.1.2001"), Optional.of(1L));
         MatchData actual = matchService.createMatch(createMatchData);
-        assertEquals(matchData1, actual);
+        assertThat(actual).isEqualTo(matchData1);
     }
 
     @Test
@@ -87,7 +88,7 @@ class MatchServiceTest {
                 Optional.empty(), Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> matchService.createMatch(createMatchData));
-        assertEquals("Es gibt kein Team mit ID -1!", actualException.getMessage());
+        assertThat(actualException.getMessage()).isEqualTo("Es gibt kein Team mit ID -1!");
     }
 
     @Test
@@ -99,7 +100,7 @@ class MatchServiceTest {
                 Optional.empty(), Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> matchService.createMatch(createMatchData));
-        assertEquals("Es gibt kein Team mit ID -1!", actualException.getMessage());
+        assertThat(actualException.getMessage()).isEqualTo("Es gibt kein Team mit ID -1!");
     }
 
     @Test
@@ -113,8 +114,8 @@ class MatchServiceTest {
                 Optional.empty(), Optional.empty());
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchService.createMatch(createMatchData));
-        assertEquals("Mindestens eine der beiden Mannschaften gehört nicht zur richtigen Staffel!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Mindestens eine der beiden Mannschaften gehört nicht zur richtigen Staffel!");
     }
 
     @Test
@@ -127,8 +128,8 @@ class MatchServiceTest {
                 Optional.empty(), Optional.empty());
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> matchService.createMatch(createMatchData));
-        assertEquals("Die Heimmannschaft hat an diesem Spieltag schon einen Wettkampf!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Die Heimmannschaft hat an diesem Spieltag schon einen Wettkampf!");
     }
 
     @Test
@@ -142,8 +143,8 @@ class MatchServiceTest {
                 Optional.empty(), Optional.empty());
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> matchService.createMatch(createMatchData));
-        assertEquals("Die Gastmannschaft hat an diesem Spieltag schon einen Wettkampf!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Die Gastmannschaft hat an diesem Spieltag schon einen Wettkampf!");
     }
 
     @Test
@@ -156,7 +157,8 @@ class MatchServiceTest {
         CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L, Optional.of("1.1%2001"), Optional.of(1L));
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchService.createMatch(createMatchData));
-        assertEquals("Das Datum enthält ungültige Zeichen!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Das Datum enthält ungültige Zeichen!");
     }
 
     @Test
@@ -170,7 +172,8 @@ class MatchServiceTest {
         CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L, Optional.of("1.1.2001"), Optional.of(-1L));
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> matchService.createMatch(createMatchData));
-        assertEquals("Es gibt keinen Schiedsrichter mit der ID -1!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keinen Schiedsrichter mit der ID -1!");
 
     }
 
@@ -186,7 +189,8 @@ class MatchServiceTest {
         CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L, Optional.of("1.1.2001"), Optional.of(1L));
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchService.createMatch(createMatchData));
-        assertEquals("Der Schiedsrichter mit der ID 1 passt nicht zur Saison mit der ID 2!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Der Schiedsrichter mit der ID 1 passt nicht zur Saison mit der ID 2!");
     }
 
 }
