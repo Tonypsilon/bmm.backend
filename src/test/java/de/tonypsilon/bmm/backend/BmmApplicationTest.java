@@ -37,7 +37,6 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BmmApplicationTest {
@@ -66,8 +65,8 @@ class BmmApplicationTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void happyPathTest() throws Exception {
         baseUrl = "http://localhost:" + port;
-        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "users"));
-        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "authorities"));
+        assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "users")).isEqualTo(1);
+        assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "authorities")).isEqualTo(1);
 
         // step 1: log in and get cookies
         HttpHeaders headersAdmin = login(configuration.adminUsername(), configuration.adminPassword());
