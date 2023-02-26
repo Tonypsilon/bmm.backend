@@ -50,7 +50,7 @@ class ClubServiceTest {
     void testGetAllClubs() {
         when(clubRepository.findAll()).thenReturn(List.of(club1, club2, club3));
         Collection<ClubData> actual = clubService.getAllClubs();
-        assertThat(actual.size()).isEqualTo(3);
+        assertThat(actual).hasSize(3);
         assertTrue(actual.containsAll(List.of(club1Data, club2Data, club3Data)));
     }
 

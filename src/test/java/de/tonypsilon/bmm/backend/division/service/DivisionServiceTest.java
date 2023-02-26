@@ -66,12 +66,12 @@ class DivisionServiceTest {
         SortedSetMultimap<Integer, DivisionData> actual = divisionService.getAllDivisionsOfSeasonByLevel(1L);
         assertThat(actual.size()).isEqualTo(3);
 
-        assertThat(actual.get(1).size()).isEqualTo(1);
+        assertThat(actual.get(1)).hasSize(1);
         Iterator<DivisionData> level1Actual = actual.get(1).iterator();
         assertThat(level1Actual.next()).isEqualTo(landesligaData);
         assertFalse(level1Actual.hasNext());
 
-        assertThat(actual.get(2).size()).isEqualTo(2);
+        assertThat(actual.get(2)).hasSize(2);
         Iterator<DivisionData> level2Actual = actual.get(2).iterator();
         assertThat(level2Actual.next()).isEqualTo(stadtligaAData);
         assertThat(level2Actual.next()).isEqualTo(stadtLigaBData);
