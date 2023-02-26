@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -76,7 +77,7 @@ class ParticipantServiceTest {
 
         Collection<ParticipantData> actual = participantService.createValidParticipantConfigurationForTeam(
                 1L, List.of(participantCreationData1, participantCreationData2));
-        assertEquals(2, actual.size());
+        assertThat(actual).hasSize(2);
         assertTrue(actual.containsAll(List.of(participantData1, participantData2)));
 
         verify(participantRepository, times(1)).save(argThat(
@@ -99,7 +100,8 @@ class ParticipantServiceTest {
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> participantService.createValidParticipantConfigurationForTeam(
                         1L, List.of(participantCreationData1, participantCreationData2)));
-        assertEquals("Es gibt keine Mannschaft mit der ID 1!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keine Mannschaft mit der ID 1!");
     }
 
     @Test
@@ -117,8 +119,8 @@ class ParticipantServiceTest {
                 () -> participantService.createValidParticipantConfigurationForTeam(
                         1L, List.of(participantCreationData2))
         );
-        assertEquals("Die Spielernummern für die Mannschaft mit ID 1 sind nicht gültig: [2]"
-                , actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Die Spielernummern für die Mannschaft mit ID 1 sind nicht gültig: [2]");
     }
 
     @Test
@@ -134,8 +136,8 @@ class ParticipantServiceTest {
                 () -> participantService.createValidParticipantConfigurationForTeam(
                         1L, List.of(participantCreationData1))
         );
-        assertEquals("In dieser Saisonphase kann keine Mannschaft mit Teilnehmern befüllt werden!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("In dieser Saisonphase kann keine Mannschaft mit Teilnehmern befüllt werden!");
     }
 
     @Test
@@ -150,7 +152,7 @@ class ParticipantServiceTest {
         when(participantRepository.getByTeamIdAndNumber(1L, 2)).thenReturn(participant2);
 
         ParticipantData actual = participantService.addParticipantToTeam(participantCreationData2);
-        assertEquals(participantData2, actual);
+        assertThat(actual).isEqualTo(participantData2);
 
         verify(participantRepository, times(1)).save(argThat(
                 participant -> participant.getTeamId().equals(1L)
@@ -166,7 +168,8 @@ class ParticipantServiceTest {
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> participantService.addParticipantToTeam(participantCreationData2)
         );
-        assertEquals("Es gibt keine Spielberechtigung mit der ID 1!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keine Spielberechtigung mit der ID 1!");
     }
 
     @Test
@@ -177,8 +180,8 @@ class ParticipantServiceTest {
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> participantService.addParticipantToTeam(participantCreationData2)
         );
-        assertEquals("Es gibt bereits einen Teilnehmer für die Spielberechtigung mit der ID 1!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt bereits einen Teilnehmer für die Spielberechtigung mit der ID 1!");
     }
 
     @Test
@@ -190,8 +193,8 @@ class ParticipantServiceTest {
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> participantService.addParticipantToTeam(participantCreationData2)
         );
-        assertEquals("Es gibt für die Mannschaft mit der ID 1 bereits einen Teilnehmer mit Nummer 2!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt für die Mannschaft mit der ID 1 bereits einen Teilnehmer mit Nummer 2!");
     }
 
     @Test
@@ -206,8 +209,8 @@ class ParticipantServiceTest {
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> participantService.addParticipantToTeam(participantCreationData2)
         );
-        assertEquals("In dieser Saisonphase können keine Teilnehmer zu einer Mannschaft hinzugefügt werden!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("In dieser Saisonphase können keine Teilnehmer zu einer Mannschaft hinzugefügt werden!");
     }
 
     @Test
@@ -223,8 +226,8 @@ class ParticipantServiceTest {
         BmmException actualException = assertThrows(BmmException.class,
                 () -> participantService.addParticipantToTeam(participantCreationData2)
         );
-        assertEquals("Die Spielernummern für die Mannschaft mit ID 1 sind nicht gültig: [2]",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Die Spielernummern für die Mannschaft mit ID 1 sind nicht gültig: [2]");
     }
 
     @Test
@@ -251,7 +254,8 @@ class ParticipantServiceTest {
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> participantService.deleteParticipant(2L)
         );
-        assertEquals("Es gibt keinen Teilnehmer mit der ID 2!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keinen Teilnehmer mit der ID 2!");
 
     }
 
@@ -264,8 +268,8 @@ class ParticipantServiceTest {
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> participantService.deleteParticipant(2L)
         );
-        assertEquals("In dieser Saisonphase kann kein Teilnehmer entfernt werden!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("In dieser Saisonphase kann kein Teilnehmer entfernt werden!");
     }
 
     @Test
@@ -278,8 +282,8 @@ class ParticipantServiceTest {
         BmmException actualException = assertThrows(BmmException.class,
                 () -> participantService.deleteParticipant(1L)
         );
-        assertEquals("Die Spielernummern für die Mannschaft mit ID 1 sind nicht gültig: [2]",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Die Spielernummern für die Mannschaft mit ID 1 sind nicht gültig: [2]");
     }
 
 
