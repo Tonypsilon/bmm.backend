@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -60,7 +61,7 @@ class SeasonServiceTest {
         when(seasonRepository.existsByName("Saison-Registration")).thenReturn(Boolean.FALSE);
         when(seasonRepository.getByName("Saison-Registration")).thenReturn(seasonRegistration);
         SeasonData actual = seasonService.createSeason(new SeasonCreationData("Saison-Registration"));
-        assertEquals(seasonRegistrationData, actual);
+        assertThat(actual).isEqualTo(seasonRegistrationData);
         verify(seasonRepository, times(1)).save(
                 argThat(season -> season.getName().equals("Saison-Registration")
                 && season.getStage().equals(SeasonStage.REGISTRATION)));
@@ -71,23 +72,26 @@ class SeasonServiceTest {
         when(seasonRepository.existsByName("name")).thenReturn(Boolean.TRUE);
         AlreadyExistsException exception = assertThrows(AlreadyExistsException.class,
                 () -> seasonService.createSeason(new SeasonCreationData("name")));
-        assertEquals("Saison mit dem Namen name existiert bereits!", exception.getMessage());
+        assertThat(exception.getMessage())
+            .isEqualTo("Saison mit dem Namen name existiert bereits!");
     }
 
     @Test
     void testCreateSeasonWithEmptyName() {
         NameBlankException exceptionNameBlank = assertThrows(NameBlankException.class,
                 () -> seasonService.createSeason(new SeasonCreationData("")));
-        assertEquals("Der Name der Saison darf nicht leer sein!", exceptionNameBlank.getMessage());
+        assertThat(exceptionNameBlank.getMessage())
+            .isEqualTo("Der Name der Saison darf nicht leer sein!");
         NameBlankException exceptionNameNull = assertThrows(NameBlankException.class,
                 () -> seasonService.createSeason(new SeasonCreationData(null)));
-        assertEquals("Der Name der Saison darf nicht leer sein!", exceptionNameNull.getMessage());
+        assertThat(exceptionNameNull.getMessage())
+            .isEqualTo("Der Name der Saison darf nicht leer sein!");
     }
 
     @Test
     void testGetSeasonByNameOk() {
         when(seasonRepository.findByName("Saison-Running")).thenReturn(Optional.of(seasonRunning));
-        assertEquals(seasonRunningData, seasonService.getSeasonByName("Saison-Running"));
+        assertThat(seasonService.getSeasonByName("Saison-Running")).isEqualTo(seasonRunningData);
     }
 
     @Test
@@ -95,13 +99,14 @@ class SeasonServiceTest {
         when(seasonRepository.findByName("foo")).thenReturn(Optional.empty());
         NotFoundException exceptionNonExistent = assertThrows(NotFoundException.class,
                 () -> seasonService.getSeasonByName("foo"));
-        assertEquals("Saison mit dem Namen foo existiert nicht!", exceptionNonExistent.getMessage());
+        assertThat(exceptionNonExistent.getMessage())
+            .isEqualTo("Saison mit dem Namen foo existiert nicht!");
     }
 
     @Test
     void testGetSeasonByIdOk() {
         when(seasonRepository.findById(1L)).thenReturn(Optional.of(seasonPreparation));
-        assertEquals(seasonPreparationData, seasonService.getSeasonById(1L));
+        assertThat(seasonService.getSeasonById(1L)).isEqualTo(seasonPreparationData);
     }
 
     @Test
@@ -109,7 +114,8 @@ class SeasonServiceTest {
         when(seasonRepository.findById(-1L)).thenReturn(Optional.empty());
         NotFoundException exceptionNonExistent = assertThrows(NotFoundException.class,
                 () -> seasonService.getSeasonById(-1L));
-        assertEquals("Saison mit der ID -1 existiert nicht!", exceptionNonExistent.getMessage());
+        assertThat(exceptionNonExistent.getMessage())
+            .isEqualTo("Saison mit der ID -1 existiert nicht!");
     }
 
     @Test
@@ -117,7 +123,7 @@ class SeasonServiceTest {
         when(seasonRepository.findAll()).thenReturn(
                 List.of(seasonRegistration, seasonPreparation, seasonRunning, seasonCompleted, seasonArchived));
         Collection<SeasonData> actual = seasonService.getAllSeasons();
-        assertEquals(5, actual.size());
+        assertThat(actual).hasSize(5);
         assertTrue(actual.containsAll(List.of(seasonRegistrationData, seasonPreparationData, seasonCompletedData, seasonRunningData, seasonArchivedData)));
 
     }
@@ -127,8 +133,8 @@ class SeasonServiceTest {
         when(seasonRepository.findByName("Saison-Running")).thenReturn(Optional.of(seasonRunning));
         when(seasonRepository.getByName("Saison-Running")).thenReturn(seasonRunning);
         SeasonData actual = seasonService.updateSeasonStage(new SeasonStageChangeData("Saison-Running", SeasonStage.COMPLETED));
-        assertEquals("Saison-Running", actual.name());
-        assertEquals(SeasonStage.COMPLETED, actual.stage());
+        assertThat(actual.name()).isEqualTo("Saison-Running");
+        assertThat(actual.stage()).isEqualTo(SeasonStage.COMPLETED);
         verify(seasonRepository, times(1)).save(
                 argThat(season -> season.getName().equals("Saison-Running")
                         && season.getStage().equals(SeasonStage.COMPLETED)));
@@ -139,8 +145,8 @@ class SeasonServiceTest {
         when(seasonRepository.findByName("Saison-Running")).thenReturn(Optional.of(seasonRunning));
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> seasonService.updateSeasonStage(new SeasonStageChangeData("Saison-Running", SeasonStage.PREPARATION)));
-        assertEquals("Eine Saison im Status RUNNING kann nicht in Status PREPARATION geändert werden!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+            .isEqualTo("Eine Saison im Status RUNNING kann nicht in Status PREPARATION geändert werden!");
     }
 
     @Test
@@ -148,7 +154,8 @@ class SeasonServiceTest {
         when(seasonRepository.findByName("foo")).thenReturn(Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> seasonService.updateSeasonStage(new SeasonStageChangeData("foo", SeasonStage.COMPLETED)));
-        assertEquals("Saison mit dem Namen foo existiert nicht!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+            .isEqualTo("Saison mit dem Namen foo existiert nicht!");
     }
 
     @Test
@@ -162,7 +169,7 @@ class SeasonServiceTest {
     @Test
     void testGetStageOfSeason() {
         when(seasonRepository.findById(3L)).thenReturn(Optional.of(seasonRunning));
-        assertEquals(SeasonStage.RUNNING, seasonService.getStageOfSeason(3L));
+        assertThat(seasonService.getStageOfSeason(3L)).isEqualTo(SeasonStage.RUNNING);
     }
 
     @Test
@@ -170,6 +177,7 @@ class SeasonServiceTest {
         when(seasonRepository.findById(-1L)).thenReturn(Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> seasonService.getStageOfSeason(-1L));
-        assertEquals("Saison mit ID -1 existiert nicht!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+            .isEqualTo("Saison mit ID -1 existiert nicht!");
     }
 }
