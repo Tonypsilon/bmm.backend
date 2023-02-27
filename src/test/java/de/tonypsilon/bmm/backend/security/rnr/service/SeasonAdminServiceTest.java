@@ -12,6 +12,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -40,7 +41,7 @@ class SeasonAdminServiceTest {
         when(seasonAdminRepository.getBySeasonIdAndUsername(1L, "user1")).thenReturn(seasonAdmin1);
 
         SeasonAdminData actual = seasonAdminService.createSeasonAdmin(new SeasonAdminData(1L, "user1"));
-        assertEquals(seasonAdminData1, actual);
+        assertThat(actual).isEqualTo(seasonAdminData1);
         verify(seasonAdminRepository, times(1)).save(
                 argThat(seasonAdmin -> seasonAdmin.getSeasonId().equals(1L)
                 && seasonAdmin.getUsername().equals("user1"))
@@ -52,7 +53,8 @@ class SeasonAdminServiceTest {
         when(userDetailsManager.userExists("user2")).thenReturn(Boolean.FALSE);
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> seasonAdminService.createSeasonAdmin(new SeasonAdminData(1L, "user2")));
-        assertEquals("Es gibt keinen Benutzer mit dem Namen user2!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+            .isEqualTo("Es gibt keinen Benutzer mit dem Namen user2!");
     }
 
     @Test
@@ -61,7 +63,8 @@ class SeasonAdminServiceTest {
         when(seasonService.seasonExistsById(2L)).thenReturn(Boolean.FALSE);
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> seasonAdminService.createSeasonAdmin(new SeasonAdminData(2L, "user1")));
-        assertEquals("Es gibt keine Saison mit der ID 2!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+            .isEqualTo("Es gibt keine Saison mit der ID 2!");
     }
 
     @Test
@@ -71,16 +74,16 @@ class SeasonAdminServiceTest {
         when(seasonAdminRepository.existsBySeasonIdAndUsername(1L, "user1")).thenReturn(Boolean.TRUE);
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> seasonAdminService.createSeasonAdmin(new SeasonAdminData(1L, "user1")));
-        assertEquals("Benutzer user1 ist bereits Administrator für die Saison mit ID 1!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+            .isEqualTo("Benutzer user1 ist bereits Administrator für die Saison mit ID 1!");
     }
 
     @Test
     void testIsSeasonAdmin() {
         when(seasonAdminRepository.existsBySeasonIdAndUsername(1L, "user1")).thenReturn(Boolean.TRUE);
         when(seasonAdminRepository.existsBySeasonIdAndUsername(2L, "user1")).thenReturn(Boolean.FALSE);
-        assertEquals(Boolean.TRUE, seasonAdminService.isSeasonAdmin(1L, "user1"));
-        assertEquals(Boolean.FALSE, seasonAdminService.isSeasonAdmin(2L, "user1"));
+        assertThat(seasonAdminService.isSeasonAdmin(1L, "user1")).isEqualTo(Boolean.TRUE);
+        assertThat(seasonAdminService.isSeasonAdmin(2L, "user1")).isEqualTo(Boolean.FALSE);
     }
 
     @Test
@@ -99,6 +102,7 @@ class SeasonAdminServiceTest {
         SeasonAdminData seasonAdminDeletionData = new SeasonAdminData(3L, "user1");
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> seasonAdminService.deleteSeasonAdmin(seasonAdminDeletionData));
-        assertEquals("Benutzer user1 ist kein Administrator für die Saison mit ID 3!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+            .isEqualTo("Benutzer user1 ist kein Administrator für die Saison mit ID 3!");
     }
 }
