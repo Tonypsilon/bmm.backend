@@ -12,6 +12,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -40,7 +41,7 @@ class TeamAdminServiceTest {
         when(teamAdminRepository.getByTeamIdAndUsername(1L, "user1")).thenReturn(teamAdmin1);
 
         TeamAdminData actual = teamAdminService.createTeamAdmin(new TeamAdminData(1L, "user1"));
-        assertEquals(teamAdminData1, actual);
+        assertThat(actual).isEqualTo(teamAdminData1);
         verify(teamAdminRepository, times(1)).save(
                 argThat(teamAdmin -> teamAdmin.getTeamId().equals(1L)
                 && teamAdmin.getUsername().equals("user1"))
@@ -52,7 +53,8 @@ class TeamAdminServiceTest {
         when(userDetailsManager.userExists("user2")).thenReturn(Boolean.FALSE);
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> teamAdminService.createTeamAdmin(new TeamAdminData(1L, "user2")));
-        assertEquals("Es gibt keinen Benutzer mit dem Namen user2!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+            .isEqualTo("Es gibt keinen Benutzer mit dem Namen user2!");
     }
 
     @Test
@@ -61,7 +63,8 @@ class TeamAdminServiceTest {
         when(teamService.existsById(2L)).thenReturn(Boolean.FALSE);
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> teamAdminService.createTeamAdmin(new TeamAdminData(2L, "user1")));
-        assertEquals("Es gibt kein Team mit der ID 2!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+            .isEqualTo("Es gibt kein Team mit der ID 2!");
     }
 
     @Test
@@ -71,16 +74,16 @@ class TeamAdminServiceTest {
         when(teamAdminRepository.existsByTeamIdAndUsername(1L, "user1")).thenReturn(Boolean.TRUE);
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> teamAdminService.createTeamAdmin(new TeamAdminData(1L, "user1")));
-        assertEquals("Benutzer user1 ist bereits Administrator für das Team mit ID 1!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+            .isEqualTo("Benutzer user1 ist bereits Administrator für das Team mit ID 1!");
     }
 
     @Test
     void testIsTeamAdmin() {
         when(teamAdminRepository.existsByTeamIdAndUsername(1L, "user1")).thenReturn(Boolean.TRUE);
         when(teamAdminRepository.existsByTeamIdAndUsername(2L, "user2")).thenReturn(Boolean.FALSE);
-        assertEquals(Boolean.TRUE, teamAdminService.isTeamAdmin(1L, "user1"));
-        assertEquals(Boolean.FALSE, teamAdminService.isTeamAdmin(2L, "user2"));
+        assertThat(teamAdminService.isTeamAdmin(1L, "user1")).isEqualTo(Boolean.TRUE);
+        assertThat(teamAdminService.isTeamAdmin(2L, "user2")).isEqualTo(Boolean.FALSE);
     }
 
     @Test
@@ -99,7 +102,8 @@ class TeamAdminServiceTest {
         TeamAdminData teamAdminData = new TeamAdminData(3L, "user3");
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> teamAdminService.deleteTeamAdmin(teamAdminData));
-        assertEquals("Benutzer user3 ist kein Administrator für das Team mit ID 3!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+            .isEqualTo("Benutzer user3 ist kein Administrator für das Team mit ID 3!");
     }
 
 }
