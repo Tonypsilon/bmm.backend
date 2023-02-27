@@ -58,7 +58,7 @@ class TeamServiceTest {
         when(venueService.getClubIdByVenueId(1L)).thenReturn(2L);
 
         TeamData actual = teamService.createTeam(new TeamCreationData(1L, 2, 1L));
-        assertEquals(actual, team2Data);
+        assertThat(actual).isEqualTo(team2Data);
         verify(teamRepository, times(1)).save(
                 argThat(team -> team.getOrganizationId().equals(1L)
                 && team.getNumber().equals(2))
@@ -71,7 +71,8 @@ class TeamServiceTest {
                 .thenThrow(new NotFoundException("Es gibt keine Organisation mit der ID -1!"));
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> teamService.createTeam(new TeamCreationData(-1L, 1, 1L)));
-        assertEquals("Es gibt keine Organisation mit der ID -1!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keine Organisation mit der ID -1!");
     }
 
     @Test
@@ -80,7 +81,8 @@ class TeamServiceTest {
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.RUNNING);
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> teamService.createTeam(new TeamCreationData(1L, 1, 1L)));
-        assertEquals("Saison ist nicht in der Registrierungsphase!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Saison ist nicht in der Registrierungsphase!");
     }
 
     @Test
@@ -110,8 +112,8 @@ class TeamServiceTest {
 
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> teamService.createTeam(new TeamCreationData(1L, 3, 1L)));
-        assertEquals("Das neue Team hat nicht die passende Teamnummer. Erwartet: 2. Tatsächlich: 3.",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Das neue Team hat nicht die passende Teamnummer. Erwartet: 2. Tatsächlich: 3.");
     }
 
     @Test
@@ -134,7 +136,8 @@ class TeamServiceTest {
         when(teamRepository.findById(-1L)).thenReturn(Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> teamService.deleteTeam(-1L));
-        assertEquals("Es gibt kein Team mit ID -1!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt kein Team mit ID -1!");
     }
 
     @Test
@@ -144,7 +147,8 @@ class TeamServiceTest {
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.PREPARATION);
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> teamService.deleteTeam(2L));
-        assertEquals("Saison ist nicht in der Registrierungsphase!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Saison ist nicht in der Registrierungsphase!");
     }
 
     @Test
@@ -156,8 +160,8 @@ class TeamServiceTest {
 
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> teamService.deleteTeam(1L));
-        assertEquals("Es kann nur das Team mit der höchsten Nummer gelöscht werden!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es kann nur das Team mit der höchsten Nummer gelöscht werden!");
     }
 
 }
