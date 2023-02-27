@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -73,7 +74,7 @@ class OrganizationServiceTest {
                 .thenReturn(newOrganization);
 
         OrganizationData actual = organizationService.createOrganization(organizationCreationData);
-        assertEquals(new OrganizationData(11L, 1L, "org name", Set.of(2L)),actual);
+        assertThat(actual).isEqualTo(new OrganizationData(11L, 1L, "org name", Set.of(2L)));
 
         verify(organizationRepository, times(1)).save(argThat(
                 organization -> organization.getName().equals("org name")
@@ -81,7 +82,7 @@ class OrganizationServiceTest {
                         && organization.getOrganizationMembers().size() == 1
         ));
 
-        assertEquals(Set.of(2L), actual.clubIds());
+        assertThat(actual.clubIds()).isEqualTo(Set.of(2L));
     }
 
     @Test
@@ -90,7 +91,8 @@ class OrganizationServiceTest {
                 new OrganizationCreationData(1L, "", null);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> organizationService.createOrganization(organizationCreationData));
-        assertEquals("Der Name der Organisation darf nicht leer sein!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Der Name der Organisation darf nicht leer sein!");
     }
 
     @Test
@@ -100,7 +102,8 @@ class OrganizationServiceTest {
                 new OrganizationCreationData(2L, "org name", null);
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> organizationService.createOrganization(organizationCreationData));
-        assertEquals("Es gibt keine Saison mit der ID 2!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keine Saison mit der ID 2!");
     }
 
     @ParameterizedTest
@@ -112,7 +115,8 @@ class OrganizationServiceTest {
                 new OrganizationCreationData(1L, "org name", null);
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> organizationService.createOrganization(organizationCreationData));
-        assertEquals("Saison ist nicht in der Registrierungsphase!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Saison ist nicht in der Registrierungsphase!");
     }
 
     @Test
@@ -124,15 +128,15 @@ class OrganizationServiceTest {
                 new OrganizationCreationData(1L, "org name", null);
         BadDataException actualExceptionClubsNull = assertThrows(BadDataException.class,
                 () -> organizationService.createOrganization(organizationCreationDataClubsNull));
-        assertEquals("Zur Erstellung einer Organisation muss mindestens ein Verein gegeben sein!",
-                actualExceptionClubsNull.getMessage());
+        assertThat(actualExceptionClubsNull.getMessage())
+                .isEqualTo("Zur Erstellung einer Organisation muss mindestens ein Verein gegeben sein!");
 
         OrganizationCreationData organizationCreationDataClubsEmpty =
                 new OrganizationCreationData(1L, "org name", Collections.emptySet());
         BadDataException actualExceptionClubsEmpty = assertThrows(BadDataException.class,
                 () -> organizationService.createOrganization(organizationCreationDataClubsEmpty));
-        assertEquals("Zur Erstellung einer Organisation muss mindestens ein Verein gegeben sein!",
-                actualExceptionClubsEmpty.getMessage());
+        assertThat(actualExceptionClubsEmpty.getMessage())
+                .isEqualTo("Zur Erstellung einer Organisation muss mindestens ein Verein gegeben sein!");
     }
 
     @Test
@@ -149,15 +153,15 @@ class OrganizationServiceTest {
 
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> organizationService.createOrganization(organizationCreationData));
-        assertEquals("Es gibt schon eine Organisation in der Saison mit der ID 1 für den Verein mit der ID 3!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt schon eine Organisation in der Saison mit der ID 1 für den Verein mit der ID 3!");
     }
 
     @Test
     void testGetSeasonIdOfOrganizationOk() {
         when(organizationRepository.findById(10L)).thenReturn(Optional.of(existingOrganization));
         Long actual = organizationService.getSeasonIdOfOrganization(10L);
-        assertEquals(1L, actual);
+        assertThat(actual).isEqualTo(1L);
     }
 
     @Test
@@ -165,7 +169,8 @@ class OrganizationServiceTest {
         when(organizationRepository.findById(-1L)).thenReturn(Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> organizationService.getSeasonIdOfOrganization(-1L));
-        assertEquals("Es gibt keine Organisation mit der ID -1!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keine Organisation mit der ID -1!");
     }
 
 }
