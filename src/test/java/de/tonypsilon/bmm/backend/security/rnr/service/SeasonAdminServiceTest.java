@@ -82,8 +82,8 @@ class SeasonAdminServiceTest {
     void testIsSeasonAdmin() {
         when(seasonAdminRepository.existsBySeasonIdAndUsername(1L, "user1")).thenReturn(Boolean.TRUE);
         when(seasonAdminRepository.existsBySeasonIdAndUsername(2L, "user1")).thenReturn(Boolean.FALSE);
-        assertThat(seasonAdminService.isSeasonAdmin(1L, "user1")).isEqualTo(Boolean.TRUE);
-        assertThat(seasonAdminService.isSeasonAdmin(2L, "user1")).isEqualTo(Boolean.FALSE);
+        assertThat(seasonAdminService.isSeasonAdmin(1L, "user1")).isTrue();
+        assertThat(seasonAdminService.isSeasonAdmin(2L, "user1")).isFalse();
     }
 
     @Test
