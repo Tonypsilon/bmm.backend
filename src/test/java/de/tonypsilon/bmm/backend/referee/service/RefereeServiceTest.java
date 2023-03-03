@@ -245,8 +245,7 @@ class RefereeServiceTest {
         when(refereeRepository.findById(1L)).thenReturn(Optional.of(referee1));
         when(refereeRepository.findById(2L)).thenReturn(Optional.empty());
         Optional<RefereeData> actual = refereeService.findById(1L);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get()).isEqualTo(refereeData);
+        assertThat(actual).isPresent().hasValue(refereeData);
         actual = refereeService.findById(2L);
         assertTrue(actual.isEmpty());
     }
