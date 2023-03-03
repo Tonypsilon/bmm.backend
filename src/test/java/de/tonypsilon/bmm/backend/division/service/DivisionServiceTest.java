@@ -200,8 +200,8 @@ class DivisionServiceTest {
     void testDivisionExistsById() {
         when(divisionRepository.existsById(1L)).thenReturn(Boolean.TRUE);
         when(divisionRepository.existsById(2L)).thenReturn(Boolean.FALSE);
-        assertThat(divisionService.divisionExistsById(1L)).isEqualTo(Boolean.TRUE);
-        assertThat(divisionService.divisionExistsById(2L)).isEqualTo(Boolean.FALSE);
+        assertThat(divisionService.divisionExistsById(1L)).isTrue();
+        assertThat(divisionService.divisionExistsById(2L)).isFalse();
     }
 
     @Test
