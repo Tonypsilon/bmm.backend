@@ -82,8 +82,8 @@ class ClubAdminServiceTest {
     void testIsClubAdmin() {
         when(clubAdminRepository.existsByClubIdAndUsername(1L, "user1")).thenReturn(Boolean.TRUE);
         when(clubAdminRepository.existsByClubIdAndUsername(2L, "user3")).thenReturn(Boolean.FALSE);
-        assertThat(clubAdminService.isClubAdmin(1L, "user1")).isEqualTo(Boolean.TRUE);
-        assertThat(clubAdminService.isClubAdmin(2L, "user3")).isEqualTo(Boolean.FALSE);
+        assertThat(clubAdminService.isClubAdmin(1L, "user1")).isTrue();
+        assertThat(clubAdminService.isClubAdmin(2L, "user3")).isFalse();
     }
 
     @Test
