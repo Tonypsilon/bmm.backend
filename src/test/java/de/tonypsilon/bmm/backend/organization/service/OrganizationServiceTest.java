@@ -82,7 +82,7 @@ class OrganizationServiceTest {
                         && organization.getOrganizationMembers().size() == 1
         ));
 
-        assertThat(actual.clubIds()).isEqualTo(Set.of(2L));
+        assertThat(actual.clubIds()).containsExactlyInAnyOrder(2L);
     }
 
     @Test
