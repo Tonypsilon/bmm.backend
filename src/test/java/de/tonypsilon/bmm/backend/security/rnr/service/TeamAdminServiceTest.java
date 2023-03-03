@@ -82,8 +82,8 @@ class TeamAdminServiceTest {
     void testIsTeamAdmin() {
         when(teamAdminRepository.existsByTeamIdAndUsername(1L, "user1")).thenReturn(Boolean.TRUE);
         when(teamAdminRepository.existsByTeamIdAndUsername(2L, "user2")).thenReturn(Boolean.FALSE);
-        assertThat(teamAdminService.isTeamAdmin(1L, "user1")).isEqualTo(Boolean.TRUE);
-        assertThat(teamAdminService.isTeamAdmin(2L, "user2")).isEqualTo(Boolean.FALSE);
+        assertThat(teamAdminService.isTeamAdmin(1L, "user1")).isTrue();
+        assertThat(teamAdminService.isTeamAdmin(2L, "user2")).isFalse();
     }
 
     @Test
