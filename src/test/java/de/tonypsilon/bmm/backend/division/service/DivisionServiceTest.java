@@ -72,10 +72,7 @@ class DivisionServiceTest {
         assertFalse(level1Actual.hasNext());
 
         assertThat(actual.get(2)).hasSize(2);
-        Iterator<DivisionData> level2Actual = actual.get(2).iterator();
-        assertThat(level2Actual.next()).isEqualTo(stadtligaAData);
-        assertThat(level2Actual.next()).isEqualTo(stadtLigaBData);
-        assertFalse(level2Actual.hasNext());
+        assertThat(actual.get(2)).containsExactly(stadtligaAData, stadtLigaBData);
     }
 
     @Test
