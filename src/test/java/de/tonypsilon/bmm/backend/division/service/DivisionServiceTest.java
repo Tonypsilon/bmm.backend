@@ -64,7 +64,7 @@ class DivisionServiceTest {
         when(divisionRepository.findBySeasonId(1L)).thenReturn(List.of(
            landesliga, stadtligaA, stadtLigaB));
         SortedSetMultimap<Integer, DivisionData> actual = divisionService.getAllDivisionsOfSeasonByLevel(1L);
-        assertThat(actual.size()).isEqualTo(3);
+        org.assertj.guava.api.Assertions.assertThat(actual).hasSize(3);
 
         assertThat(actual.get(1)).hasSize(1);
         Iterator<DivisionData> level1Actual = actual.get(1).iterator();
