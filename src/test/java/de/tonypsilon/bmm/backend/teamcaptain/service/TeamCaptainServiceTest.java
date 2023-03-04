@@ -8,6 +8,7 @@ import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,7 +45,7 @@ class TeamCaptainServiceTest {
         when(teamCaptainRepository.existsByTeamId(2L)).thenReturn(Boolean.FALSE);
         when(teamCaptainRepository.getByTeamId(2L)).thenReturn(teamCaptain1);
         TeamCaptainData actual = teamCaptainService.createTeamCaptain(createTeamCaptainData);
-        assertEquals(teamCaptainData1, actual);
+        assertThat(actual).isEqualTo(teamCaptainData1);
     }
 
     @Test
@@ -54,7 +55,8 @@ class TeamCaptainServiceTest {
         when(teamService.existsById(1L)).thenReturn(Boolean.FALSE);
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> teamCaptainService.createTeamCaptain(createTeamCaptainData));
-        assertEquals("Es gibt keine Mannschaft mit der ID 1!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keine Mannschaft mit der ID 1!");
     }
 
     @Test
@@ -65,8 +67,8 @@ class TeamCaptainServiceTest {
         when(teamCaptainRepository.existsByTeamId(2L)).thenReturn(Boolean.TRUE);
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> teamCaptainService.createTeamCaptain(createTeamCaptainData));
-        assertEquals("Es gibt bereits einen Mannschaftsleiter für die Mannschaft mit der ID 2!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt bereits einen Mannschaftsleiter für die Mannschaft mit der ID 2!");
     }
 
 }

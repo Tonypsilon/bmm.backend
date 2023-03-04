@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collection;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -52,7 +53,7 @@ class SeasonControllerTest {
         Collection<SeasonData> actualSeasons = objectMapper.readValue(
                 actualResponse.getContentAsString(),
                 new TypeReference<Collection<SeasonData>>(){});
-        assertEquals(2, actualSeasons.size());
+        assertThat(actualSeasons).hasSize(2);
         assertTrue(actualSeasons.containsAll(List.of(seasonData1, seasonData2)));
     }
 

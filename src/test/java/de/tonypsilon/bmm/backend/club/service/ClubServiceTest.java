@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -49,7 +50,7 @@ class ClubServiceTest {
     void testGetAllClubs() {
         when(clubRepository.findAll()).thenReturn(List.of(club1, club2, club3));
         Collection<ClubData> actual = clubService.getAllClubs();
-        assertEquals(3, actual.size());
+        assertThat(actual).hasSize(3);
         assertTrue(actual.containsAll(List.of(club1Data, club2Data, club3Data)));
     }
 
@@ -59,7 +60,7 @@ class ClubServiceTest {
         when(clubRepository.existsByZps(20)).thenReturn(Boolean.FALSE);
         when(clubRepository.getByName("club2")).thenReturn(club2);
         ClubData actual = clubService.createClub(new ClubCreationData("club2", 20, Boolean.TRUE));
-        assertEquals(club2Data, actual);
+        assertThat(actual).isEqualTo(club2Data);
         verify(clubRepository, times(1)).save(
                 argThat(club -> club.getName().equals("club2")
                 && club.getZps().equals(20)
@@ -70,7 +71,7 @@ class ClubServiceTest {
         when(clubRepository.existsByZps(133)).thenReturn(Boolean.FALSE);
         when(clubRepository.getByName("club3")).thenReturn(club3);
         actual = clubService.createClub(new ClubCreationData("club3", 133, null));
-        assertEquals(club3Data, actual);
+        assertThat(actual).isEqualTo(club3Data);
         verify(clubRepository, times(1)).save(
                 argThat(club -> club.getName().equals("club3")
                         && club.getZps().equals(133)
@@ -82,11 +83,13 @@ class ClubServiceTest {
     void testCreateClubInvalidName() {
         NameBlankException nameNullException = assertThrows(NameBlankException.class,
                 () -> clubService.createClub(new ClubCreationData(null, 1, Boolean.TRUE)));
-        assertEquals("Der Name des Vereins darf nicht leer sein!", nameNullException.getMessage());
+        assertThat(nameNullException.getMessage())
+                .isEqualTo("Der Name des Vereins darf nicht leer sein!");
 
         NameBlankException nameBlankException = assertThrows(NameBlankException.class,
                 () -> clubService.createClub(new ClubCreationData("", 1, null)));
-        assertEquals("Der Name des Vereins darf nicht leer sein!", nameBlankException.getMessage());
+        assertThat(nameBlankException.getMessage())
+                .isEqualTo("Der Name des Vereins darf nicht leer sein!");
 
     }
 
@@ -95,7 +98,8 @@ class ClubServiceTest {
         when(clubRepository.existsByName("club2")).thenReturn(Boolean.TRUE);
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> clubService.createClub(new ClubCreationData("club2", 2, Boolean.TRUE)));
-        assertEquals("Verein mit dem Namen club2 existiert bereits!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Verein mit dem Namen club2 existiert bereits!");
     }
 
     @Test
@@ -103,7 +107,8 @@ class ClubServiceTest {
         when(clubRepository.existsByName("club2")).thenReturn(Boolean.FALSE);
         MissingDataException actualException = assertThrows(MissingDataException.class,
                 () -> clubService.createClub(new ClubCreationData("club2", null, Boolean.TRUE)));
-        assertEquals("Verein muss Eigenschaft zps besitzen!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Verein muss Eigenschaft zps besitzen!");
     }
 
     @Test
@@ -112,7 +117,8 @@ class ClubServiceTest {
         when(clubRepository.existsByZps(20)).thenReturn(Boolean.TRUE);
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> clubService.createClub(new ClubCreationData("club2", 20, Boolean.TRUE)));
-        assertEquals("Verein mit der zps 20 existiert bereits!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Verein mit der zps 20 existiert bereits!");
     }
 
     @Test
@@ -134,7 +140,7 @@ class ClubServiceTest {
                         && club.getZps().equals(100)
                         && club.getActive().equals(Boolean.FALSE)
                 ));
-        assertEquals(new ClubData(1L, "club1Patched", 100, Boolean.FALSE), actual);
+        assertThat(actual).isEqualTo(new ClubData(1L, "club1Patched", 100, Boolean.FALSE));
     }
 
     @Test
@@ -142,10 +148,12 @@ class ClubServiceTest {
         when(clubRepository.existsById(-1L)).thenReturn(Boolean.FALSE);
         NotFoundException idNullException = assertThrows(NotFoundException.class,
                 () -> clubService.patchClub(new ClubData(null, "idNullClub", 123, null)));
-        assertEquals("Verein mit der ID null existiert nicht!", idNullException.getMessage());
+        assertThat(idNullException.getMessage())
+                .isEqualTo("Verein mit der ID null existiert nicht!");
         NotFoundException idNotFoundException = assertThrows(NotFoundException.class,
                 () -> clubService.patchClub(new ClubData(-1L, "nonExistentClub", 456, Boolean.TRUE)));
-        assertEquals("Verein mit der ID -1 existiert nicht!", idNotFoundException.getMessage());
+        assertThat(idNotFoundException.getMessage())
+                .isEqualTo("Verein mit der ID -1 existiert nicht!");
     }
 
     @Test
@@ -154,16 +162,16 @@ class ClubServiceTest {
         when(clubRepository.findById(1L)).thenReturn(Optional.of(club1));
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> clubService.patchClub(new ClubData(1L, "club1", 1000, Boolean.TRUE)));
-        assertEquals("Die Eigenschaft zps eines Vereins darf sich nicht ändern!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Die Eigenschaft zps eines Vereins darf sich nicht ändern!");
     }
 
     @Test
     void testClubExistsById() {
         when(clubRepository.existsById(1L)).thenReturn(Boolean.TRUE);
         when(clubRepository.existsById(-1L)).thenReturn(Boolean.FALSE);
-        assertEquals(Boolean.TRUE, clubService.clubExistsById(1L));
-        assertEquals(Boolean.FALSE, clubService.clubExistsById(-1L));
+        assertThat(clubService.clubExistsById(1L)).isEqualTo(Boolean.TRUE);
+        assertThat(clubService.clubExistsById(-1L)).isEqualTo(Boolean.FALSE);
     }
 
     @Test
@@ -183,7 +191,8 @@ class ClubServiceTest {
         when(clubRepository.findById(-1L)).thenReturn(Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> clubService.deleteClub(-1L));
-        assertEquals("Es gibt keinen Verein mit der ID -1!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keinen Verein mit der ID -1!");
     }
 
 }

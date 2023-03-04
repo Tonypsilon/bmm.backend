@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -94,7 +95,7 @@ class ParticipationEligibilityServiceTest {
                 .thenReturn(participationEligibility1);
         ParticipationEligibilityData actual = participationEligibilityService.createParticipationEligibility(
                 new ParticipationEligibilityCreationData(2L, 3L, "Max", "Mustermann", 1, Optional.empty()));
-        assertEquals(participationEligibilityData1, actual);
+        assertThat(actual).isEqualTo(participationEligibilityData1);
     }
 
     @Test
@@ -105,7 +106,8 @@ class ParticipationEligibilityServiceTest {
                         new ParticipationEligibilityCreationData(1L, 3L, "Max", "Mustermann", 1, Optional.empty())
                 )
         );
-        assertEquals("Es gibt keine Saison mit der ID 1!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keine Saison mit der ID 1!");
     }
 
     @ParameterizedTest
@@ -118,7 +120,8 @@ class ParticipationEligibilityServiceTest {
 
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> participationEligibilityService.createParticipationEligibility(participationEligibilityCreationData));
-        assertEquals("Die Saison ist nicht in der Registrierungsphase!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Die Saison ist nicht in der Registrierungsphase!");
     }
 
     @Test
@@ -131,7 +134,8 @@ class ParticipationEligibilityServiceTest {
                         new ParticipationEligibilityCreationData(2L, 1L, "Max", "Mustermann", 1, Optional.empty())
                 )
         );
-        assertEquals("Es gibt keinen Verein mit der ID 1!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keinen Verein mit der ID 1!");
     }
 
     @Test
@@ -144,7 +148,8 @@ class ParticipationEligibilityServiceTest {
                         new ParticipationEligibilityCreationData(2L, 3L, "", "Mustermann", 1, Optional.empty())
                 )
         );
-        assertEquals("Der Name darf nicht leer sein!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Der Name darf nicht leer sein!");
     }
 
     @Test
@@ -157,7 +162,8 @@ class ParticipationEligibilityServiceTest {
                         new ParticipationEligibilityCreationData(2L, 3L, "Max", "", 1, Optional.empty())
                 )
         );
-        assertEquals("Der Name darf nicht leer sein!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Der Name darf nicht leer sein!");
     }
 
     @Test
@@ -170,7 +176,8 @@ class ParticipationEligibilityServiceTest {
                         new ParticipationEligibilityCreationData(2L, 3L, "Max", "Mustermann", 1, Optional.of(-1))
                 )
         );
-        assertEquals("Das Rating muss positiv sein!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Das Rating muss positiv sein!");
     }
 
     @Test
@@ -184,8 +191,9 @@ class ParticipationEligibilityServiceTest {
                 () -> participationEligibilityService.createParticipationEligibility(
                         new ParticipationEligibilityCreationData(2L, 3L, "Max", "Mustermann", 1, Optional.empty()))
         );
-        assertEquals("Es gibt bereits eine Spielberechtigung für die Spielernummer 1 " +
-                "für den Club mit ID 3 und die Saison mit der ID 2!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt bereits eine Spielberechtigung für die Spielernummer 1 " +
+                "für den Club mit ID 3 und die Saison mit der ID 2!");
     }
 
     @Test
@@ -194,7 +202,7 @@ class ParticipationEligibilityServiceTest {
                 .thenReturn(List.of(participationEligibility1, participationEligibility2, participationEligibility4));
         Collection<ParticipationEligibilityData> actual = participationEligibilityService
                 .getAllParticipationEligibilitiesForSeason(2L);
-        assertEquals(3, actual.size());
+        assertThat(actual).hasSize(3);
         assertTrue(actual.containsAll(List.of(participationEligibilityData1,
                 participationEligibilityData2, participationEligibilityData4)));
     }
@@ -205,7 +213,7 @@ class ParticipationEligibilityServiceTest {
                 .thenReturn(List.of(participationEligibility1, participationEligibility2));
         Collection<ParticipationEligibilityData> actual = participationEligibilityService
                 .getAllParticipationEligibilitiesForSeasonAndClub(2L, 3L);
-        assertEquals(2, actual.size());
+        assertThat(actual).hasSize(2);
         assertTrue(actual.containsAll(List.of(participationEligibilityData1, participationEligibilityData2)));
     }
 
@@ -232,13 +240,14 @@ class ParticipationEligibilityServiceTest {
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> participationEligibilityService.deleteParticipationEligibility(5L)
         );
-        assertEquals("Es gibt keine Spielberechtigung mit der ID 5!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keine Spielberechtigung mit der ID 5!");
     }
 
     @ParameterizedTest
     @ValueSource(strings = { "true", "false" })
     void testExistsById(boolean doesExist) {
         when(participationEligibilityRepository.existsById(1L)).thenReturn(doesExist);
-        assertEquals(doesExist, participationEligibilityService.existsById(1L));
+        assertThat(participationEligibilityService.existsById(1L)).isEqualTo(doesExist);
     }
 }

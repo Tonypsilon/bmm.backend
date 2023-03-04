@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -60,7 +61,7 @@ class MatchdayServiceTest {
         when(matchdayRepository.getByDivisionIdAndRound(1L, 2)).thenReturn(matchday2);
 
         MatchdayData actual = matchdayService.createMatchday(new CreateMatchdayData(1L, "22.2.2001-KW3", 2));
-        assertEquals(matchdayData2, actual);
+        assertThat(actual).isEqualTo(matchdayData2);
         verify(matchdayRepository, times(1)).save(
                 argThat(matchday -> matchday.getDivisionId().equals(1L)
                 && matchday.getRound().equals(2)
@@ -74,7 +75,8 @@ class MatchdayServiceTest {
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> matchdayService.createMatchday(new CreateMatchdayData(3L, "1.1.1111", 1))
         );
-        assertEquals("Es gibt keine Staffel mit der ID 3!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keine Staffel mit der ID 3!");
     }
 
     @Test
@@ -84,8 +86,8 @@ class MatchdayServiceTest {
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> matchdayService.createMatchday(new CreateMatchdayData(1L, "1.1.1111", 2))
         );
-        assertEquals("Es gibt für die Staffel mit der ID 1 und Runde 2 schon einen Spieltag!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt für die Staffel mit der ID 1 und Runde 2 schon einen Spieltag!");
     }
 
     @Test
@@ -97,7 +99,8 @@ class MatchdayServiceTest {
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> matchdayService.createMatchday(new CreateMatchdayData(1L, "1.1.1111", 2))
         );
-        assertEquals("Saison ist nicht in der Vorbereitungsphase!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Saison ist nicht in der Vorbereitungsphase!");
     }
 
     @Test
@@ -111,8 +114,8 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.createMatchday(new CreateMatchdayData(1L, "2.2.2", 3))
         );
-        assertEquals("Für die Staffel mit ID 1 sollte als nächstes Runde 2 erstellt werden, nicht 3!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Für die Staffel mit ID 1 sollte als nächstes Runde 2 erstellt werden, nicht 3!");
     }
 
     @Test
@@ -121,8 +124,8 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.createMatchday(new CreateMatchdayData(1L, "abc;", 2))
         );
-        assertEquals("Das Datum enthält ungültige Zeichen!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Das Datum enthält ungültige Zeichen!");
     }
 
     @Test
@@ -131,8 +134,8 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.createMatchday(new CreateMatchdayData(1L, "abc/", 2))
         );
-        assertEquals("Das Datum enthält ungültige Zeichen!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Das Datum enthält ungültige Zeichen!");
     }
 
     @Test
@@ -141,8 +144,8 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.createMatchday(new CreateMatchdayData(1L, "abc&", 2))
         );
-        assertEquals("Das Datum enthält ungültige Zeichen!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Das Datum enthält ungültige Zeichen!");
     }
 
     @Test
@@ -151,15 +154,15 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.createMatchday(new CreateMatchdayData(1L, "", 2))
         );
-        assertEquals("Das Datum darf nicht leer sein!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Das Datum darf nicht leer sein!");
     }
 
     @Test
     void testGetMatchdaysOfDivisionOrderedByRound() {
         when(matchdayRepository.findByDivisionIdOrderByRoundAsc(1L)).thenReturn(List.of(matchday1, matchday2));
         List<MatchdayData> actual = matchdayService.getMatchdaysOfDivisionOrderedByRound(1L);
-        assertEquals(2, actual.size());
+        assertThat(actual).hasSize(2);
         assertTrue(actual.containsAll(List.of(matchdayData1, matchdayData2)));
     }
 
@@ -167,11 +170,11 @@ class MatchdayServiceTest {
     void testGetById() {
         when(matchdayRepository.findById(1L)).thenReturn(Optional.of(matchday1));
         when(matchdayRepository.findById(-1L)).thenReturn(Optional.empty());
-        assertEquals(matchdayData1, matchdayService.getMatchdayDataById(1L));
+        assertThat(matchdayService.getMatchdayDataById(1L)).isEqualTo(matchdayData1);
         NotFoundException notFoundException = assertThrows(NotFoundException.class,
                 () -> matchdayService.getMatchdayDataById(-1L));
-        assertEquals("Es gibt keinen Spieltag mit der ID -1!",
-                notFoundException.getMessage());
+        assertThat(notFoundException.getMessage())
+                .isEqualTo("Es gibt keinen Spieltag mit der ID -1!");
     }
 
     @Test
@@ -186,7 +189,7 @@ class MatchdayServiceTest {
         modifiedMatchday.setDate("12.1.2001");
         when(matchdayRepository.getByDivisionIdAndRound(1L, 1)).thenReturn(modifiedMatchday);
         MatchdayData actual = matchdayService.updateMatchday(new MatchdayData(1L, 1L, "12.1.2001", 1));
-        assertEquals(actual, new MatchdayData(1L, 1L, "12.1.2001", 1));
+        assertThat(actual).isEqualTo(new MatchdayData(1L, 1L, "12.1.2001", 1));
         verify(matchdayRepository, times(1)).save(argThat(
                 matchday -> matchday.getId().equals(1L)
                 && matchday.getDivisionId().equals(1L)
@@ -200,7 +203,8 @@ class MatchdayServiceTest {
         when(matchdayRepository.findById(1L)).thenReturn(Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> matchdayService.updateMatchday(matchdayData1));
-        assertEquals("Es gibt keinen Spieltag mit der ID 1!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keinen Spieltag mit der ID 1!");
     }
 
     @Test
@@ -209,7 +213,8 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.updateMatchday(new MatchdayData(1L, 2L, "13.1.2001", 1))
         );
-        assertEquals("Die Staffel eines Spieltags kann sich nicht ändern!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Die Staffel eines Spieltags kann sich nicht ändern!");
     }
 
     @Test
@@ -218,7 +223,8 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.updateMatchday(new MatchdayData(1L, 1L, "13.1.2001", 2))
         );
-        assertEquals("Die Runde eines Spieltags kann sich nicht ändern!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Die Runde eines Spieltags kann sich nicht ändern!");
     }
 
     @Test
@@ -229,8 +235,8 @@ class MatchdayServiceTest {
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> matchdayService.updateMatchday(new MatchdayData(1L, 1L, "13.1.2001", 1))
         );
-        assertEquals("In dieser Saisonphase können Spieltage nicht angepasst werden!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("In dieser Saisonphase können Spieltage nicht angepasst werden!");
     }
 
     @Test
@@ -241,7 +247,8 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.updateMatchday(new MatchdayData(1L, 1L, "123abc;", 1))
         );
-        assertEquals("Das Datum enthält ungültige Zeichen!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Das Datum enthält ungültige Zeichen!");
     }
 
     @Test
@@ -265,7 +272,8 @@ class MatchdayServiceTest {
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> matchdayService.deleteMatchday(2L)
         );
-        assertEquals("Es gibt keinen Spieltag mit der ID 2!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keinen Spieltag mit der ID 2!");
     }
 
     @Test
@@ -276,8 +284,8 @@ class MatchdayServiceTest {
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> matchdayService.deleteMatchday(2L)
         );
-        assertEquals("In dieser Saisonphase können Spieltage nicht gelöscht werden!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("In dieser Saisonphase können Spieltage nicht gelöscht werden!");
     }
 
     @Test
@@ -289,8 +297,8 @@ class MatchdayServiceTest {
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> matchdayService.deleteMatchday(1L)
         );
-        assertEquals("Für die Staffel mit ID 1 kann nur Runde 2 gelöscht werden, nicht 1!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Für die Staffel mit ID 1 kann nur Runde 2 gelöscht werden, nicht 1!");
     }
 
     private void prepareMocksForInvalidDateCase() {

@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -47,7 +48,7 @@ class RefereeServiceTest {
         CreateRefereeData createRefereeData = new CreateRefereeData(
                 1L, "Forename", "Surname", "fore.sure@name.com");
         RefereeData actual = refereeService.createReferee(createRefereeData);
-        assertEquals(refereeData, actual);
+        assertThat(actual).isEqualTo(refereeData);
         verify(refereeRepository, times(1)).save(argThat(
                 referee -> referee.getSeasonId().equals(1L)
                         && referee.getForename().equals("Forename")
@@ -63,7 +64,8 @@ class RefereeServiceTest {
                 1L, "Forename", "Surname", "fore.sure@name.com");
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> refereeService.createReferee(createRefereeData));
-        assertEquals("Es gibt keine Saison mit der ID 1!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keine Saison mit der ID 1!");
     }
 
     @Test
@@ -74,9 +76,8 @@ class RefereeServiceTest {
                 1L, "Forename", "Surname", "fore.sure@name.com");
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> refereeService.createReferee(createRefereeData));
-        assertEquals(
-                "Es gibt bereits einen Schiedsrichter für die Saison mit der ID 1 und der E-Mailadresse fore.sure@name.com!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt bereits einen Schiedsrichter für die Saison mit der ID 1 und der E-Mailadresse fore.sure@name.com!");
     }
 
     @Test
@@ -87,7 +88,8 @@ class RefereeServiceTest {
                 1L, "", "Surname", "for.sure@name.com");
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> refereeService.createReferee(createRefereeData));
-        assertEquals("Der Name darf nicht leer sein!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+               .isEqualTo("Der Name darf nicht leer sein!");
     }
 
     @Test
@@ -98,7 +100,8 @@ class RefereeServiceTest {
                 1L, "Forename", "", "fore.sure@name.com");
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> refereeService.createReferee(createRefereeData));
-        assertEquals("Der Name darf nicht leer sein!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Der Name darf nicht leer sein!");
     }
 
     @Test
@@ -109,7 +112,8 @@ class RefereeServiceTest {
                 1L, "Forename", "Surname", "fore.sure.name.com");
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> refereeService.createReferee(createRefereeData));
-        assertEquals("Die E-Mailadresse ist ungültig!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Die E-Mailadresse ist ungültig!");
     }
 
     @Test
@@ -125,7 +129,7 @@ class RefereeServiceTest {
         updatedReferee.setEmailAddress("fore.sure2@name.com");
         when(refereeRepository.getBySeasonIdAndEmailAddress(1L, "fore.sure2@name.com")).thenReturn(updatedReferee);
         RefereeData actual = refereeService.updateReferee(refereeData);
-        assertEquals(refereeData, actual);
+        assertThat(actual).isEqualTo(refereeData);
         verify(refereeRepository, times(1)).save(argThat(
                 referee -> referee.getId().equals(1L)
                 && referee.getSeasonId().equals(1L)
@@ -141,7 +145,8 @@ class RefereeServiceTest {
         RefereeData refereeData = new RefereeData(2L, 1L, "Forename", "Surname", "fore.sure@name.com");
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> refereeService.updateReferee(refereeData));
-        assertEquals("Es gibt keinen Schiedsrichter mit der ID 2!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keinen Schiedsrichter mit der ID 2!");
     }
 
     @Test
@@ -150,7 +155,8 @@ class RefereeServiceTest {
         RefereeData refereeData = new RefereeData(1L, 2L, "Forename", "Surname", "fore.sure@name.com");
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> refereeService.updateReferee(refereeData));
-        assertEquals("Die Saison darf sich nicht ändern!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Die Saison darf sich nicht ändern!");
     }
 
     @Test
@@ -160,9 +166,8 @@ class RefereeServiceTest {
         RefereeData refereeData = new RefereeData(1L, 1L, "Forename", "Surname", "fore.sure2@name.com");
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> refereeService.updateReferee(refereeData));
-        assertEquals(
-                "Es gibt bereits einen Schiedsrichter für die Saison mit der ID 1 und der E-Mailadresse fore.sure2@name.com!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt bereits einen Schiedsrichter für die Saison mit der ID 1 und der E-Mailadresse fore.sure2@name.com!");
     }
 
     @Test
@@ -172,7 +177,8 @@ class RefereeServiceTest {
         RefereeData refereeData = new RefereeData(1L, 1L, null, "Surname", "fore.sure@name.com");
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> refereeService.updateReferee(refereeData));
-        assertEquals("Der Name darf nicht leer sein!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Der Name darf nicht leer sein!");
     }
 
     @Test
@@ -182,7 +188,8 @@ class RefereeServiceTest {
         RefereeData refereeData = new RefereeData(1L, 1L, "Forename", null, "fore.sure@name.com");
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> refereeService.updateReferee(refereeData));
-        assertEquals("Der Name darf nicht leer sein!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Der Name darf nicht leer sein!");
     }
 
     @Test
@@ -192,7 +199,8 @@ class RefereeServiceTest {
         RefereeData refereeData = new RefereeData(1L, 1L, "Forename", "Surname", "abc;@@domain.com");
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> refereeService.updateReferee(refereeData));
-        assertEquals("Die E-Mailadresse ist ungültig!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Die E-Mailadresse ist ungültig!");
     }
 
     @ParameterizedTest
@@ -216,7 +224,8 @@ class RefereeServiceTest {
         RefereeData refereeData = new RefereeData(2L, 1L, "Forename", "Surname", "fore.sure@name.com");
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> refereeService.deleteReferee(refereeData));
-        assertEquals("Es gibt keinen Schiedsrichter mit der ID 2!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keinen Schiedsrichter mit der ID 2!");
     }
 
     @ParameterizedTest
@@ -227,9 +236,8 @@ class RefereeServiceTest {
 
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> refereeService.deleteReferee(refereeData));
-        assertEquals("In dieser Saisonphase kann kein Schiedsrichter gelöscht werden!",
-                actualException.getMessage());
-
+        assertThat(actualException.getMessage()).
+                isEqualTo("In dieser Saisonphase kann kein Schiedsrichter gelöscht werden!");
     }
 
     @Test
@@ -237,8 +245,7 @@ class RefereeServiceTest {
         when(refereeRepository.findById(1L)).thenReturn(Optional.of(referee1));
         when(refereeRepository.findById(2L)).thenReturn(Optional.empty());
         Optional<RefereeData> actual = refereeService.findById(1L);
-        assertTrue(actual.isPresent());
-        assertEquals(refereeData, actual.get());
+        assertThat(actual).isPresent().hasValue(refereeData);
         actual = refereeService.findById(2L);
         assertTrue(actual.isEmpty());
     }

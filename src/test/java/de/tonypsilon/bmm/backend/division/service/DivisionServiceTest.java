@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -63,25 +64,22 @@ class DivisionServiceTest {
         when(divisionRepository.findBySeasonId(1L)).thenReturn(List.of(
            landesliga, stadtligaA, stadtLigaB));
         SortedSetMultimap<Integer, DivisionData> actual = divisionService.getAllDivisionsOfSeasonByLevel(1L);
-        assertEquals(3, actual.size());
+        org.assertj.guava.api.Assertions.assertThat(actual).hasSize(3);
 
-        assertEquals(1, actual.get(1).size());
+        assertThat(actual.get(1)).hasSize(1);
         Iterator<DivisionData> level1Actual = actual.get(1).iterator();
-        assertEquals(landesligaData, level1Actual.next());
+        assertThat(level1Actual.next()).isEqualTo(landesligaData);
         assertFalse(level1Actual.hasNext());
 
-        assertEquals(2, actual.get(2).size());
-        Iterator<DivisionData> level2Actual = actual.get(2).iterator();
-        assertEquals(stadtligaAData, level2Actual.next());
-        assertEquals(stadtLigaBData, level2Actual.next());
-        assertFalse(level2Actual.hasNext());
+        assertThat(actual.get(2)).hasSize(2);
+        assertThat(actual.get(2)).containsExactly(stadtligaAData, stadtLigaBData);
     }
 
     @Test
     void testGetSeasonIdByDivisionIdOk() {
         when(divisionRepository.findById(1L)).thenReturn(Optional.of(landesliga));
         Long actual = divisionService.getSeasonIdByDivisionId(1L);
-        assertEquals(landesliga.getSeasonId(), actual);
+        assertThat(actual).isEqualTo(landesliga.getSeasonId());
     }
 
     @Test
@@ -89,7 +87,8 @@ class DivisionServiceTest {
         when(divisionRepository.findById(-1L)).thenReturn(Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> divisionService.getSeasonIdByDivisionId(-1L));
-        assertEquals("Es gibt keine Staffel mit der ID -1!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keine Staffel mit der ID -1!");
     }
 
     @Test
@@ -100,7 +99,7 @@ class DivisionServiceTest {
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.PREPARATION);
         DivisionCreationData divisionCreationData = new DivisionCreationData("Landesliga", 1, 8, 1L);
         DivisionData actual = divisionService.createDivision(divisionCreationData);
-        assertEquals(actual, landesligaData);
+        assertThat(actual).isEqualTo(landesligaData);
         verify(divisionRepository, times(1)).save(
                 argThat(division -> division.getName().equals("Landesliga")
                 && division.getLevel().equals(1)
@@ -113,16 +112,18 @@ class DivisionServiceTest {
         NameBlankException nameBlankException = assertThrows(NameBlankException.class,
                 () -> divisionService.createDivision(
                         new DivisionCreationData("",1,8,1L)));
-        assertEquals("Der Name der Staffel darf nicht leer sein!", nameBlankException.getMessage());
+        assertThat(nameBlankException.getMessage())
+                .isEqualTo("Der Name der Staffel darf nicht leer sein!");
         NameBlankException nameNullException = assertThrows(NameBlankException.class,
                 () -> divisionService.createDivision(
                         new DivisionCreationData(null,1,8,1L)));
-        assertEquals("Der Name der Staffel darf nicht leer sein!", nameNullException.getMessage());
+        assertThat(nameNullException.getMessage())
+                .isEqualTo("Der Name der Staffel darf nicht leer sein!");
         BadDataException seasonNullException = assertThrows(BadDataException.class,
                 () -> divisionService.createDivision(
                         new DivisionCreationData("Landesliga", 1, 8 ,null)));
-        assertEquals("Zur Erstellung einer Staffel muss eine Saison gegeben sein!",
-                seasonNullException.getMessage());
+        assertThat(seasonNullException.getMessage())
+                .isEqualTo("Zur Erstellung einer Staffel muss eine Saison gegeben sein!");
     }
 
     @Test
@@ -133,7 +134,8 @@ class DivisionServiceTest {
                         new DivisionCreationData("Landesliga", 1, 8, 2L)
                 )
         );
-        assertEquals("Es gibt keine Saison mit der ID 2!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Es gibt keine Saison mit der ID 2!");
     }
 
     @Test
@@ -145,7 +147,8 @@ class DivisionServiceTest {
                         new DivisionCreationData("Landesliga", 1, 8, 1L)
                 )
         );
-        assertEquals("Saison ist nicht in der Vorbereitungsphase!", actualException.getMessage());
+        assertThat(actualException.getMessage())
+                .isEqualTo("Saison ist nicht in der Vorbereitungsphase!");
     }
 
     @Test
@@ -156,8 +159,8 @@ class DivisionServiceTest {
         AlreadyExistsException alreadyExistsException = assertThrows(AlreadyExistsException.class,
                 () -> divisionService.createDivision(
                         new DivisionCreationData("Landesliga", 1, 8, 1L)));
-        assertEquals("Staffel mit Namen Landesliga für Saison mit ID 1 existiert bereits!",
-                alreadyExistsException.getMessage());
+        assertThat(alreadyExistsException.getMessage())
+                .isEqualTo("Staffel mit Namen Landesliga für Saison mit ID 1 existiert bereits!");
     }
 
     @Test
@@ -171,13 +174,13 @@ class DivisionServiceTest {
 
         BadDataException actualExceptionNull = assertThrows(BadDataException.class,
                 () -> divisionService.createDivision(divisionCreationDataNull));
-        assertEquals("Die Anzahl der Bretter für eine Staffel muss eine ganze Zahl > 0 sein!",
-                actualExceptionNull.getMessage());
+        assertThat(actualExceptionNull.getMessage())
+                .isEqualTo("Die Anzahl der Bretter für eine Staffel muss eine ganze Zahl > 0 sein!");
 
         BadDataException actualExceptionInvalid = assertThrows(BadDataException.class,
                 () -> divisionService.createDivision(divisionCreationDataInvalid));
-        assertEquals("Die Anzahl der Bretter für eine Staffel muss eine ganze Zahl > 0 sein!",
-                actualExceptionInvalid.getMessage());
+        assertThat(actualExceptionInvalid.getMessage())
+                .isEqualTo("Die Anzahl der Bretter für eine Staffel muss eine ganze Zahl > 0 sein!");
     }
 
     @Test
@@ -190,16 +193,15 @@ class DivisionServiceTest {
 
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> divisionService.createDivision(divisionCreationData));
-        assertEquals("Das Level der Staffel muss eine ganze Zahl > 0 sein!",
-                actualException.getMessage());
+        assertThat(actualException.getMessage()).isEqualTo("Das Level der Staffel muss eine ganze Zahl > 0 sein!");
     }
 
     @Test
     void testDivisionExistsById() {
         when(divisionRepository.existsById(1L)).thenReturn(Boolean.TRUE);
         when(divisionRepository.existsById(2L)).thenReturn(Boolean.FALSE);
-        assertEquals(Boolean.TRUE, divisionService.divisionExistsById(1L));
-        assertEquals(Boolean.FALSE, divisionService.divisionExistsById(2L));
+        assertThat(divisionService.divisionExistsById(1L)).isTrue();
+        assertThat(divisionService.divisionExistsById(2L)).isFalse();
     }
 
     @Test
@@ -207,7 +209,7 @@ class DivisionServiceTest {
         when(divisionRepository.findById(1L)).thenReturn(Optional.of(landesliga));
 
         Integer actual = divisionService.getNumberOfBoardsByDivisionId(1L);
-        assertEquals(8, actual);
+        assertThat(actual).isEqualTo(8);
     }
 
     @Test
@@ -216,6 +218,6 @@ class DivisionServiceTest {
 
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> divisionService.getNumberOfBoardsByDivisionId(-1L));
-        assertEquals("Es gibt keine Staffel mit der ID -1!", actualException.getMessage());
+        assertThat(actualException.getMessage()).isEqualTo("Es gibt keine Staffel mit der ID -1!");
     }
 }
