@@ -7,6 +7,7 @@ import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.data.SeasonStageChangeData;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
+import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +27,18 @@ public class SeasonStageService {
     private final OrganizationService organizationService;
     private final TeamService teamService;
     private final ParticipantService participantService;
+    private final TeamDivisionLinkService teamDivisionLinkService;
 
     public SeasonStageService(final SeasonService seasonService,
                               final OrganizationService organizationService,
                               final TeamService teamService,
-                              final ParticipantService participantService) {
+                              final ParticipantService participantService,
+                              final TeamDivisionLinkService teamDivisionLinkService) {
         this.seasonService = seasonService;
         this.organizationService = organizationService;
         this.teamService = teamService;
         this.participantService = participantService;
+        this.teamDivisionLinkService = teamDivisionLinkService;
     }
 
     @Transactional
@@ -46,6 +50,7 @@ public class SeasonStageService {
         }
         if(seasonData.stage() == SeasonStage.PREPARATION && seasonStageChangeData.stage() == SeasonStage.RUNNING) {
             verifyChangeSeasonStageFromPreparationToRunning(seasonData);
+            prepareSeasonStart(seasonData);
             return seasonService.updateSeasonStage(seasonStageChangeData);
         }
         throw new BmmException("Fehler bei Saisonübergang von %s zu %s"
@@ -53,12 +58,7 @@ public class SeasonStageService {
     }
 
     private void verifyChangeSeasonStageFromRegistrationToPreparation(SeasonData seasonData) {
-        Set<TeamData> allTeamsOfSeason = Stream.of(seasonData)
-                .map(SeasonData::id)
-                .map(organizationService::getOrganizationIdsOfSeason)
-                .map(teamService::getTeamsByOrganizationIdIn)
-                .flatMap(Set::stream)
-                .collect(Collectors.toSet());
+        Set<TeamData> allTeamsOfSeason = getAllTeamsOfSeason(seasonData);
         verifyPlayersOfTeams(allTeamsOfSeason);
         verifyNoHolesInTeamNumberSequences(allTeamsOfSeason);
     }
@@ -94,5 +94,30 @@ public class SeasonStageService {
     }
 
     private void verifyChangeSeasonStageFromPreparationToRunning(SeasonData seasonData) {
+        verifyAllTeamsAreLinkedToDivision(getAllTeamsOfSeason(seasonData));
+    }
+
+    private void verifyAllTeamsAreLinkedToDivision(Set<TeamData> teams) {
+        List<Long> teamIdsWithoutDivision = teams.stream()
+                .map(TeamData::id)
+                .filter(id -> teamDivisionLinkService.getDivisionIdOfTeam(id) == null)
+                .toList();
+        if (!teamIdsWithoutDivision.isEmpty()) {
+            throw new BmmException("Es gibt mindestens eine Mannschaft ohne Staffel: "
+                    + teamIdsWithoutDivision.toString());
+        }
+    }
+
+    private void prepareSeasonStart(SeasonData seasonData) {
+
+    }
+
+    private Set<TeamData> getAllTeamsOfSeason(SeasonData seasonData) {
+        return Stream.of(seasonData)
+                .map(SeasonData::id)
+                .map(organizationService::getOrganizationIdsOfSeason)
+                .map(teamService::getTeamsByOrganizationIdIn)
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
     }
 }
