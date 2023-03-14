@@ -27,6 +27,10 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    - name: Create testdatabase.properties
+      run: cp ./src/test/resources/testdatabase.properties.sample ./src/test/resources/testdatabase.properties
+    - name: Create integrationtest.properties
+      run: cp ./src/test/resources/integrationtest.properties.sample ./src/test/resources/integrationtest.properties
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
