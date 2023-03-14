@@ -1,8 +1,8 @@
-de.tonypsilon.bmm.integrationtest.adminusername=username
-de.tonypsilon.bmm.integrationtest.adminpassword=password
-de.tonypsilon.bmm.integrationtest.seasonadminusername=username
-de.tonypsilon.bmm.integrationtest.seasonadminpassword=password
-de.tonypsilon.bmm.integrationtest.clubadminusername=username
-de.tonypsilon.bmm.integrationtest.clubadminpassword=password
-de.tonypsilon.bmm.integrationtest.teamadminusername=username
-de.tonypsilon.bmm.integrationtest.teamadminpassword=password
+de.tonypsilon.bmm.integrationtest.adminusername=admin
+de.tonypsilon.bmm.integrationtest.adminpassword=secret
+de.tonypsilon.bmm.integrationtest.seasonadminusername=seasonadmin
+de.tonypsilon.bmm.integrationtest.seasonadminpassword=seasonadminsecret
+de.tonypsilon.bmm.integrationtest.clubadminusername=clubadmin
+de.tonypsilon.bmm.integrationtest.clubadminpassword=clubadminsecret
+de.tonypsilon.bmm.integrationtest.teamadminusername=teamadmin
+de.tonypsilon.bmm.integrationtest.teamadminpassword=teamadminpassword
