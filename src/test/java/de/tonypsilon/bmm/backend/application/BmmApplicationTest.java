@@ -86,26 +86,13 @@ class BmmApplicationTest {
                 new SeasonAdminData(theSeason.id(), seasonAdminUser.username()),
                 headersAdmin);
 
-        // step 4: Create a playing date for the season.
+        // step 4: Create 9 playing dates for the season.
         // substep: Log in as season admin and fetch headers
         HttpHeaders seasonAdminHeaders = login(seasonAdminUser.username(), configuration.seasonAdminPassword());
-        PlayingDateData playingDateData = RestAssured
-                .given()
-                .headers(seasonAdminHeaders)
-                .body(objectMapper.writeValueAsString(
-                        new PlayingDateCreationData(theSeason.id(), 1, "1.1.2024")))
-                .when()
-                .post(baseUrl + "/playingdates")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .response()
-                .as(PlayingDateData.class);
-        assertThat(playingDateData.seasonId()).isEqualTo(theSeason.id());
-        assertThat(playingDateData.number()).isEqualTo(1);
-        assertThat(playingDateData.date()).isEqualTo("1.1.2024");
+        Map<Integer, PlayingDateData> playingDates =
+                seasonHelper.createNinePlayingDatesForSeason(theSeason.id(),seasonAdminHeaders);
 
-        // step 5: Create 3 clubs and a club admin for each.
+        // step 5: Create clubs and a club admin for each.
         ClubData clubOrga1 = createClub(new ClubCreationData("clubOrga1", 1, Boolean.TRUE), headersAdmin);
         assertThat(clubOrga1.name()).isEqualTo("clubOrga1");
         assertThat(clubOrga1.zps()).isEqualTo(1);

@@ -1,13 +1,15 @@
 package de.tonypsilon.bmm.backend.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
-import de.tonypsilon.bmm.backend.season.data.SeasonData;
+import de.tonypsilon.bmm.backend.season.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,5 +40,34 @@ public class SeasonHelper {
         assertThat(seasonData.stage()).isEqualTo(SeasonStage.REGISTRATION);
 
         return seasonData;
+    }
+
+    Map<Integer, PlayingDateData> createNinePlayingDatesForSeason(Long seasonId, HttpHeaders headers) throws Exception {
+        Map<Integer, PlayingDateData> playingDates = new HashMap<>();
+        for (int i=1; i<=9; i++) {
+            playingDates.put(i,
+                    createPlayingDate(new PlayingDateCreationData(seasonId, i, "1." + i + ".2024"), headers));
+        }
+        return playingDates;
+    }
+
+    private PlayingDateData createPlayingDate(PlayingDateCreationData playingDateCreationData,
+                                              HttpHeaders headers) throws Exception {
+        PlayingDateData playingDateData = RestAssured
+                .given()
+                .headers(headers)
+                .body(objectMapper.writeValueAsString(playingDateCreationData))
+                .when()
+                .post(baseUrl + "/playingdates")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .response()
+                .as(PlayingDateData.class);
+        assertThat(playingDateData.seasonId()).isEqualTo(playingDateCreationData.seasonId());
+        assertThat(playingDateData.number()).isEqualTo(playingDateCreationData.number());
+        assertThat(playingDateData.date()).isEqualTo(playingDateCreationData.date());
+
+        return playingDateData;
     }
 }

@@ -1,7 +1,6 @@
 package de.tonypsilon.bmm.backend.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.tonypsilon.bmm.backend.security.rnr.Role;
 import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
 import io.restassured.RestAssured;
@@ -9,19 +8,17 @@ import io.restassured.response.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-import java.util.Set;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserHelper {
 
     private final String baseUrl;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     UserHelper(final String baseUrl) {
         this.baseUrl = baseUrl;
     }
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     UserData createUser(UserData userData, HttpHeaders headers) throws Exception {
         Response postUserResponse = RestAssured
