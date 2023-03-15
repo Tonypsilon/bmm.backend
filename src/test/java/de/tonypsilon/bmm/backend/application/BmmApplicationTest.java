@@ -1,4 +1,4 @@
-package de.tonypsilon.bmm.backend;
+package de.tonypsilon.bmm.backend.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tonypsilon.bmm.backend.club.data.ClubCreationData;
@@ -35,7 +35,6 @@ import javax.sql.DataSource;
 
 import java.util.*;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -65,6 +64,8 @@ class BmmApplicationTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void happyPathTest() throws Exception {
         baseUrl = "http://localhost:" + port;
+        SeasonHelper seasonHelper = new SeasonHelper(baseUrl);
+        UserHelper userHelper = new UserHelper(baseUrl);
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "users")).isEqualTo(1);
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "authorities")).isEqualTo(1);
 
@@ -72,56 +73,18 @@ class BmmApplicationTest {
         HttpHeaders headersAdmin = login(configuration.adminUsername(), configuration.adminPassword());
 
         // step 2: create season
-        Response postSeasonResponse = RestAssured
-            .given()
-                .headers(headersAdmin)
-                .body(objectMapper.writeValueAsString(new SeasonCreationData("test")))
-            .when()
-                .post(baseUrl + "/seasons")
-            .then()
-                .statusCode(HttpStatus.CREATED.value())
-            .extract()
-                .response();
-
-        SeasonData theSeason = postSeasonResponse.as(SeasonData.class);
-        assertThat(theSeason.name()).isEqualTo("test");
-        assertThat(theSeason.stage()).isEqualTo(SeasonStage.REGISTRATION);
+        SeasonData theSeason = seasonHelper.createSeason(new SeasonCreationData("test"), headersAdmin);
 
         // step 3: create a new user and make it season admin for the season.
-        Response postUserResponse = RestAssured
-            .given()
-                .headers(headersAdmin)
-                .body(objectMapper.writeValueAsString(
-                        new UserData(configuration.seasonAdminUsername(),
-                                configuration.seasonAdminPassword(),
-                                Set.of(Role.SEASON_ADMIN))))
-            .when()
-                .post(baseUrl + "/users")
-            .then()
-                .statusCode(HttpStatus.CREATED.value())
-            .extract()
-                .response();
+        UserData seasonAdminUser = userHelper.createUser(
+                new UserData(configuration.seasonAdminUsername(),
+                        configuration.seasonAdminPassword(),
+                        Set.of(Role.SEASON_ADMIN)),
+                headersAdmin);
 
-        UserData seasonAdminUser = postUserResponse.as(UserData.class);
-        assertThat(seasonAdminUser.username()).isEqualTo(configuration.seasonAdminUsername());
-        assertThat(seasonAdminUser.password()).isNull();
-        assertThat(seasonAdminUser.roles()).isEqualTo(Set.of(Role.SEASON_ADMIN));
-
-        Response postSeasonAdminResponse = RestAssured
-            .given()
-                .headers(headersAdmin)
-                .body(objectMapper.writeValueAsString(
-                        new SeasonAdminData(theSeason.id(), seasonAdminUser.username())))
-            .when()
-                .post(baseUrl + "/seasonadmins")
-            .then()
-                .statusCode(HttpStatus.CREATED.value())
-            .extract()
-                .response();
-
-        SeasonAdminData seasonAdminData = postSeasonAdminResponse.as(SeasonAdminData.class);
-        assertThat(seasonAdminData.seasonId()).isEqualTo(theSeason.id());
-        assertThat(seasonAdminData.username()).isEqualTo(seasonAdminUser.username());
+        SeasonAdminData seasonAdminData = userHelper.createSeasonAdmin(
+                new SeasonAdminData(theSeason.id(), seasonAdminUser.username()),
+                headersAdmin);
 
         // step 4: Create a playing date for the season.
         // substep: Log in as season admin and fetch headers

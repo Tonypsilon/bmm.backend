@@ -1,4 +1,4 @@
-package de.tonypsilon.bmm.backend;
+package de.tonypsilon.bmm.backend.application;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

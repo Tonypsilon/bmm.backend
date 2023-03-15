@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Objects;
 
 @RestController
 public class SeasonController {
@@ -64,11 +65,8 @@ public class SeasonController {
     public ResponseEntity<SeasonData> changeSeasonState(RequestEntity<SeasonStageChangeData> patchedSeasonRequestEntity,
                                                         @NonNull @PathVariable String seasonName,
                                                         Principal principal) {
-        SeasonStageChangeData seasonStageChangeData = patchedSeasonRequestEntity.getBody();
-        if(seasonStageChangeData == null) {
-            throw new BadDataException("Unvollständige Daten gegeben!");
-        }
-        if (!seasonName.equals(seasonStageChangeData.seasonName())) {
+        SeasonStageChangeData seasonStageChangeData = Objects.requireNonNull(patchedSeasonRequestEntity.getBody());
+        if (!seasonName.equals(Objects.requireNonNull(seasonStageChangeData.seasonName()))) {
             throw new BadDataException("Der Saisonname im Request passt nicht zum Requestbody.");
         }
         if (!seasonAdminService.isSeasonAdmin(seasonName, principal.getName())) {
