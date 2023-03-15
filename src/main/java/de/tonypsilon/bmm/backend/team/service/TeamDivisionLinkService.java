@@ -14,6 +14,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 public class TeamDivisionLinkService {
 
@@ -72,6 +75,13 @@ public class TeamDivisionLinkService {
         return teamDivisionLinkRepository.findByTeamId(teamId)
                 .map(TeamDivisionLink::getDivisionId)
                 .orElse(null);
+    }
+
+    @NonNull
+    public Set<TeamDivisionLinkData> getByDivisionId(Long divisionId) {
+        return teamDivisionLinkRepository.findByDivisionId(divisionId).stream()
+                .map(this::teamDivisionLinkToTeamDivisionLinkData)
+                .collect(Collectors.toSet());
     }
 
     @NonNull

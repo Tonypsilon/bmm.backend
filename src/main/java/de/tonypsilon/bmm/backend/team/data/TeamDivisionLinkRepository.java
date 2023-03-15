@@ -5,6 +5,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface TeamDivisionLinkRepository
@@ -17,4 +18,6 @@ public interface TeamDivisionLinkRepository
     Optional<TeamDivisionLink> findByTeamIdAndDivisionId(@NonNull Long teamId, @NonNull Long divisionId);
 
     Optional<TeamDivisionLink> findByTeamId(@NonNull Long teamId);
+
+    Set<TeamDivisionLink> findByDivisionId(@NonNull Long divisionId);
 }

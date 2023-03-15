@@ -11,6 +11,7 @@ import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,17 +29,20 @@ public class SeasonStageService {
     private final TeamService teamService;
     private final ParticipantService participantService;
     private final TeamDivisionLinkService teamDivisionLinkService;
+    private final SeasonStartService seasonStartService;
 
     public SeasonStageService(final SeasonService seasonService,
                               final OrganizationService organizationService,
                               final TeamService teamService,
                               final ParticipantService participantService,
-                              final TeamDivisionLinkService teamDivisionLinkService) {
+                              final TeamDivisionLinkService teamDivisionLinkService,
+                              final SeasonStartService seasonStartService) {
         this.seasonService = seasonService;
         this.organizationService = organizationService;
         this.teamService = teamService;
         this.participantService = participantService;
         this.teamDivisionLinkService = teamDivisionLinkService;
+        this.seasonStartService = seasonStartService;
     }
 
     @Transactional
@@ -108,8 +112,8 @@ public class SeasonStageService {
         }
     }
 
-    private void prepareSeasonStart(SeasonData seasonData) {
-
+    private void prepareSeasonStart(@NonNull SeasonData seasonData) {
+        seasonStartService.createMatchesForSeason(seasonData);
     }
 
     private Set<TeamData> getAllTeamsOfSeason(SeasonData seasonData) {

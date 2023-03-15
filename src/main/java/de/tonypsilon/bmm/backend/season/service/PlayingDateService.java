@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.transaction.Transactional;
 
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
@@ -52,11 +53,17 @@ public class PlayingDateService {
 		playingDate.setNumber(creationData.number());
 		playingDate.setDate(creationData.date());
 		playingDateRepository.save(playingDate);
-		return playingDateToPlayingDateData(getBySeasonIdAndNumber(creationData.seasonId(), creationData.number()));
+		return playingDateToPlayingDateData(
+				getPlayingDateBySeasonIdAndNumber(creationData.seasonId(), creationData.number()));
 	}
-	
+
+	@NonNull
+	public PlayingDateData getBySeasonIdAndNumber(@Nonnull Long seasonId, @Nonnull Integer number) {
+		return playingDateToPlayingDateData(getPlayingDateBySeasonIdAndNumber(seasonId, number));
+	}
+
 	@Nonnull
-	private PlayingDate getBySeasonIdAndNumber(@Nonnull Long seasonId, @Nonnull Integer number) {
+	private PlayingDate getPlayingDateBySeasonIdAndNumber(@Nonnull Long seasonId, @Nonnull Integer number) {
 		return playingDateRepository.findBySeasonIdAndNumber(seasonId, number)
 				.orElseThrow(() -> new NotFoundException("Es gibt für Saison %d und Runde %d kein Datum!"
 						.formatted(seasonId, number)));
