@@ -1,7 +1,5 @@
 package de.tonypsilon.bmm.backend.match.data;
 
-import de.tonypsilon.bmm.backend.venue.data.VenueData;
-
 import java.util.Optional;
 
 public record MatchData(Long id,
