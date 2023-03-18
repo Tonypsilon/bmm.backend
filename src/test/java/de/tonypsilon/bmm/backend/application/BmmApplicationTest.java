@@ -68,6 +68,7 @@ class BmmApplicationTest {
         UserHelper userHelper = new UserHelper(baseUrl);
         ClubHelper clubHelper = new ClubHelper(baseUrl);
         LoginHelper loginHelper = new LoginHelper(baseUrl);
+        TeamHelper teamHelper = new TeamHelper(baseUrl);
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "users")).isEqualTo(1);
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "authorities")).isEqualTo(1);
 
@@ -103,10 +104,10 @@ class BmmApplicationTest {
                         clubs.keySet().stream().sorted(Comparator.comparing(ClubData::name)).toList());
 
         // step 7a: create playing venues
-        clubHelper.createVenuesForClubs(clubs.keySet());
+        Map<ClubData, VenueData> venues = clubHelper.createVenuesForClubs(clubs.keySet());
 
         // step 7: Create 2 teams of each organization.
-
+        Map<OrganizationData, List<TeamData>> teams = teamHelper.createTeams(organizations, venues);
 
         // step 8: Move season to preparation stage.
         SeasonData theSeasonInPreparation = RestAssured
@@ -123,7 +124,7 @@ class BmmApplicationTest {
         assertThat(theSeasonInPreparation.name()).isEqualTo(theSeason.name());
         assertThat(theSeasonInPreparation.stage()).isEqualTo(SeasonStage.PREPARATION);
 
-        // step 9: Create a division for the season.
+        // step 9: Create two divisions for the season.
         DivisionData divisionData = RestAssured
             .given()
                 .headers(seasonAdminHeaders)
@@ -137,42 +138,12 @@ class BmmApplicationTest {
         assertThat(divisionData.level()).isEqualTo(1);
         assertThat(divisionData.seasonId()).isEqualTo(theSeason.id());
 
-        // step 10: Assign all 4 teams of the 2 organizations to the division.
+        // step 10: Assign all teams of the organizations to the divisions.
 
 
         // TODO: Referees?
 
         // step 11: Move season to in progress stage. Verify that all matchdays are created properly.
     }
-
-    private TeamData createTeam(TeamCreationData teamCreationData, HttpHeaders headers) throws Exception {
-        return RestAssured
-            .given()
-                .headers(headers)
-                .body(objectMapper.writeValueAsString(teamCreationData))
-            .when()
-                .post(baseUrl + "/teams")
-            .then()
-                .statusCode(HttpStatus.CREATED.value())
-            .extract()
-                .response()
-                .as(TeamData.class);
-    }
-    
-    private TeamDivisionLinkData createTeamDivisionLink(
-            TeamDivisionLinkData teamDivisionLinkData, HttpHeaders headers)  throws Exception {
-    	return RestAssured
-    		.given()
-    			.headers(headers)
-    			.body(objectMapper.writeValueAsString(teamDivisionLinkData))
-    		.when()
-    		    .post(baseUrl + "/teamdivisionlinks")
-    		.then()
-    		    .statusCode(HttpStatus.CREATED.value())
-    		.extract()
-    		    .response()
-    		    .as(TeamDivisionLinkData.class);
-    }
-
 
 }

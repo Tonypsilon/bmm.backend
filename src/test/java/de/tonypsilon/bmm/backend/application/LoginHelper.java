@@ -1,6 +1,7 @@
 package de.tonypsilon.bmm.backend.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.tonypsilon.bmm.backend.club.data.ClubData;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.springframework.http.HttpHeaders;
@@ -15,12 +16,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LoginHelper {
 
+    static final String CLUB_ADMIN_PASSWORD = "secret";
     private final String baseUrl;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     LoginHelper(final String baseUrl) {
         this.baseUrl = baseUrl;
+    }
+
+    HttpHeaders login(ClubData clubData) {
+        return login(clubData.name() + "Admin", CLUB_ADMIN_PASSWORD);
     }
 
     HttpHeaders login(String username, String password) {

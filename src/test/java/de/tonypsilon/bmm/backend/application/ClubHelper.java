@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 
 import java.util.*;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClubHelper {
@@ -24,8 +23,6 @@ public class ClubHelper {
     private final String baseUrl;
 
     private final LoginHelper loginHelper;
-
-    private static final String CLUB_ADMIN_PASSWORD = "secret";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -81,7 +78,7 @@ public class ClubHelper {
                 .headers(headers)
                 .body(objectMapper.writeValueAsString(
                         new UserData(clubData.name() + "Admin",
-                                CLUB_ADMIN_PASSWORD,
+                                loginHelper.CLUB_ADMIN_PASSWORD,
                                 Set.of(Role.CLUB_ADMIN))))
                 .when()
                 .post(baseUrl + "/users")
@@ -129,12 +126,12 @@ public class ClubHelper {
                         "SG %s %s".formatted(clubDataFirstClub.name(), clubDataSecondClub.name()),
                         Set.of(clubDataFirstClub.id(), clubDataSecondClub.id()));
         organizations.add(createOrganization(jointOrganizationCreationData,
-                loginHelper.login(clubDataFirstClub.name() + "Admin", CLUB_ADMIN_PASSWORD)));
+                loginHelper.login(clubDataFirstClub)));
         for (int i = 2; i < clubs.size(); i++) {
             ClubData clubData = clubs.get(i);
             organizations.add(createOrganization(
                     new OrganizationCreationData(seasonId, clubData.name(), Set.of(clubData.id())),
-                    loginHelper.login(clubData.name() + "Admin", CLUB_ADMIN_PASSWORD)));
+                    loginHelper.login(clubData)));
         }
         return organizations;
     }
@@ -170,7 +167,7 @@ public class ClubHelper {
     private VenueData createVenue(ClubData clubData) throws Exception {
         VenueData venueData = RestAssured
                 .given()
-                .headers(loginHelper.login(clubData.name() + "Admin", CLUB_ADMIN_PASSWORD))
+                .headers(loginHelper.login(clubData))
                 .body(objectMapper.writeValueAsString(
                         new VenueCreationData(clubData.id(),
                                 clubData.name() + "location 1",
