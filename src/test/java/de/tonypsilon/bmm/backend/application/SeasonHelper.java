@@ -1,6 +1,8 @@
 package de.tonypsilon.bmm.backend.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
+import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.season.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import io.restassured.RestAssured;
@@ -69,5 +71,23 @@ public class SeasonHelper {
         assertThat(playingDateData.date()).isEqualTo(playingDateCreationData.date());
 
         return playingDateData;
+    }
+
+    DivisionData createDivision(DivisionCreationData divisionCreationData, HttpHeaders headers) throws Exception {
+        DivisionData divisionData = RestAssured
+                .given()
+                .headers(headers)
+                .body(objectMapper.writeValueAsString(divisionCreationData))
+                .when()
+                .post(baseUrl + "/divisions")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract().response().as(DivisionData.class);
+        assertThat(divisionData.name()).isEqualTo(divisionCreationData.name());
+        assertThat(divisionData.level()).isEqualTo(divisionCreationData.level());
+        assertThat(divisionData.seasonId()).isEqualTo(divisionCreationData.seasonId());
+        assertThat(divisionData.numberOfBoards()).isEqualTo(divisionCreationData.numberOfBoards());
+
+        return divisionData;
     }
 }

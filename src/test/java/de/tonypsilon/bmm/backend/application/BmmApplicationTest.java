@@ -125,21 +125,15 @@ class BmmApplicationTest {
         assertThat(theSeasonInPreparation.stage()).isEqualTo(SeasonStage.PREPARATION);
 
         // step 9: Create two divisions for the season.
-        DivisionData divisionData = RestAssured
-            .given()
-                .headers(seasonAdminHeaders)
-                .body(objectMapper.writeValueAsString(new DivisionCreationData("the division", 1, 8, theSeason.id())))
-            .when()
-                .post(baseUrl + "/divisions")
-            .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract().response().as(DivisionData.class);
-        assertThat(divisionData.name()).isEqualTo("the division");
-        assertThat(divisionData.level()).isEqualTo(1);
-        assertThat(divisionData.seasonId()).isEqualTo(theSeason.id());
+        DivisionData firstDivision = seasonHelper.createDivision(
+                new DivisionCreationData("First Division", 1, 8, theSeasonInPreparation.id()), seasonAdminHeaders);
+        DivisionData secondDivision = seasonHelper.createDivision(
+                new DivisionCreationData("Second Division", 2, 8, theSeasonInPreparation.id()),seasonAdminHeaders);
+
 
         // step 10: Assign all teams of the organizations to the divisions.
-
+        Map<DivisionData, List<TeamDivisionLinkData>> teamsToDivisions =
+                teamHelper.linkTeamsToDivisions(teams, firstDivision, secondDivision, seasonAdminHeaders);
 
         // TODO: Referees?
 

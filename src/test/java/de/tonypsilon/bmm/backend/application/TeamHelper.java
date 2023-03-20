@@ -2,6 +2,7 @@ package de.tonypsilon.bmm.backend.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tonypsilon.bmm.backend.club.data.ClubData;
+import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import de.tonypsilon.bmm.backend.team.data.TeamCreationData;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
@@ -63,6 +64,27 @@ public class TeamHelper {
          return teamData;
     }
 
+    Map<DivisionData, List<TeamDivisionLinkData>> linkTeamsToDivisions(
+            Map<OrganizationData, List<TeamData>> teams,
+            DivisionData division1,
+            DivisionData division2,
+            HttpHeaders headers) throws Exception{
+        Map<DivisionData, List<TeamDivisionLinkData>> teamLinks = new HashMap<>();
+        teamLinks.put(division1, new ArrayList<>());
+        teamLinks.put(division2, new ArrayList<>());
+        int i = 1;
+        for (OrganizationData organizationData : teams.keySet()) {
+            teamLinks.get(division1).add(createTeamDivisionLink(
+                    new TeamDivisionLinkData(teams.get(organizationData).get(0).id(), division1.id(), i), headers));
+            teamLinks.get(division2).add(createTeamDivisionLink(
+                    new TeamDivisionLinkData(teams.get(organizationData).get(1).id(), division2.id(), i), headers));
+            i++;
+        }
+        assertThat(teamLinks.get(division1)).isNotNull().hasSize(10);
+        assertThat(teamLinks.get(division2)).isNotNull().hasSize(10);
+        return teamLinks;
+    }
+
     private TeamDivisionLinkData createTeamDivisionLink(
             TeamDivisionLinkData teamDivisionLinkData, HttpHeaders headers)  throws Exception {
         TeamDivisionLinkData teamDivisionLink = RestAssured
@@ -82,4 +104,5 @@ public class TeamHelper {
 
         return teamDivisionLink;
     }
+
 }
