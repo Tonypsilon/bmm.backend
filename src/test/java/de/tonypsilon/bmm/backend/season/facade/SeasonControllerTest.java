@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
+import de.tonypsilon.bmm.backend.season.service.SeasonStageService;
 import de.tonypsilon.bmm.backend.security.SecurityConfiguration;
 import de.tonypsilon.bmm.backend.security.rnr.service.SeasonAdminService;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,9 @@ class SeasonControllerTest {
 
     @MockBean
     private SeasonAdminService seasonAdminService;
+
+    @MockBean
+    private SeasonStageService seasonStageService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
