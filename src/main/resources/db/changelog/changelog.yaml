@@ -324,7 +324,7 @@ databaseChangeLog:
       author: Tonypsilon
       changes:
         - createTable:
-            tableName: match
+            tableName: MATCH
             columns:
               - column:
                   name: id
