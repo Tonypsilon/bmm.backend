@@ -10,7 +10,7 @@ public class PairingTable {
 
     public static final PairingTable STANDARD = PairingTableBuilder
             .newBuilder()
-            .withNumberOfRounds(9)
+            .withNumberOfParticipants(10)
             .withRound(Round.ofNumbers(1,10, 2,9, 3,8, 4,7, 5,6))
             .withRound(Round.ofNumbers(10,6, 7,5, 8,4, 9,3, 1,2))
             .withRound(Round.ofNumbers(2,10, 3,1, 4,9, 5,8, 6,7))
@@ -24,7 +24,7 @@ public class PairingTable {
 
     public static final PairingTable STANDARD_WITH_FIRST_ROUND_AS_LAST = PairingTableBuilder
             .newBuilder()
-            .withNumberOfRounds(9)
+            .withNumberOfParticipants(10)
             .withRound(Round.ofNumbers(10,6, 7,5, 8,4, 9,3, 1,2))
             .withRound(Round.ofNumbers(2,10, 3,1, 4,9, 5,8, 6,7))
             .withRound(Round.ofNumbers(10,7, 8,6, 9,5, 1,4, 2,3))

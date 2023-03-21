@@ -5,7 +5,7 @@ import java.util.List;
 
 public class PairingTableBuilder {
 
-    private int numberOfRounds;
+    private int numberOfParticipants;
     private List<Round> rounds;
 
     private PairingTableBuilder() {
@@ -16,8 +16,8 @@ public class PairingTableBuilder {
         return new PairingTableBuilder();
     }
 
-    PairingTableBuilder withNumberOfRounds(int numberOfRounds) {
-        this.numberOfRounds = numberOfRounds;
+    PairingTableBuilder withNumberOfParticipants(int numberOfParticipants) {
+        this.numberOfParticipants = numberOfParticipants;
         return this;
     }
 
@@ -27,6 +27,6 @@ public class PairingTableBuilder {
     }
 
     PairingTable build() {
-        return new PairingTable(this.numberOfRounds, this.rounds);
+        return new PairingTable(this.numberOfParticipants, this.rounds);
     }
 }

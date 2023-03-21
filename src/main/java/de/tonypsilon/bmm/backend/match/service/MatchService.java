@@ -64,8 +64,8 @@ public class MatchService {
 
         if (divisionIdHomeTeam.isEmpty()
         || divisionIdAwayTeam.isEmpty()
-        || divisionIdHomeTeam.get().equals(matchdayData.divisionId())
-        || divisionIdAwayTeam.get().equals(matchdayData.divisionId())) {
+        || !divisionIdHomeTeam.get().equals(matchdayData.divisionId())
+        || !divisionIdAwayTeam.get().equals(matchdayData.divisionId())) {
             throw new BadDataException("Mindestens eine der beiden Mannschaften gehört nicht zur richtigen Staffel!");
         }
 

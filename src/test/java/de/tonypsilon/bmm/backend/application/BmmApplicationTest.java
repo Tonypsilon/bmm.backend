@@ -137,7 +137,23 @@ class BmmApplicationTest {
 
         // TODO: Referees?
 
-        // step 11: Move season to in progress stage. Verify that all matchdays are created properly.
+        // step 11: Move season to running stage. Verify that all matchdays are created properly.
+        SeasonData theSeasonRunning = RestAssured
+                .given()
+                .headers(seasonAdminHeaders)
+                .body(objectMapper.writeValueAsString(
+                        new SeasonStageChangeData(theSeason.name(), SeasonStage.RUNNING)))
+                .when()
+                .patch(baseUrl + "/seasons/" + theSeason.name())
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract().response().as(SeasonData.class);
+        assertThat(theSeasonRunning.id()).isEqualTo(theSeason.id());
+        assertThat(theSeasonRunning.name()).isEqualTo(theSeason.name());
+        assertThat(theSeasonRunning.stage()).isEqualTo(SeasonStage.RUNNING);
+
+        assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "`match`"))
+                .isEqualTo(2*5*9); // 2 divisions, 5 matches per matchday, 9 matchdays
     }
 
 }

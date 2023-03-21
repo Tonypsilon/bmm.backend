@@ -6,6 +6,7 @@ import de.tonypsilon.bmm.backend.season.data.SeasonCreationData;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.data.SeasonStageChangeData;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
+import de.tonypsilon.bmm.backend.season.service.SeasonStageService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.SeasonAdminService;
 import org.springframework.http.HttpStatus;
@@ -25,11 +26,14 @@ public class SeasonController {
 
     private final SeasonService seasonService;
     private final SeasonAdminService seasonAdminService;
+    private final SeasonStageService seasonStageService;
 
     public SeasonController(final SeasonService seasonService,
-                            final SeasonAdminService seasonAdminService) {
+                            final SeasonAdminService seasonAdminService,
+                            final SeasonStageService seasonStageService) {
         this.seasonService = seasonService;
         this.seasonAdminService = seasonAdminService;
+        this.seasonStageService = seasonStageService;
     }
 
     @GetMapping(value = "/seasons", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -74,7 +78,7 @@ public class SeasonController {
                     .formatted(principal.getName(), seasonName));
         }
         return ResponseEntity
-                .ok(seasonService.updateSeasonStage(patchedSeasonRequestEntity.getBody()));
+                .ok(seasonStageService.changeSeasonStage(patchedSeasonRequestEntity.getBody()));
     }
 
 
