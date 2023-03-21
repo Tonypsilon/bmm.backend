@@ -324,7 +324,7 @@ databaseChangeLog:
       author: Tonypsilon
       changes:
         - createTable:
-            tableName: MATCH
+            tableName: match
             columns:
               - column:
                   name: id
@@ -854,3 +854,10 @@ databaseChangeLog:
                   constraints:
                     unique: false
                     nullable: false
+  - changeSet:
+      id: 31
+      author: Tonypsilon
+      changes:
+        - renameTable:
+            newTableName: match_
+            oldTableName: match

@@ -7,7 +7,7 @@ import org.springframework.lang.Nullable;
 import java.util.Optional;
 
 @Entity
-@Table(name = "\"MATCH\"")
+@Table(name = "match_")
 public class Match {
 
     @Id

@@ -152,7 +152,7 @@ class BmmApplicationTest {
         assertThat(theSeasonRunning.name()).isEqualTo(theSeason.name());
         assertThat(theSeasonRunning.stage()).isEqualTo(SeasonStage.RUNNING);
 
-        assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "`match`"))
+        assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "match_"))
                 .isEqualTo(2*5*9); // 2 divisions, 5 matches per matchday, 9 matchdays
     }
 

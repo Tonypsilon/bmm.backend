@@ -2,7 +2,7 @@ delete from game;
 delete from teamcaptain;
 
 delete from participant;
-delete from `match`;
+delete from match_;
 
 delete from clubadmin;
 delete from seasonadmin;
