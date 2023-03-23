@@ -103,13 +103,17 @@ class BmmApplicationTest {
                 clubHelper.createOrganizations(theSeason.id(),
                         clubs.keySet().stream().sorted(Comparator.comparing(ClubData::name)).toList());
 
-        // step 7a: create playing venues
+        // step 7: create playing venues
         Map<ClubData, VenueData> venues = clubHelper.createVenuesForClubs(clubs.keySet());
 
-        // step 7: Create 2 teams of each organization.
+        // step 8: Create participation eligibilities
+
+        // step 9: Create 2 teams of each organization.
         Map<OrganizationData, List<TeamData>> teams = teamHelper.createTeams(organizations, venues);
 
-        // step 8: Move season to preparation stage.
+        // step 10: Assign players to the teams
+
+        // step 11: Move season to preparation stage.
         SeasonData theSeasonInPreparation = RestAssured
             .given()
                 .headers(seasonAdminHeaders)
@@ -124,20 +128,20 @@ class BmmApplicationTest {
         assertThat(theSeasonInPreparation.name()).isEqualTo(theSeason.name());
         assertThat(theSeasonInPreparation.stage()).isEqualTo(SeasonStage.PREPARATION);
 
-        // step 9: Create two divisions for the season.
+        // step 12: Create two divisions for the season.
         DivisionData firstDivision = seasonHelper.createDivision(
                 new DivisionCreationData("First Division", 1, 8, theSeasonInPreparation.id()), seasonAdminHeaders);
         DivisionData secondDivision = seasonHelper.createDivision(
                 new DivisionCreationData("Second Division", 2, 8, theSeasonInPreparation.id()),seasonAdminHeaders);
 
 
-        // step 10: Assign all teams of the organizations to the divisions.
+        // step 13: Assign all teams of the organizations to the divisions.
         Map<DivisionData, List<TeamDivisionLinkData>> teamsToDivisions =
                 teamHelper.linkTeamsToDivisions(teams, firstDivision, secondDivision, seasonAdminHeaders);
 
         // TODO: Referees?
 
-        // step 11: Move season to running stage. Verify that all matchdays are created properly.
+        // step 14: Move season to running stage. Verify that all matchdays are created properly.
         SeasonData theSeasonRunning = RestAssured
                 .given()
                 .headers(seasonAdminHeaders)
