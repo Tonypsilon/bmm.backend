@@ -1,6 +1,7 @@
 package de.tonypsilon.bmm.backend.security.rnr.service;
 
 import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
+import de.tonypsilon.bmm.backend.team.service.TeamService;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,16 @@ public class AuthorizationService {
     private final ClubAdminService clubAdminService;
     private final OrganizationService organizationService;
     private final SeasonAdminService seasonAdminService;
+    private final TeamService teamService;
 
     public AuthorizationService(final ClubAdminService clubAdminService,
                                 final OrganizationService organizationService,
-                                final SeasonAdminService seasonAdminService) {
+                                final SeasonAdminService seasonAdminService,
+                                final TeamService teamService) {
         this.clubAdminService = clubAdminService;
         this.organizationService = organizationService;
         this.seasonAdminService = seasonAdminService;
+        this.teamService = teamService;
     }
 
     /**
@@ -32,6 +36,7 @@ public class AuthorizationService {
      * @param username the name of the user
      * @param clubIds the ids of the clubs
      */
+    @Transactional
     public void verifyUserIsClubAdminOfAnyClub(@NonNull String username, @NonNull Set<Long> clubIds) {
         if (clubIds.stream()
                 .map(clubAdminService::getAdminsOfClub)
@@ -58,11 +63,17 @@ public class AuthorizationService {
      * @param username the name of the user
      * @param seasonId the id of the season
      */
+    @Transactional
     public void verifyUserIsSeasonAdminOfSeason(@NonNull String username, @NonNull Long seasonId) {
         if(!seasonAdminService.isSeasonAdmin(seasonId, username)) {
             throw new AccessDeniedException("%s hat nicht ausreichend Saisonadministrationsrechte!"
                     .formatted(username));
         }
+    }
+
+    @Transactional
+    public void verifyUserIsClubAdminOfTeam(@NonNull String username, @NonNull Long teamId) {
+        verifyUserIsClubAdminOfOrganization(username, teamService.getTeamDataById(teamId).organizationId());
     }
 
 

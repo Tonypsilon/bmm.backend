@@ -2,6 +2,7 @@ package de.tonypsilon.bmm.backend.security.rnr.service;
 
 import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
+import de.tonypsilon.bmm.backend.team.service.TeamService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -18,13 +19,15 @@ class AuthorizationServiceTest {
     private final ClubAdminService clubAdminService = mock(ClubAdminService.class);
     private final OrganizationService organizationService = mock(OrganizationService.class);
     private final SeasonAdminService seasonAdminService = mock(SeasonAdminService.class);
+    private final TeamService teamService = mock(TeamService.class);
     private AuthorizationService authorizationService;
 
     @BeforeEach
     void setUp() {
         this.authorizationService = new AuthorizationService(clubAdminService,
                 organizationService,
-                seasonAdminService);
+                seasonAdminService,
+                teamService);
     }
 
     @Test

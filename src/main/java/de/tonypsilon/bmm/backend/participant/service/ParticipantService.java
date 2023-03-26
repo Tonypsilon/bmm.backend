@@ -5,10 +5,7 @@ import de.tonypsilon.bmm.backend.exception.BmmException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.exception.SeasonStageException;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
-import de.tonypsilon.bmm.backend.participant.data.Participant;
-import de.tonypsilon.bmm.backend.participant.data.ParticipantCreationData;
-import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
-import de.tonypsilon.bmm.backend.participant.data.ParticipantRepository;
+import de.tonypsilon.bmm.backend.participant.data.*;
 import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationEligibilityService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
@@ -44,16 +41,34 @@ public class ParticipantService {
     @Transactional
     @NonNull
     public Collection<ParticipantData> createValidParticipantConfigurationForTeam(
-            Long teamId, Collection<ParticipantCreationData> participantsCreationData) {
-        if(Boolean.FALSE.equals(teamService.existsById(teamId))) {
-            throw new NotFoundException("Es gibt keine Mannschaft mit der ID %d!".formatted(teamId));
+            ParticipantsCreationData participantsCreationData) {
+        if(Boolean.FALSE.equals(teamService.existsById(participantsCreationData.teamId()))) {
+            throw new NotFoundException("Es gibt keine Mannschaft mit der ID %d!"
+                    .formatted(participantsCreationData.teamId()));
         }
-        Collection<ParticipantData> createdParticipants = participantsCreationData
+        Collection<ParticipantData> createdParticipants = participantsCreationData.participantCreationDataCollection()
                 .stream()
                 .map(this::createSingleParticipantFromGivenCollection)
                 .toList();
-        validateParticipantsNumbersOfTeam(teamId);
+        validateParticipantsNumbersOfTeam(participantsCreationData.teamId());
         return createdParticipants;
+    }
+
+    @Transactional
+    @NonNull
+    public ParticipantData createParticipant(@NonNull ParticipantCreationData participantCreationData) {
+        validateParticipantCreationData(participantCreationData);
+        if(seasonService.getStageOfSeason(
+                organizationService.getSeasonIdOfOrganization(
+                        teamService.getTeamDataById(participantCreationData.teamId()).organizationId()))
+                != SeasonStage.REGISTRATION) {
+            throw new SeasonStageException("In dieser Saisonphase kann keine Mannschaft mit Teilnehmern befüllt werden!");
+        }
+        participantRepository.save(createParticipantFromParticipantCreationData(participantCreationData));
+        validateParticipantsNumbersOfTeam(participantCreationData.teamId());
+        return participantToParticipantData(participantRepository.getByTeamIdAndNumber(
+                participantCreationData.teamId(), participantCreationData.number())
+        );
     }
 
     private ParticipantData createSingleParticipantFromGivenCollection(ParticipantCreationData participantCreationData) {
@@ -138,6 +153,10 @@ public class ParticipantService {
     }
 
     private void validateParticipantCreationData(ParticipantCreationData participantCreationData) {
+        if(Boolean.FALSE.equals(teamService.existsById(participantCreationData.teamId()))) {
+            throw new NotFoundException("Es gibt keine Mannschaft mit der ID %d!"
+                    .formatted(participantCreationData.teamId()));
+        }
         if(Boolean.FALSE.equals(participationEligibilityService.existsById(participantCreationData.participationEligibilityId()))) {
             throw new NotFoundException("Es gibt keine Spielberechtigung mit der ID %d!"
                     .formatted(participantCreationData.participationEligibilityId()));

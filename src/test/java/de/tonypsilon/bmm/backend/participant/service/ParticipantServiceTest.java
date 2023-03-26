@@ -5,10 +5,7 @@ import de.tonypsilon.bmm.backend.exception.BmmException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.exception.SeasonStageException;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
-import de.tonypsilon.bmm.backend.participant.data.Participant;
-import de.tonypsilon.bmm.backend.participant.data.ParticipantCreationData;
-import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
-import de.tonypsilon.bmm.backend.participant.data.ParticipantRepository;
+import de.tonypsilon.bmm.backend.participant.data.*;
 import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationEligibilityService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
@@ -76,7 +73,7 @@ class ParticipantServiceTest {
         when(participantRepository.findByTeamId(1L)).thenReturn(List.of(participant1, participant2));
 
         Collection<ParticipantData> actual = participantService.createValidParticipantConfigurationForTeam(
-                1L, List.of(participantCreationData1, participantCreationData2));
+                new ParticipantsCreationData(1L, List.of(participantCreationData1, participantCreationData2)));
         assertThat(actual).hasSize(2);
         assertTrue(actual.containsAll(List.of(participantData1, participantData2)));
 
@@ -99,7 +96,7 @@ class ParticipantServiceTest {
         when(teamService.existsById(1L)).thenReturn(Boolean.FALSE);
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> participantService.createValidParticipantConfigurationForTeam(
-                        1L, List.of(participantCreationData1, participantCreationData2)));
+                        new ParticipantsCreationData(1L, List.of(participantCreationData1, participantCreationData2))));
         assertThat(actualException.getMessage())
                 .isEqualTo("Es gibt keine Mannschaft mit der ID 1!");
     }
@@ -117,7 +114,7 @@ class ParticipantServiceTest {
         when(participantRepository.getByTeamIdAndNumber(1L, 2)).thenReturn(participant2);
         BmmException actualException = assertThrows(BmmException.class,
                 () -> participantService.createValidParticipantConfigurationForTeam(
-                        1L, List.of(participantCreationData2))
+                        new ParticipantsCreationData(1L, List.of(participantCreationData2)))
         );
         assertThat(actualException.getMessage())
                 .isEqualTo("Die Spielernummern für die Mannschaft mit ID 1 sind nicht gültig: [2]");
@@ -134,7 +131,7 @@ class ParticipantServiceTest {
         when(participantRepository.existsByTeamIdAndNumber(1L, 1)).thenReturn(Boolean.FALSE);
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> participantService.createValidParticipantConfigurationForTeam(
-                        1L, List.of(participantCreationData1))
+                        new ParticipantsCreationData(1L, List.of(participantCreationData1)))
         );
         assertThat(actualException.getMessage())
                 .isEqualTo("In dieser Saisonphase kann keine Mannschaft mit Teilnehmern befüllt werden!");
@@ -146,6 +143,7 @@ class ParticipantServiceTest {
         when(participantRepository.existsByParticipationEligibilityId(1L)).thenReturn(Boolean.FALSE);
         when(participantRepository.existsByTeamIdAndNumber(1L, 2)).thenReturn(Boolean.FALSE);
         when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 3L, 4, 5L));
+        when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(organizationService.getSeasonIdOfOrganization(3L)).thenReturn(2L);
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.RUNNING);
         when(participantRepository.findByTeamId(1L)).thenReturn(List.of(participant1, participant2));
@@ -163,6 +161,7 @@ class ParticipantServiceTest {
 
     @Test
     void testAddParticipantToTeamParticipationEligibilityDoesNotExist() {
+        when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(participationEligibilityService.existsById(1L)).thenReturn(Boolean.FALSE);
 
         NotFoundException actualException = assertThrows(NotFoundException.class,
@@ -176,6 +175,7 @@ class ParticipantServiceTest {
     void testAddParticipantToTeamParticipantForParticipationEligibilityAlreadyExists() {
         when(participationEligibilityService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(participantRepository.existsByParticipationEligibilityId(1L)).thenReturn(Boolean.TRUE);
+        when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
 
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> participantService.addParticipantToTeam(participantCreationData2)
@@ -189,6 +189,7 @@ class ParticipantServiceTest {
         when(participationEligibilityService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(participantRepository.existsByParticipationEligibilityId(1L)).thenReturn(Boolean.FALSE);
         when(participantRepository.existsByTeamIdAndNumber(1L, 2)).thenReturn(Boolean.TRUE);
+        when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
 
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> participantService.addParticipantToTeam(participantCreationData2)
@@ -202,6 +203,7 @@ class ParticipantServiceTest {
         when(participationEligibilityService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(participantRepository.existsByParticipationEligibilityId(1L)).thenReturn(Boolean.FALSE);
         when(participantRepository.existsByTeamIdAndNumber(1L, 2)).thenReturn(Boolean.FALSE);
+        when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 3L, 4, 5L));
         when(organizationService.getSeasonIdOfOrganization(3L)).thenReturn(2L);
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.PREPARATION);
@@ -218,6 +220,7 @@ class ParticipantServiceTest {
         when(participationEligibilityService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(participantRepository.existsByParticipationEligibilityId(1L)).thenReturn(Boolean.FALSE);
         when(participantRepository.existsByTeamIdAndNumber(1L, 2)).thenReturn(Boolean.FALSE);
+        when(teamService.existsById(1L)).thenReturn(Boolean.TRUE);
         when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 3L, 4, 5L));
         when(organizationService.getSeasonIdOfOrganization(3L)).thenReturn(2L);
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.RUNNING);
