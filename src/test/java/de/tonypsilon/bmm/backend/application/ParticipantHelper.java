@@ -2,16 +2,17 @@ package de.tonypsilon.bmm.backend.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tonypsilon.bmm.backend.club.data.ClubData;
+import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
+import de.tonypsilon.bmm.backend.participant.data.ParticipantCreationData;
+import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityCreationData;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
+import de.tonypsilon.bmm.backend.team.data.TeamData;
 import io.restassured.RestAssured;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 public class ParticipantHelper {
@@ -87,6 +88,44 @@ public class ParticipantHelper {
         assertThat(participationEligibility.dwz()).isEqualTo(Optional.ofNullable(creationData.dwz()));
 
         return participationEligibility;
+    }
+
+    List<ParticipantData> assignParticipantsToTeamsOfClub(Long clubId,
+                                                          List<Long> participationEligibilityIds,
+                                                          Map<OrganizationData, List<TeamData>> teams,
+                                                          HttpHeaders headers) throws Exception {
+        List<ParticipantData> participants = new ArrayList<>();
+
+        return participants;
+    }
+
+    private List<ParticipantData> assignParticipantsToTeam(Long teamId,
+                                                   List<Long> participationEligibilityIds,
+                                                   HttpHeaders headers) throws Exception {
+        List<ParticipantData> participants = new ArrayList<>();
+        int i = 1;
+        for (Long participationEligibilityId : participationEligibilityIds) {
+            ParticipantData participant = RestAssured
+                    .given()
+                    .headers(headers)
+                    .body(objectMapper.writeValueAsString(
+                            new ParticipantCreationData(teamId, participationEligibilityId, i)))
+                    .when()
+                    .post(baseUrl + "/participants")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .extract()
+                    .response()
+                    .as(ParticipantData.class);
+            assertThat(participant.teamId()).isEqualTo(teamId);
+            assertThat(participant.participationEligibilityId()).isEqualTo(participationEligibilityId);
+            assertThat(participant.number()).isEqualTo(i);
+
+            participants.add(participant);
+            i++;
+        }
+
+        return participants;
     }
 
 }

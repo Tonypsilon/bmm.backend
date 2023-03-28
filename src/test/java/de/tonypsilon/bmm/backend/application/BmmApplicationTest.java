@@ -7,6 +7,7 @@ import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
 import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationCreationData;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
+import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
 import de.tonypsilon.bmm.backend.season.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
@@ -36,6 +37,7 @@ import javax.servlet.http.Part;
 import javax.sql.DataSource;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -117,6 +119,22 @@ class BmmApplicationTest {
         Map<OrganizationData, List<TeamData>> teams = teamHelper.createTeams(organizations, venues);
 
         // step 10: Assign players to the teams
+        Map<Long, List<ParticipationEligibilityData>> participationEligibilitiesByClub =
+                participationEligibilities.stream()
+                .collect(Collectors.groupingBy(ParticipationEligibilityData::clubId));
+
+        Set<ParticipantData> participants = new HashSet<>();
+        for (Long clubId : participationEligibilitiesByClub.keySet()) {
+            participants.addAll(participantHelper.assignParticipantsToTeamsOfClub(clubId,
+                    participationEligibilitiesByClub.get(clubId).stream().map(ParticipationEligibilityData::id).toList(),
+                    teams,
+                    loginHelper.login(
+                            clubs.keySet().stream()
+                                    .filter(clubData -> clubData.id().equals(clubId))
+                                    .findFirst().orElseThrow()))
+            );
+        }
+        //assertThat(participants).hasSize(8*2*8); // 8 clubs, with 2 teams each, with 8 participants each
 
         // step 11: Move season to preparation stage.
         SeasonData theSeasonInPreparation = RestAssured
