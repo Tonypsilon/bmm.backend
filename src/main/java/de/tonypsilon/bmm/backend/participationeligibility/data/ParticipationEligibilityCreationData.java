@@ -7,5 +7,5 @@ public record ParticipationEligibilityCreationData(Long seasonId,
                                                    String forename,
                                                    String surname,
                                                    Integer pkz,
-                                                   Optional<Integer> dwz) {
+                                                   Integer dwz) {
 }

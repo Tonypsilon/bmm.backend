@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 public class ParticipationEligibilityService {
@@ -52,7 +53,8 @@ public class ParticipationEligibilityService {
         }
         validationService.validateName(participationEligibilityCreationData.forename());
         validationService.validateName(participationEligibilityCreationData.surname());
-        participationEligibilityCreationData.dwz().ifPresent(validationService::validateRating);
+        Optional<Integer> dwz = Optional.ofNullable(participationEligibilityCreationData.dwz());
+        dwz.ifPresent(validationService::validateRating);
         if (Boolean.TRUE.equals(participationEligibilityRepository.existsBySeasonIdAndClubIdAndPkz(
                 participationEligibilityCreationData.seasonId(),
                 participationEligibilityCreationData.clubId(),
@@ -66,10 +68,10 @@ public class ParticipationEligibilityService {
         ParticipationEligibility participationEligibility = new ParticipationEligibility();
         participationEligibility.setSeasonId(participationEligibilityCreationData.seasonId());
         participationEligibility.setClubId(participationEligibilityCreationData.clubId());
-        participationEligibility.setForename(participationEligibility.getForename());
-        participationEligibility.setSurname(participationEligibility.getSurname());
+        participationEligibility.setForename(participationEligibilityCreationData.forename());
+        participationEligibility.setSurname(participationEligibilityCreationData.surname());
         participationEligibility.setPkz(participationEligibilityCreationData.pkz());
-        participationEligibility.setDwz(participationEligibilityCreationData.dwz().orElse(null));
+        participationEligibility.setDwz(dwz.orElse(null));
         participationEligibilityRepository.save(participationEligibility);
 
         return participationEligibilityToParticipationEligibilityData(

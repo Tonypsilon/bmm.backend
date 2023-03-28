@@ -6,6 +6,7 @@ import org.springframework.lang.NonNull;
 import java.util.Optional;
 
 @Entity
+@Table(name = "participationeligibility")
 public class ParticipationEligibility {
 
     @Id

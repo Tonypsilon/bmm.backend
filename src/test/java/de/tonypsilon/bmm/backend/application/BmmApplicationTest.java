@@ -7,6 +7,7 @@ import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
 import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationCreationData;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
+import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
 import de.tonypsilon.bmm.backend.season.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.rnr.Role;
@@ -31,6 +32,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
+import javax.servlet.http.Part;
 import javax.sql.DataSource;
 
 import java.util.*;
@@ -69,6 +71,7 @@ class BmmApplicationTest {
         ClubHelper clubHelper = new ClubHelper(baseUrl);
         LoginHelper loginHelper = new LoginHelper(baseUrl);
         TeamHelper teamHelper = new TeamHelper(baseUrl);
+        ParticipantHelper participantHelper = new ParticipantHelper(baseUrl);
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "users")).isEqualTo(1);
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "authorities")).isEqualTo(1);
 
@@ -107,6 +110,8 @@ class BmmApplicationTest {
         Map<ClubData, VenueData> venues = clubHelper.createVenuesForClubs(clubs.keySet());
 
         // step 8: Create participation eligibilities
+        List<ParticipationEligibilityData> participationEligibilities =
+                participantHelper.createParticipationEligibilities(theSeason.id(), clubs.keySet(), seasonAdminHeaders);
 
         // step 9: Create 2 teams of each organization.
         Map<OrganizationData, List<TeamData>> teams = teamHelper.createTeams(organizations, venues);

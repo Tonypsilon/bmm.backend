@@ -94,7 +94,7 @@ class ParticipationEligibilityServiceTest {
         when(participationEligibilityRepository.getBySeasonIdAndClubIdAndPkz(2L, 3L, 1))
                 .thenReturn(participationEligibility1);
         ParticipationEligibilityData actual = participationEligibilityService.createParticipationEligibility(
-                new ParticipationEligibilityCreationData(2L, 3L, "Max", "Mustermann", 1, Optional.empty()));
+                new ParticipationEligibilityCreationData(2L, 3L, "Max", "Mustermann", 1, null));
         assertThat(actual).isEqualTo(participationEligibilityData1);
     }
 
@@ -103,7 +103,7 @@ class ParticipationEligibilityServiceTest {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.FALSE);
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> participationEligibilityService.createParticipationEligibility(
-                        new ParticipationEligibilityCreationData(1L, 3L, "Max", "Mustermann", 1, Optional.empty())
+                        new ParticipationEligibilityCreationData(1L, 3L, "Max", "Mustermann", 1, null)
                 )
         );
         assertThat(actualException.getMessage())
@@ -116,7 +116,7 @@ class ParticipationEligibilityServiceTest {
         when(seasonService.seasonExistsById(2L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(2L)).thenReturn(seasonStage);
         ParticipationEligibilityCreationData participationEligibilityCreationData =
-                new ParticipationEligibilityCreationData(2L, 1L, "Max", "Mustermann", 1, Optional.empty());
+                new ParticipationEligibilityCreationData(2L, 1L, "Max", "Mustermann", 1, null);
 
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> participationEligibilityService.createParticipationEligibility(participationEligibilityCreationData));
@@ -131,7 +131,7 @@ class ParticipationEligibilityServiceTest {
         when(clubService.clubExistsById(1L)).thenReturn(Boolean.FALSE);
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> participationEligibilityService.createParticipationEligibility(
-                        new ParticipationEligibilityCreationData(2L, 1L, "Max", "Mustermann", 1, Optional.empty())
+                        new ParticipationEligibilityCreationData(2L, 1L, "Max", "Mustermann", 1, null)
                 )
         );
         assertThat(actualException.getMessage())
@@ -145,7 +145,7 @@ class ParticipationEligibilityServiceTest {
         when(clubService.clubExistsById(3L)).thenReturn(Boolean.TRUE);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> participationEligibilityService.createParticipationEligibility(
-                        new ParticipationEligibilityCreationData(2L, 3L, "", "Mustermann", 1, Optional.empty())
+                        new ParticipationEligibilityCreationData(2L, 3L, "", "Mustermann", 1, null)
                 )
         );
         assertThat(actualException.getMessage())
@@ -159,7 +159,7 @@ class ParticipationEligibilityServiceTest {
         when(clubService.clubExistsById(3L)).thenReturn(Boolean.TRUE);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> participationEligibilityService.createParticipationEligibility(
-                        new ParticipationEligibilityCreationData(2L, 3L, "Max", "", 1, Optional.empty())
+                        new ParticipationEligibilityCreationData(2L, 3L, "Max", "", 1, null)
                 )
         );
         assertThat(actualException.getMessage())
@@ -173,7 +173,7 @@ class ParticipationEligibilityServiceTest {
         when(clubService.clubExistsById(3L)).thenReturn(Boolean.TRUE);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> participationEligibilityService.createParticipationEligibility(
-                        new ParticipationEligibilityCreationData(2L, 3L, "Max", "Mustermann", 1, Optional.of(-1))
+                        new ParticipationEligibilityCreationData(2L, 3L, "Max", "Mustermann", 1, -1)
                 )
         );
         assertThat(actualException.getMessage())
@@ -189,7 +189,7 @@ class ParticipationEligibilityServiceTest {
                 .thenReturn(Boolean.TRUE);
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> participationEligibilityService.createParticipationEligibility(
-                        new ParticipationEligibilityCreationData(2L, 3L, "Max", "Mustermann", 1, Optional.empty()))
+                        new ParticipationEligibilityCreationData(2L, 3L, "Max", "Mustermann", 1, null))
         );
         assertThat(actualException.getMessage())
                 .isEqualTo("Es gibt bereits eine Spielberechtigung für die Spielernummer 1 " +
