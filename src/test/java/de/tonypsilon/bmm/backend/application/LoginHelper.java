@@ -2,6 +2,7 @@ package de.tonypsilon.bmm.backend.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tonypsilon.bmm.backend.club.data.ClubData;
+import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +27,11 @@ public class LoginHelper {
     }
 
     HttpHeaders login(ClubData clubData) {
-        return login(clubData.name() + "Admin", CLUB_ADMIN_PASSWORD);
+        return login(clubData.name());
+    }
+
+    private HttpHeaders login(String clubName) {
+        return login(clubName + "Admin", CLUB_ADMIN_PASSWORD);
     }
 
     HttpHeaders login(String username, String password) {

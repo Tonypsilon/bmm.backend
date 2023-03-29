@@ -1,11 +1,9 @@
 package de.tonypsilon.bmm.backend.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.tonypsilon.bmm.backend.club.data.ClubCreationData;
 import de.tonypsilon.bmm.backend.club.data.ClubData;
 import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
 import de.tonypsilon.bmm.backend.division.data.DivisionData;
-import de.tonypsilon.bmm.backend.organization.data.OrganizationCreationData;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
@@ -15,25 +13,20 @@ import de.tonypsilon.bmm.backend.security.rnr.Role;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
-import de.tonypsilon.bmm.backend.team.data.TeamCreationData;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.data.TeamDivisionLinkData;
-import de.tonypsilon.bmm.backend.venue.data.VenueCreationData;
 import de.tonypsilon.bmm.backend.venue.data.VenueData;
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
-import javax.servlet.http.Part;
 import javax.sql.DataSource;
 
 import java.util.*;
@@ -113,7 +106,7 @@ class BmmApplicationTest {
 
         // step 8: Create participation eligibilities
         List<ParticipationEligibilityData> participationEligibilities =
-                participantHelper.createParticipationEligibilities(theSeason.id(), clubs.keySet(), seasonAdminHeaders);
+                participantHelper.createParticipationEligibilities(theSeason.id(), organizations, seasonAdminHeaders);
 
         // step 9: Create 2 teams of each organization.
         Map<OrganizationData, List<TeamData>> teams = teamHelper.createTeams(organizations, venues);
@@ -122,19 +115,30 @@ class BmmApplicationTest {
         Map<Long, List<ParticipationEligibilityData>> participationEligibilitiesByClub =
                 participationEligibilities.stream()
                 .collect(Collectors.groupingBy(ParticipationEligibilityData::clubId));
+        Map<Long, List<ParticipationEligibilityData>> participationEligibilitiesByOrganization =
+                new HashMap<>();
+        for (List<ParticipationEligibilityData> participationEligibilityDataList :
+                participationEligibilitiesByClub.values()) {
+            participationEligibilitiesByOrganization.put(
+                    getOrganizationIdByClubId(participationEligibilityDataList.get(0).clubId(),
+                            organizations),
+                    participationEligibilityDataList);
+        }
 
         Set<ParticipantData> participants = new HashSet<>();
-        for (Long clubId : participationEligibilitiesByClub.keySet()) {
-            participants.addAll(participantHelper.assignParticipantsToTeamsOfClub(clubId,
-                    participationEligibilitiesByClub.get(clubId).stream().map(ParticipationEligibilityData::id).toList(),
+        for (OrganizationData organization : organizations) {
+            participants.addAll(participantHelper.assignParticipantsToTeamsOfOrganization(organization,
+                    participationEligibilitiesByOrganization.get(organization.id()).stream()
+                            .map(ParticipationEligibilityData::id)
+                            .toList(),
                     teams,
                     loginHelper.login(
                             clubs.keySet().stream()
-                                    .filter(clubData -> clubData.id().equals(clubId))
+                                    .filter(clubData -> clubData.id().equals(organization.clubIds().iterator().next()))
                                     .findFirst().orElseThrow()))
             );
         }
-        //assertThat(participants).hasSize(8*2*8); // 8 clubs, with 2 teams each, with 8 participants each
+        assertThat(participants).hasSize(10*2*8); // 10 organizations, with 2 teams each, with 8 participants each
 
         // step 11: Move season to preparation stage.
         SeasonData theSeasonInPreparation = RestAssured
@@ -181,6 +185,14 @@ class BmmApplicationTest {
 
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "match_"))
                 .isEqualTo(2*5*9); // 2 divisions, 5 matches per matchday, 9 matchdays
+    }
+
+    private Long getOrganizationIdByClubId(Long clubId, Collection<OrganizationData> organizations) {
+        return organizations.stream()
+                .filter(organizationData -> organizationData.clubIds().contains(clubId))
+                .findFirst()
+                .orElseThrow()
+                .id();
     }
 
 }
