@@ -7,6 +7,8 @@ import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
+import de.tonypsilon.bmm.backend.referee.data.RefereeCreationData;
+import de.tonypsilon.bmm.backend.referee.facade.RefereeExternalData;
 import de.tonypsilon.bmm.backend.season.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.rnr.Role;
@@ -166,9 +168,24 @@ class BmmApplicationTest {
         Map<DivisionData, List<TeamDivisionLinkData>> teamsToDivisions =
                 teamHelper.linkTeamsToDivisions(teams, firstDivision, secondDivision, seasonAdminHeaders);
 
-        // TODO: Referees?
+        // step 14: Create a referee.
+        RefereeExternalData referee = RestAssured
+                .given()
+                .headers(seasonAdminHeaders)
+                .body(objectMapper.writeValueAsString(new RefereeCreationData(
+                        theSeasonInPreparation.id(), "Mister", "Referee", "mister@referee.com")))
+                .when()
+                .post(baseUrl + "/referees")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .response()
+                .as(RefereeExternalData.class);
+        assertThat(referee.seasonId()).isEqualTo(theSeasonInPreparation.id());
+        assertThat(referee.forename()).isEqualTo("Mister");
+        assertThat(referee.surname()).isEqualTo("Referee");
 
-        // step 14: Move season to running stage. Verify that all matchdays are created properly.
+        // step 15: Move season to running stage. Verify that all matchdays are created properly.
         SeasonData theSeasonRunning = RestAssured
                 .given()
                 .headers(seasonAdminHeaders)

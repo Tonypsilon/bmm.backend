@@ -861,3 +861,11 @@ databaseChangeLog:
         - renameTable:
             newTableName: match_
             oldTableName: match
+  - changeSet:
+      id: 32
+      author: Tonypsilon
+      changes:
+        - addAutoIncrement:
+            tableName: referee
+            columnName: id
+            columnDataType: int
