@@ -869,3 +869,16 @@ databaseChangeLog:
             tableName: referee
             columnName: id
             columnDataType: int
+  - changeSet:
+      id: 33
+      author: Tonypsilon
+      changes:
+        - dropColumn:
+            tableName: match_
+            columnName: editable
+        - addColumn:
+            tableName: match_
+            columns:
+              - column:
+                  name: state
+                  type: varchar(64)

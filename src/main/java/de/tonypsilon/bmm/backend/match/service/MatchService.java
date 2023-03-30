@@ -4,10 +4,7 @@ import de.tonypsilon.bmm.backend.division.service.DivisionService;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
-import de.tonypsilon.bmm.backend.match.data.CreateMatchData;
-import de.tonypsilon.bmm.backend.match.data.Match;
-import de.tonypsilon.bmm.backend.match.data.MatchData;
-import de.tonypsilon.bmm.backend.match.data.MatchRepository;
+import de.tonypsilon.bmm.backend.match.data.*;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.referee.data.RefereeData;
@@ -52,10 +49,10 @@ public class MatchService {
 
     @Transactional
     @NonNull
-    public MatchData createMatch(CreateMatchData createMatchData) {
-        MatchdayData matchdayData = matchdayService.getMatchdayDataById(createMatchData.matchdayId());
-        TeamData homeTeamData = teamService.getTeamDataById(createMatchData.homeTeamId());
-        TeamData awayTeamData = teamService.getTeamDataById(createMatchData.awayTeamId());
+    public MatchData createMatch(MatchCreationData matchCreationData) {
+        MatchdayData matchdayData = matchdayService.getMatchdayDataById(matchCreationData.matchdayId());
+        TeamData homeTeamData = teamService.getTeamDataById(matchCreationData.homeTeamId());
+        TeamData awayTeamData = teamService.getTeamDataById(matchCreationData.awayTeamId());
 
         Optional<Long> divisionIdHomeTeam =
                 Optional.ofNullable(teamDivisionLinkService.getDivisionIdOfTeam(homeTeamData.id()));
@@ -71,31 +68,31 @@ public class MatchService {
 
         if(Boolean.TRUE.equals(
                 matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(
-                        createMatchData.matchdayId(), createMatchData.homeTeamId()))) {
+                        matchCreationData.matchdayId(), matchCreationData.homeTeamId()))) {
             throw new AlreadyExistsException("Die Heimmannschaft hat an diesem Spieltag schon einen Wettkampf!");
         }
         if(Boolean.TRUE.equals(
                 matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(
-                        createMatchData.matchdayId(), createMatchData.awayTeamId()))) {
+                        matchCreationData.matchdayId(), matchCreationData.awayTeamId()))) {
             throw new AlreadyExistsException("Die Gastmannschaft hat an diesem Spieltag schon einen Wettkampf!");
         }
-        createMatchData.date().ifPresent(validationService::validateDateString);
+        matchCreationData.date().ifPresent(validationService::validateDateString);
         Long seasonId = divisionService.getSeasonIdByDivisionId(matchdayData.divisionId());
-        createMatchData.refereeId().ifPresent(refereeId -> verifyRefereeId(refereeId, seasonId));
+        matchCreationData.refereeId().ifPresent(refereeId -> verifyRefereeId(refereeId, seasonId));
         Match match = new Match();
-        match.setMatchdayId(createMatchData.matchdayId());
-        match.setHomeTeamId(createMatchData.homeTeamId());
-        match.setAwayTeamId(createMatchData.awayTeamId());
-        createMatchData.date().ifPresent(match::setDate);
-        createMatchData.refereeId().ifPresent(match::setRefereeId);
+        match.setMatchdayId(matchCreationData.matchdayId());
+        match.setHomeTeamId(matchCreationData.homeTeamId());
+        match.setAwayTeamId(matchCreationData.awayTeamId());
+        matchCreationData.date().ifPresent(match::setDate);
+        matchCreationData.refereeId().ifPresent(match::setRefereeId);
         match.setHomeTeamPoints(0);
         match.setAwayTeamPoints(0);
-        match.setEditable(Boolean.TRUE);
+        match.setState(MatchState.OPEN);
 
         matchRepository.save(match);
 
         return matchToMatchData(matchRepository.getByMatchdayIdAndHomeTeamIdAndAwayTeamId(
-                createMatchData.matchdayId(), createMatchData.homeTeamId(), createMatchData.awayTeamId()));
+                matchCreationData.matchdayId(), matchCreationData.homeTeamId(), matchCreationData.awayTeamId()));
     }
 
     @NonNull
@@ -117,8 +114,8 @@ public class MatchService {
                 match.getOverruledHomeBoardHalfPoints(),
                 match.getOverruledAwayBoardHalfPoints(),
                 match.getRefereeId(),
-                match.getEditable(),
-                match.getVenueId());
+                match.getVenueId(),
+                match.getState());
     }
 
     private void verifyRefereeId(@NonNull Long refereeId, @NonNull Long seasonId) {

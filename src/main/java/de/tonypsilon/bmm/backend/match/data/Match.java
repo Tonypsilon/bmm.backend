@@ -32,11 +32,12 @@ public class Match {
     @Column(name = "away_team_points", unique = false, nullable = false)
     private Integer awayTeamPoints;
 
-    @Column(unique = false, nullable = false)
-    private Boolean editable;
-
     @Column(name = "venue_id")
     private Long venueId;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MatchState state;
 
     /**
      * Note: To avoid strange round off behaviour for half points, points are stored
@@ -146,20 +147,20 @@ public class Match {
     }
 
     @NonNull
-    public Boolean getEditable() {
-        return editable;
-    }
-
-    public void setEditable(@NonNull Boolean editable) {
-        this.editable = editable;
-    }
-
-    @NonNull
     public Optional<Long> getVenueId() {
         return Optional.ofNullable(venueId);
     }
 
     public void setVenueId(@Nullable Long venueId) {
         this.venueId = venueId;
+    }
+
+    @NonNull
+    public MatchState getState() {
+        return state;
+    }
+
+    public void setState(@NonNull MatchState state) {
+        this.state = state;
     }
 }

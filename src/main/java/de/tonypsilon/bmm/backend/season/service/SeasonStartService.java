@@ -2,7 +2,7 @@ package de.tonypsilon.bmm.backend.season.service;
 
 import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.division.service.DivisionService;
-import de.tonypsilon.bmm.backend.match.data.CreateMatchData;
+import de.tonypsilon.bmm.backend.match.data.MatchCreationData;
 import de.tonypsilon.bmm.backend.match.service.MatchService;
 import de.tonypsilon.bmm.backend.matchday.data.CreateMatchdayData;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
@@ -67,7 +67,7 @@ public class SeasonStartService {
                             i));
             List<Pairing> pairingsOfRound = pairingTable.getPairingsOfRound(i);
             for (Pairing pairing : pairingsOfRound) {
-                matchService.createMatch(new CreateMatchData(matchdayData.id(),
+                matchService.createMatch(new MatchCreationData(matchdayData.id(),
                         teamsOfDivisionByNumber.get(pairing.home()).teamId(),
                         teamsOfDivisionByNumber.get(pairing.away()).teamId(),
                         Optional.empty(),

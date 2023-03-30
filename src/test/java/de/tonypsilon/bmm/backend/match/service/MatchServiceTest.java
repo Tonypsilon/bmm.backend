@@ -4,10 +4,7 @@ import de.tonypsilon.bmm.backend.division.service.DivisionService;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
-import de.tonypsilon.bmm.backend.match.data.CreateMatchData;
-import de.tonypsilon.bmm.backend.match.data.Match;
-import de.tonypsilon.bmm.backend.match.data.MatchData;
-import de.tonypsilon.bmm.backend.match.data.MatchRepository;
+import de.tonypsilon.bmm.backend.match.data.*;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.referee.data.RefereeData;
@@ -38,7 +35,7 @@ class MatchServiceTest {
     		mock(TeamDivisionLinkService.class);
     private final ValidationService validationService = new ValidationService();
     private final MatchData matchData1 = new MatchData(1L, 1L, 1L, 2L, Optional.of("1.1.2001"),
-            2, 0, Optional.empty(), Optional.empty(), Optional.of(1L), Boolean.TRUE, Optional.empty());
+            2, 0, Optional.empty(), Optional.empty(), Optional.of(1L), Optional.empty(), MatchState.OPEN);
     private final MatchdayData matchdayData = new MatchdayData(1L, 2L, "1.1.2000", 3);
     private Match match1;
 
@@ -62,7 +59,7 @@ class MatchServiceTest {
         match1.setOverruledHomeBoardHalfPoints(null);
         match1.setOverruledAwayBoardHalfPoints(null);
         match1.setRefereeId(1L);
-        match1.setEditable(Boolean.TRUE);
+        match1.setState(MatchState.OPEN);
     }
 
     @Test
@@ -77,8 +74,8 @@ class MatchServiceTest {
         when(divisionService.getSeasonIdByDivisionId(2L)).thenReturn(1L);
         when(refereeService.findById(1L)).thenReturn(Optional.of(new RefereeData(1L, 1L, "Ref", "eree", "ref@eree.com")));
         when(matchRepository.getByMatchdayIdAndHomeTeamIdAndAwayTeamId(1L, 1L, 2L)).thenReturn(match1);
-        CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L, Optional.of("1.1.2001"), Optional.of(1L));
-        MatchData actual = matchService.createMatch(createMatchData);
+        MatchCreationData matchCreationData = new MatchCreationData(1L, 1L, 2L, Optional.of("1.1.2001"), Optional.of(1L));
+        MatchData actual = matchService.createMatch(matchCreationData);
         assertThat(actual).isEqualTo(matchData1);
     }
 
@@ -86,10 +83,10 @@ class MatchServiceTest {
     void testCreateMatchHomeTeamDoesNotExist() {
         when(matchdayService.getMatchdayDataById(1L)).thenReturn(matchdayData);
         when(teamService.getTeamDataById(-1L)).thenThrow(new NotFoundException("Es gibt kein Team mit ID -1!"));
-        CreateMatchData createMatchData = new CreateMatchData(1L, -1L, 2L,
+        MatchCreationData matchCreationData = new MatchCreationData(1L, -1L, 2L,
                 Optional.empty(), Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
-                () -> matchService.createMatch(createMatchData));
+                () -> matchService.createMatch(matchCreationData));
         assertThat(actualException.getMessage()).isEqualTo("Es gibt kein Team mit ID -1!");
     }
 
@@ -98,10 +95,10 @@ class MatchServiceTest {
         when(matchdayService.getMatchdayDataById(1L)).thenReturn(matchdayData);
         when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 1L, 1, 1L));
         when(teamService.getTeamDataById(-1L)).thenThrow(new NotFoundException("Es gibt kein Team mit ID -1!"));
-        CreateMatchData createMatchData = new CreateMatchData(1L, 1L, -1L,
+        MatchCreationData matchCreationData = new MatchCreationData(1L, 1L, -1L,
                 Optional.empty(), Optional.empty());
         NotFoundException actualException = assertThrows(NotFoundException.class,
-                () -> matchService.createMatch(createMatchData));
+                () -> matchService.createMatch(matchCreationData));
         assertThat(actualException.getMessage()).isEqualTo("Es gibt kein Team mit ID -1!");
     }
 
@@ -112,10 +109,10 @@ class MatchServiceTest {
         when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(2L, 2L, 2, 2L));
         when(teamDivisionLinkService.getDivisionIdOfTeam(1L)).thenReturn(2L);
         when(teamDivisionLinkService.getDivisionIdOfTeam(2L)).thenReturn(5L);
-        CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L,
+        MatchCreationData matchCreationData = new MatchCreationData(1L, 1L, 2L,
                 Optional.empty(), Optional.empty());
         BadDataException actualException = assertThrows(BadDataException.class,
-                () -> matchService.createMatch(createMatchData));
+                () -> matchService.createMatch(matchCreationData));
         assertThat(actualException.getMessage())
                 .isEqualTo("Mindestens eine der beiden Mannschaften gehört nicht zur richtigen Staffel!");
     }
@@ -128,10 +125,10 @@ class MatchServiceTest {
         when(teamDivisionLinkService.getDivisionIdOfTeam(1L)).thenReturn(2L);
         when(teamDivisionLinkService.getDivisionIdOfTeam(2L)).thenReturn(2L);
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.TRUE);
-        CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L,
+        MatchCreationData matchCreationData = new MatchCreationData(1L, 1L, 2L,
                 Optional.empty(), Optional.empty());
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
-                () -> matchService.createMatch(createMatchData));
+                () -> matchService.createMatch(matchCreationData));
         assertThat(actualException.getMessage())
                 .isEqualTo("Die Heimmannschaft hat an diesem Spieltag schon einen Wettkampf!");
     }
@@ -145,10 +142,10 @@ class MatchServiceTest {
         when(teamDivisionLinkService.getDivisionIdOfTeam(2L)).thenReturn(2L);
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.FALSE);
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 2L)).thenReturn(Boolean.TRUE);
-        CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L,
+        MatchCreationData matchCreationData = new MatchCreationData(1L, 1L, 2L,
                 Optional.empty(), Optional.empty());
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
-                () -> matchService.createMatch(createMatchData));
+                () -> matchService.createMatch(matchCreationData));
         assertThat(actualException.getMessage())
                 .isEqualTo("Die Gastmannschaft hat an diesem Spieltag schon einen Wettkampf!");
     }
@@ -162,9 +159,9 @@ class MatchServiceTest {
         when(teamDivisionLinkService.getDivisionIdOfTeam(2L)).thenReturn(2L);
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.FALSE);
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 2L)).thenReturn(Boolean.FALSE);
-        CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L, Optional.of("1.1%2001"), Optional.of(1L));
+        MatchCreationData matchCreationData = new MatchCreationData(1L, 1L, 2L, Optional.of("1.1%2001"), Optional.of(1L));
         BadDataException actualException = assertThrows(BadDataException.class,
-                () -> matchService.createMatch(createMatchData));
+                () -> matchService.createMatch(matchCreationData));
         assertThat(actualException.getMessage())
                 .isEqualTo("Das Datum enthält ungültige Zeichen!");
     }
@@ -179,9 +176,9 @@ class MatchServiceTest {
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.FALSE);
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 2L)).thenReturn(Boolean.FALSE);
         when(refereeService.findById(-1L)).thenReturn(Optional.empty());
-        CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L, Optional.of("1.1.2001"), Optional.of(-1L));
+        MatchCreationData matchCreationData = new MatchCreationData(1L, 1L, 2L, Optional.of("1.1.2001"), Optional.of(-1L));
         NotFoundException actualException = assertThrows(NotFoundException.class,
-                () -> matchService.createMatch(createMatchData));
+                () -> matchService.createMatch(matchCreationData));
         assertThat(actualException.getMessage())
                 .isEqualTo("Es gibt keinen Schiedsrichter mit der ID -1!");
 
@@ -198,9 +195,9 @@ class MatchServiceTest {
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 2L)).thenReturn(Boolean.FALSE);
         when(divisionService.getSeasonIdByDivisionId(2L)).thenReturn(2L);
         when(refereeService.findById(1L)).thenReturn(Optional.of(new RefereeData(1L, 1L, "Ref", "eree", "ref@eree.com")));
-        CreateMatchData createMatchData = new CreateMatchData(1L, 1L, 2L, Optional.of("1.1.2001"), Optional.of(1L));
+        MatchCreationData matchCreationData = new MatchCreationData(1L, 1L, 2L, Optional.of("1.1.2001"), Optional.of(1L));
         BadDataException actualException = assertThrows(BadDataException.class,
-                () -> matchService.createMatch(createMatchData));
+                () -> matchService.createMatch(matchCreationData));
         assertThat(actualException.getMessage())
                 .isEqualTo("Der Schiedsrichter mit der ID 1 passt nicht zur Saison mit der ID 2!");
     }

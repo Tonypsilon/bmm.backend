@@ -4,6 +4,7 @@ import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.game.data.*;
 import de.tonypsilon.bmm.backend.match.data.MatchData;
+import de.tonypsilon.bmm.backend.match.data.MatchState;
 import de.tonypsilon.bmm.backend.match.service.MatchService;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
@@ -36,7 +37,7 @@ class GameServiceTest {
             Optional.of(Result.WIN),Optional.empty(),
             Optional.of(Result.LOSS),Optional.empty());
     private final MatchData matchData = new MatchData(matchId, 5L, homeTeamId, awayTeamId, Optional.empty(),
-            5, 3, Optional.empty(), Optional.empty(), Optional.empty(), Boolean.TRUE, null);
+            5, 3, Optional.empty(), Optional.empty(), Optional.empty(), null, MatchState.OPEN);
     private Game game;
 
     @BeforeEach
