@@ -185,6 +185,8 @@ class BmmApplicationTest {
 
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "match_"))
                 .isEqualTo(2*5*9); // 2 divisions, 5 matches per matchday, 9 matchdays
+
+        //
     }
 
     private Long getOrganizationIdByClubId(Long clubId, Collection<OrganizationData> organizations) {

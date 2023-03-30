@@ -45,9 +45,9 @@ class RefereeServiceTest {
         when(refereeRepository.existsBySeasonIdAndEmailAddress(1L, "fore.sure@name.com")).thenReturn(Boolean.FALSE);
         when(refereeRepository.getBySeasonIdAndEmailAddress(1L, "fore.sure@name.com"))
                 .thenReturn(referee1);
-        CreateRefereeData createRefereeData = new CreateRefereeData(
+        RefereeCreationData refereeCreationData = new RefereeCreationData(
                 1L, "Forename", "Surname", "fore.sure@name.com");
-        RefereeData actual = refereeService.createReferee(createRefereeData);
+        RefereeData actual = refereeService.createReferee(refereeCreationData);
         assertThat(actual).isEqualTo(refereeData);
         verify(refereeRepository, times(1)).save(argThat(
                 referee -> referee.getSeasonId().equals(1L)
@@ -60,10 +60,10 @@ class RefereeServiceTest {
     @Test
     void testCreateRefereeSeasonDoesNotExist() {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.FALSE);
-        CreateRefereeData createRefereeData = new CreateRefereeData(
+        RefereeCreationData refereeCreationData = new RefereeCreationData(
                 1L, "Forename", "Surname", "fore.sure@name.com");
         NotFoundException actualException = assertThrows(NotFoundException.class,
-                () -> refereeService.createReferee(createRefereeData));
+                () -> refereeService.createReferee(refereeCreationData));
         assertThat(actualException.getMessage())
                 .isEqualTo("Es gibt keine Saison mit der ID 1!");
     }
@@ -72,10 +72,10 @@ class RefereeServiceTest {
     void testCreateRefereeAlreadyExists() {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(refereeRepository.existsBySeasonIdAndEmailAddress(1L, "fore.sure@name.com")).thenReturn(Boolean.TRUE);
-        CreateRefereeData createRefereeData = new CreateRefereeData(
+        RefereeCreationData refereeCreationData = new RefereeCreationData(
                 1L, "Forename", "Surname", "fore.sure@name.com");
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
-                () -> refereeService.createReferee(createRefereeData));
+                () -> refereeService.createReferee(refereeCreationData));
         assertThat(actualException.getMessage())
                 .isEqualTo("Es gibt bereits einen Schiedsrichter für die Saison mit der ID 1 und der E-Mailadresse fore.sure@name.com!");
     }
@@ -84,10 +84,10 @@ class RefereeServiceTest {
     void testCreateRefereeInvalidForename() {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(refereeRepository.existsBySeasonIdAndEmailAddress(1L, "fore.sure@name.com")).thenReturn(Boolean.FALSE);
-        CreateRefereeData createRefereeData = new CreateRefereeData(
+        RefereeCreationData refereeCreationData = new RefereeCreationData(
                 1L, "", "Surname", "for.sure@name.com");
         BadDataException actualException = assertThrows(BadDataException.class,
-                () -> refereeService.createReferee(createRefereeData));
+                () -> refereeService.createReferee(refereeCreationData));
         assertThat(actualException.getMessage())
                .isEqualTo("Der Name darf nicht leer sein!");
     }
@@ -96,10 +96,10 @@ class RefereeServiceTest {
     void testCreateRefereeInvalidSurname() {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(refereeRepository.existsBySeasonIdAndEmailAddress(1L, "fore.sure@name.com")).thenReturn(Boolean.FALSE);
-        CreateRefereeData createRefereeData = new CreateRefereeData(
+        RefereeCreationData refereeCreationData = new RefereeCreationData(
                 1L, "Forename", "", "fore.sure@name.com");
         BadDataException actualException = assertThrows(BadDataException.class,
-                () -> refereeService.createReferee(createRefereeData));
+                () -> refereeService.createReferee(refereeCreationData));
         assertThat(actualException.getMessage())
                 .isEqualTo("Der Name darf nicht leer sein!");
     }
@@ -108,10 +108,10 @@ class RefereeServiceTest {
     void testCreateRefereeInvalidEmailAddress() {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(refereeRepository.existsBySeasonIdAndEmailAddress(1L, "fore.sure.name.com")).thenReturn(Boolean.FALSE);
-        CreateRefereeData createRefereeData = new CreateRefereeData(
+        RefereeCreationData refereeCreationData = new RefereeCreationData(
                 1L, "Forename", "Surname", "fore.sure.name.com");
         BadDataException actualException = assertThrows(BadDataException.class,
-                () -> refereeService.createReferee(createRefereeData));
+                () -> refereeService.createReferee(refereeCreationData));
         assertThat(actualException.getMessage())
                 .isEqualTo("Die E-Mailadresse ist ungültig!");
     }
