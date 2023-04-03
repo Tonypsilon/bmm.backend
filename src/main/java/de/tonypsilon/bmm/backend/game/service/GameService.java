@@ -33,7 +33,7 @@ public class GameService {
     @Transactional
     @NonNull
     public GameData createGame(GameCreationData gameCreationData) {
-        MatchData matchData = matchService.getMatchById(gameCreationData.matchId());
+        MatchData matchData = matchService.getMatchDataById(gameCreationData.matchId());
         ParticipantData homeParticipantData = participantService.getParticipantById(gameCreationData.homeParticipantId());
         ParticipantData awayParticipantData = participantService.getParticipantById(gameCreationData.awayParticipantId());
 

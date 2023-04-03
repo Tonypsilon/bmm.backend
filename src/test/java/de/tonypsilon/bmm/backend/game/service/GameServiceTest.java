@@ -60,7 +60,7 @@ class GameServiceTest {
 
     @Test
     void testCreateGameHomePlayerDoesntMatchTeam() {
-        when(matchService.getMatchById(2L)).thenReturn(matchData);
+        when(matchService.getMatchDataById(2L)).thenReturn(matchData);
         when(participantService.getParticipantById(homeParticipantId))
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId +1, homeParticipantId, 3));
         BadDataException actualException = assertThrows(BadDataException.class,
@@ -70,7 +70,7 @@ class GameServiceTest {
 
     @Test
     void testCreateGameAwayPlayerDoesntMatchTeam() {
-        when(matchService.getMatchById(2L)).thenReturn(matchData);
+        when(matchService.getMatchDataById(2L)).thenReturn(matchData);
         when(participantService.getParticipantById(homeParticipantId))
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
@@ -87,7 +87,7 @@ class GameServiceTest {
                 homeParticipantId, awayParticipantId,
                 Optional.of(Result.WIN),Optional.empty(),
                 Optional.of(Result.LOSS),Optional.empty());
-        when(matchService.getMatchById(2L)).thenReturn(matchData);
+        when(matchService.getMatchDataById(2L)).thenReturn(matchData);
         when(participantService.getParticipantById(homeParticipantId))
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
@@ -104,7 +104,7 @@ class GameServiceTest {
                 homeParticipantId, awayParticipantId,
                 Optional.of(Result.WIN),Optional.empty(),
                 Optional.of(Result.LOSS),Optional.empty());
-        when(matchService.getMatchById(2L)).thenReturn(matchData);
+        when(matchService.getMatchDataById(2L)).thenReturn(matchData);
         when(participantService.getParticipantById(homeParticipantId))
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
@@ -117,7 +117,7 @@ class GameServiceTest {
 
     @Test
     void testCreateGameAlreadyExists() {
-        when(matchService.getMatchById(2L)).thenReturn(matchData);
+        when(matchService.getMatchDataById(2L)).thenReturn(matchData);
         when(participantService.getParticipantById(homeParticipantId))
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
@@ -132,7 +132,7 @@ class GameServiceTest {
 
     @Test
     void testCreateGameOk() {
-        when(matchService.getMatchById(2L)).thenReturn(matchData);
+        when(matchService.getMatchDataById(2L)).thenReturn(matchData);
         when(participantService.getParticipantById(homeParticipantId))
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))

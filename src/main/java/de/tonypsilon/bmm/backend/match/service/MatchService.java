@@ -17,6 +17,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -96,10 +97,22 @@ public class MatchService {
     }
 
     @NonNull
-    public MatchData getMatchById(Long matchId) {
-        return matchRepository.findById(matchId).map(this::matchToMatchData)
+    public MatchData getMatchDataById(Long matchId) {
+        return matchToMatchData(getById(matchId));
+    }
+
+    private Match getById(Long matchId) {
+        return matchRepository.findById(matchId)
                 .orElseThrow(() -> new NotFoundException("Es gibt keinen Mannschaftskampf mit der ID %d!"
                         .formatted(matchId)));
+    }
+
+    @NonNull
+    MatchData changeMatchState(@NonNull Long id, @NonNull MatchState matchState) {
+        Match match = getById(Objects.requireNonNull(id));
+        match.setState(Objects.requireNonNull(matchState));
+        matchRepository.save(match);
+        return getMatchDataById(id);
     }
 
     @NonNull
