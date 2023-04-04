@@ -2,6 +2,7 @@ package de.tonypsilon.bmm.backend.game.service;
 
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
+import de.tonypsilon.bmm.backend.exception.SeasonStageException;
 import de.tonypsilon.bmm.backend.game.data.*;
 import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.data.MatchState;
@@ -9,6 +10,7 @@ import de.tonypsilon.bmm.backend.match.service.MatchService;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
+import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -63,6 +65,7 @@ class GameServiceTest {
         when(matchService.getMatchDataById(2L)).thenReturn(matchData);
         when(participantService.getParticipantById(homeParticipantId))
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId +1, homeParticipantId, 3));
+        when(matchdayService.getSeasonStageOfMatchday(5L)).thenReturn(SeasonStage.RUNNING);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> gameService.createGame(creationData));
         assertThat(actualException).hasMessage("Der Spieler mit ID 1 ist nicht vom Team mit ID 3!");
@@ -75,6 +78,7 @@ class GameServiceTest {
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
                 .thenReturn(new ParticipantData(awayParticipantId, awayTeamId +1, awayParticipantId, 3));
+        when(matchdayService.getSeasonStageOfMatchday(5L)).thenReturn(SeasonStage.RUNNING);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> gameService.createGame(creationData));
         assertThat(actualException).hasMessage("Der Spieler mit ID 2 ist nicht vom Team mit ID 4!");
@@ -92,10 +96,25 @@ class GameServiceTest {
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
                 .thenReturn(new ParticipantData(awayParticipantId, awayTeamId, awayParticipantId, 3));
+        when(matchdayService.getSeasonStageOfMatchday(5L)).thenReturn(SeasonStage.RUNNING);
         when(matchdayService.getNumberOfBoardsForMatchday(5L)).thenReturn(8);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> gameService.createGame(creationData));
         assertThat(actualException).hasMessage("Die Brettnummer ist ungültig!");
+    }
+
+    @Test
+    void testCreateGameWrongSeasonStage() {
+        when(matchService.getMatchDataById(2L)).thenReturn(matchData);
+        when(participantService.getParticipantById(homeParticipantId))
+                .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
+        when(participantService.getParticipantById(awayParticipantId))
+                .thenReturn(new ParticipantData(awayParticipantId, awayTeamId, awayParticipantId, 3));
+        when(matchdayService.getSeasonStageOfMatchday(5L)).thenReturn(SeasonStage.COMPLETED);
+        SeasonStageException actualException = assertThrows(SeasonStageException.class,
+                () -> gameService.createGame(creationData));
+        assertThat(actualException)
+                .hasMessage("Saison ist nicht in der Durchführungsphase, es kann kein Spiel angelegt werden!");
     }
 
     @Test
@@ -109,6 +128,7 @@ class GameServiceTest {
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
                 .thenReturn(new ParticipantData(awayParticipantId, awayTeamId, awayParticipantId, 3));
+        when(matchdayService.getSeasonStageOfMatchday(5L)).thenReturn(SeasonStage.RUNNING);
         when(matchdayService.getNumberOfBoardsForMatchday(5L)).thenReturn(8);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> gameService.createGame(creationData));
@@ -122,6 +142,7 @@ class GameServiceTest {
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
                 .thenReturn(new ParticipantData(awayParticipantId, awayTeamId, awayParticipantId, 3));
+        when(matchdayService.getSeasonStageOfMatchday(5L)).thenReturn(SeasonStage.RUNNING);
         when(matchdayService.getNumberOfBoardsForMatchday(5L)).thenReturn(8);
         when(gameRepository.existsByMatchIdAndBoardNumber(matchId, 1)).thenReturn(Boolean.TRUE);
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
@@ -137,6 +158,7 @@ class GameServiceTest {
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
                 .thenReturn(new ParticipantData(awayParticipantId, awayTeamId, awayParticipantId, 3));
+        when(matchdayService.getSeasonStageOfMatchday(5L)).thenReturn(SeasonStage.RUNNING);
         when(matchdayService.getNumberOfBoardsForMatchday(5L)).thenReturn(8);
         when(gameRepository.existsByMatchIdAndBoardNumber(matchId, 1)).thenReturn(Boolean.FALSE);
         when(gameRepository.getByMatchIdAndBoardNumber(matchId, 1)).thenReturn(game);
