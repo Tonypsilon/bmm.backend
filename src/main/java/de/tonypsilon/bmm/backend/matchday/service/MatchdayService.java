@@ -105,6 +105,11 @@ public class MatchdayService {
         );
     }
 
+    public SeasonStage getSeasonStageOfMatchday(Long matchdayId) {
+        return seasonService.getStageOfSeason(divisionService.getSeasonIdByDivisionId(
+                getById(matchdayId).getDivisionId()));
+    }
+
     @Transactional
     public void deleteMatchday(Long matchdayId) {
         Matchday matchdayToDelete = matchdayRepository.findById(matchdayId).orElseThrow(

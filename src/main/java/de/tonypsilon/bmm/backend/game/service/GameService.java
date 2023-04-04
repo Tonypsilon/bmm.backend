@@ -2,15 +2,19 @@ package de.tonypsilon.bmm.backend.game.service;
 
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
+import de.tonypsilon.bmm.backend.exception.SeasonStageException;
 import de.tonypsilon.bmm.backend.game.data.*;
 import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.service.MatchService;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
+import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 @Service
 public class GameService {
@@ -36,6 +40,11 @@ public class GameService {
         MatchData matchData = matchService.getMatchDataById(gameCreationData.matchId());
         ParticipantData homeParticipantData = participantService.getParticipantById(gameCreationData.homeParticipantId());
         ParticipantData awayParticipantData = participantService.getParticipantById(gameCreationData.awayParticipantId());
+
+        if(matchdayService.getSeasonStageOfMatchday(matchData.matchdayId()) != SeasonStage.RUNNING) {
+            throw new SeasonStageException(
+                    "Saison ist nicht in der Durchführungsphase, es kann kein Spiel angelegt werden!");
+        }
 
         verifyPlayerMatchesTeam(homeParticipantData, matchData.homeTeamId());
         verifyPlayerMatchesTeam(awayParticipantData, matchData.awayTeamId());
