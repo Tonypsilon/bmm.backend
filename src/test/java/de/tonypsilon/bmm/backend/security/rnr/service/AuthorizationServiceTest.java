@@ -19,6 +19,7 @@ class AuthorizationServiceTest {
     private final ClubAdminService clubAdminService = mock(ClubAdminService.class);
     private final OrganizationService organizationService = mock(OrganizationService.class);
     private final SeasonAdminService seasonAdminService = mock(SeasonAdminService.class);
+    private final TeamAdminService teamAdminService = mock(TeamAdminService.class);
     private final TeamService teamService = mock(TeamService.class);
     private AuthorizationService authorizationService;
 
@@ -27,6 +28,7 @@ class AuthorizationServiceTest {
         this.authorizationService = new AuthorizationService(clubAdminService,
                 organizationService,
                 seasonAdminService,
+                teamAdminService,
                 teamService);
     }
 

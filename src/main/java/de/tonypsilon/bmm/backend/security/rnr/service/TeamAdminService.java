@@ -11,6 +11,9 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 public class TeamAdminService {
 
@@ -58,6 +61,14 @@ public class TeamAdminService {
                         .formatted(teamAdminData.username(), teamAdminData.teamId())));
         teamAdminRepository.delete(teamAdminToDelete);
 
+    }
+
+    @NonNull
+    @Transactional
+    public Set<TeamAdminData> getTeamAdminsOfTeam(@NonNull Long teamId) {
+        return teamAdminRepository.findByTeamId(teamId).stream()
+                .map(this::teamAdminToTeamAdminData)
+                .collect(Collectors.toSet());
     }
 
     @NonNull

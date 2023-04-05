@@ -105,9 +105,14 @@ public class MatchdayService {
         );
     }
 
-    public SeasonStage getSeasonStageOfMatchday(Long matchdayId) {
-        return seasonService.getStageOfSeason(divisionService.getSeasonIdByDivisionId(
-                getById(matchdayId).getDivisionId()));
+    @NonNull
+    public SeasonStage getSeasonStageOfMatchday(@NonNull Long matchdayId) {
+        return seasonService.getStageOfSeason(getSeasonIdOfMatchday(matchdayId));
+    }
+
+    @NonNull
+    public Long getSeasonIdOfMatchday(@NonNull Long matchdayId) {
+        return divisionService.getSeasonIdByDivisionId(getById(matchdayId).getDivisionId());
     }
 
     @Transactional
