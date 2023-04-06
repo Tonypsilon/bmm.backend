@@ -23,7 +23,8 @@ public class MatchStateService {
         this.authorizationService = authorizationService;
     }
 
-    public MatchData changeMatchState(MatchData matchData, MatchState state, String username) {
+    public MatchData changeMatchState(Long matchId, MatchState state, String username) {
+        MatchData matchData = matchService.getMatchDataById(matchId);
         if(matchData.matchState() == MatchState.OPEN) {
             verifyUserIsClubAdminOrTeamAdmin(matchData, username);
         } else {

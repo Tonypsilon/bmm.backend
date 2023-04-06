@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
+import java.util.Objects;
 
 @RestController
 public class UserController {
@@ -26,10 +27,8 @@ public class UserController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserData> createUser(RequestEntity<UserData> userDataRequestEntity) {
-        UserData createUserData = userDataRequestEntity.getBody();
-        if (createUserData == null) {
-            throw new BadDataException("Unvollständige Daten gegeben!");
-        }
+        UserData createUserData = Objects.requireNonNull(userDataRequestEntity).getBody();
+        Objects.requireNonNull(createUserData);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userService.createUser(createUserData));
