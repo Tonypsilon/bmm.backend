@@ -4,7 +4,9 @@ import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.data.MatchState;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -23,7 +25,11 @@ public class MatchStateService {
         this.authorizationService = authorizationService;
     }
 
-    public MatchData changeMatchState(Long matchId, MatchState state, String username) {
+    @NonNull
+    @Transactional
+    public MatchData changeMatchState(@NonNull Long matchId,
+                                      @NonNull MatchState state,
+                                      @NonNull String username) {
         MatchData matchData = matchService.getMatchDataById(matchId);
         if(matchData.matchState() == MatchState.OPEN) {
             verifyUserIsClubAdminOrTeamAdmin(matchData, username);

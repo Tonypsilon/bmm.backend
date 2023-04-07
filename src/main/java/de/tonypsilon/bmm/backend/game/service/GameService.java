@@ -1,8 +1,6 @@
 package de.tonypsilon.bmm.backend.game.service;
 
-import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
-import de.tonypsilon.bmm.backend.exception.BadDataException;
-import de.tonypsilon.bmm.backend.exception.SeasonStageException;
+import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.game.data.*;
 import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.service.MatchService;
@@ -14,6 +12,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -63,6 +62,37 @@ public class GameService {
         }
 
         return gameToGameData(gameRepository.getByMatchIdAndBoardNumber(gameCreationData.matchId(), gameCreationData.boardNumber()));
+    }
+
+    @Transactional
+    @NonNull
+    public GameData changeResult(@NonNull Long gameId, @NonNull ResultData resultData) {
+        Game game = getById(gameId);
+        game.setPlayedResultHome(Objects.requireNonNull(resultData.homeResult()));
+        game.setPlayedResultAway(Objects.requireNonNull(resultData.awayResult()));
+        gameRepository.save(game);
+        return gameToGameData(getById(gameId));
+    }
+
+    @Transactional
+    @NonNull
+    public GameData changeOverruledResult(@NonNull Long gameId, @NonNull ResultData overruledResultData) {
+        Game game = getById(gameId);
+        game.setOverruledResultHome(Objects.requireNonNull(overruledResultData.homeResult()));
+        game.setOverruledResultAway(Objects.requireNonNull(overruledResultData.awayResult()));
+        gameRepository.save(game);
+        return gameToGameData(getById(gameId));
+    }
+
+    @Transactional
+    public void deleteGame(@NonNull Long gameId) {
+        gameRepository.deleteById(gameId);
+    }
+
+    private Game getById(Long gameId) {
+        return gameRepository.findById(gameId)
+                .orElseThrow(() -> new NotFoundException("Es gibt keine Begegnung mit der ID %d!"
+                        .formatted(gameId)));
     }
 
     private void verifyPlayerMatchesTeam(ParticipantData participantData, Long teamId) {
