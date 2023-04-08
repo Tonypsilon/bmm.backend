@@ -4,10 +4,10 @@ import de.tonypsilon.bmm.backend.game.data.GameCreationData;
 import de.tonypsilon.bmm.backend.game.data.GameData;
 import de.tonypsilon.bmm.backend.game.service.GameAccessService;
 import de.tonypsilon.bmm.backend.game.service.GameService;
+import de.tonypsilon.bmm.backend.game.service.ResultData;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
@@ -25,7 +25,7 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @RolesAllowed({Roles.TEAM_ADMIN, Roles.CLUB_ADMIN, Roles.TEAM_ADMIN})
+    @RolesAllowed({Roles.SEASON_ADMIN, Roles.CLUB_ADMIN, Roles.TEAM_ADMIN})
     @PostMapping(value = "/games",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,5 +37,37 @@ public class GameController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                         .body(gameService.createGame(creationData));
+    }
+
+    @RolesAllowed({Roles.SEASON_ADMIN, Roles.CLUB_ADMIN, Roles.TEAM_ADMIN})
+    @PatchMapping(value = "/games/{gameId}/playedResult",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GameData> changePlayedResult(RequestEntity<ResultData> resultDataRequestEntity,
+                                                       @PathVariable Long gameId,
+                                                       Principal principal) {
+        ResultData resultData = Objects.requireNonNull(resultDataRequestEntity).getBody();
+        Objects.requireNonNull(resultData);
+        Objects.requireNonNull(resultData.homeResult());
+        Objects.requireNonNull(resultData.awayResult());
+        gameAccessService.verifyResultCanBeChanged(principal.getName(), gameId);
+        return ResponseEntity
+                .ok(gameService.changeResult(gameId, resultData));
+    }
+
+    @RolesAllowed({Roles.SEASON_ADMIN, Roles.CLUB_ADMIN, Roles.TEAM_ADMIN})
+    @PatchMapping(value = "/games/{gameId}/overruledResult",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GameData> changeOverruledResult(RequestEntity<ResultData> resultDataRequestEntity,
+                                                       @PathVariable Long gameId,
+                                                       Principal principal) {
+        ResultData resultData = Objects.requireNonNull(resultDataRequestEntity).getBody();
+        Objects.requireNonNull(resultData);
+        Objects.requireNonNull(resultData.homeResult());
+        Objects.requireNonNull(resultData.awayResult());
+        gameAccessService.verifyResultCanBeChanged(principal.getName(), gameId);
+        return ResponseEntity
+                .ok(gameService.changeOverruledResult(gameId, resultData));
     }
 }

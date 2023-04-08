@@ -89,6 +89,11 @@ public class GameService {
         gameRepository.deleteById(gameId);
     }
 
+    @Transactional
+    public GameData getGameDataById(Long gameId) {
+        return gameToGameData(getById(gameId));
+    }
+
     private Game getById(Long gameId) {
         return gameRepository.findById(gameId)
                 .orElseThrow(() -> new NotFoundException("Es gibt keine Begegnung mit der ID %d!"
