@@ -204,6 +204,11 @@ class BmmApplicationTest {
                 .isEqualTo(2*5*9); // 2 divisions, 5 matches per matchday, 9 matchdays
 
         // step 16: Enter results for one specific match of the first matchday.
+        // Start by entering 8 games consisting of no results yet.
+        // Delete game of board 4
+        // Add a new game of board 4 with different players.
+        // Modify all the games: Enter results.
+        // Then, finally, close the match. Verify that there are 8 games in the database.
     }
 
     private Long getOrganizationIdByClubId(Long clubId, Collection<OrganizationData> organizations) {

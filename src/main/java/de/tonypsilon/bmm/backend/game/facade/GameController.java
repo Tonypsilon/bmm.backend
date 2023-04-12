@@ -70,4 +70,15 @@ public class GameController {
         return ResponseEntity
                 .ok(gameService.changeOverruledResult(gameId, resultData));
     }
+
+    @RolesAllowed({Roles.SEASON_ADMIN, Roles.CLUB_ADMIN, Roles.TEAM_ADMIN})
+    @DeleteMapping(value = "/games/{gameId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> deleteGame(@PathVariable Long gameId, Principal principal) {
+        Objects.requireNonNull(gameId);
+        gameAccessService.verifyResultCanBeChanged(principal.getName(), gameId);
+        gameService.deleteGame(gameId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
