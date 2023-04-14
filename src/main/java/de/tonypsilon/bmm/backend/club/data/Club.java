@@ -16,7 +16,7 @@ public class Club {
     @Column(unique = true, nullable = false)
     private Integer zps;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private Boolean active;
 
     @NonNull

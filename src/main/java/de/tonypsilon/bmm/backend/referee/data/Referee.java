@@ -10,16 +10,16 @@ public class Referee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "season_id", unique = false, nullable = false)
+    @Column(name = "season_id", nullable = false)
     private Long seasonId;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private String forename;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private String surname;
 
-    @Column(name = "email_address", unique = false, nullable = false)
+    @Column(name = "email_address", nullable = false)
     private String emailAddress;
 
     @NonNull

@@ -10,13 +10,13 @@ public class Participant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "team_id", unique = false, nullable = false)
+    @Column(name = "team_id", nullable = false)
     private Long teamId;
 
-    @Column(name = "participation_eligibility_id", unique = false, nullable = false)
+    @Column(name = "participation_eligibility_id", nullable = false)
     private Long participationEligibilityId;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private Integer number;
 
     @NonNull

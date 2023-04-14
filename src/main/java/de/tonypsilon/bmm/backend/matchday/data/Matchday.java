@@ -10,13 +10,13 @@ public class Matchday {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "division_id", unique = false, nullable = false)
+    @Column(name = "division_id", nullable = false)
     private Long divisionId;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private String date;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private Integer round;
 
     @NonNull
