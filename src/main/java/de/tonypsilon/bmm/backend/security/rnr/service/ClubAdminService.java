@@ -1,5 +1,6 @@
 package de.tonypsilon.bmm.backend.security.rnr.service;
 
+import de.tonypsilon.bmm.backend.club.data.ClubData;
 import de.tonypsilon.bmm.backend.club.service.ClubService;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
@@ -11,6 +12,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -56,6 +58,17 @@ public class ClubAdminService {
                 .stream()
                 .map(ClubAdmin::getUsername)
                 .collect(Collectors.toSet());
+    }
+
+    @NonNull
+    @Transactional
+    public List<String> getClubNamesOfClubAdmin(@NonNull String username) {
+        return clubAdminRepository.findByUsername(username).stream()
+                .map(ClubAdmin::getClubId)
+                .map(clubService::getClubById)
+                .map(ClubData::name)
+                .sorted()
+                .toList();
     }
 
     @NonNull

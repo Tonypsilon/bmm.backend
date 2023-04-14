@@ -2,6 +2,7 @@ package de.tonypsilon.bmm.backend.security.rnr.service;
 
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdmin;
 import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdminData;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class SeasonAdminService {
@@ -78,6 +80,16 @@ public class SeasonAdminService {
                                 "Benutzer %s ist kein Administrator für die Saison mit ID %d!"
                                         .formatted(seasonAdminData.username(), seasonAdminData.seasonId())));
         seasonAdminRepository.delete(seasonAdminToDelete);
+    }
+
+    @NonNull
+    public List<String> getSeasonNamesOfSeasonAdmin(@NonNull String username) {
+        return seasonAdminRepository.findByUsername(username).stream()
+                .map(SeasonAdmin::getSeasonId)
+                .map(seasonService::getSeasonById)
+                .map(SeasonData::name)
+                .sorted()
+                .toList();
     }
 
     @NonNull

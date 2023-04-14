@@ -74,6 +74,11 @@ public class ClubService {
     }
 
     @NonNull
+    public ClubData getClubById(@NonNull Long clubId) {
+        return clubToClubData(getById(clubId));
+    }
+
+    @NonNull
     private Club getById(@NonNull Long clubId) {
         return clubRepository.findById(clubId)
                 .orElseThrow(() -> new NotFoundException("Es gibt keinen Verein mit der ID %d!"

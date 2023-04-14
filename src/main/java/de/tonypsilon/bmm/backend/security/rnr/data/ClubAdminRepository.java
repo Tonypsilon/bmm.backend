@@ -16,4 +16,6 @@ public interface ClubAdminRepository extends JpaRepository<ClubAdmin, ClubAdminK
     Optional<ClubAdmin> findByClubIdAndUsername(Long clubId, String username);
 
     Set<ClubAdmin> findByClubId(Long clubId);
+
+    Set<ClubAdmin> findByUsername(String username);
 }

@@ -57,10 +57,8 @@ class BmmApplicationTest {
     private BmmApplicationIntegrationTestConfiguration configuration;
 
     @Test
-    @Sql(scripts = "classpath:test-user-data.sql",
+    @Sql(scripts = {"classpath:clear-all-tables.sql", "classpath:test-user-data.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:clear-all-tables.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void happyPathTest() throws Exception {
         baseUrl = "http://localhost:" + port;
         SeasonHelper seasonHelper = new SeasonHelper(baseUrl);

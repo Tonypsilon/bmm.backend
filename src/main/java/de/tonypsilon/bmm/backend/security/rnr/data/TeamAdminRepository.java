@@ -16,4 +16,6 @@ public interface TeamAdminRepository extends JpaRepository<TeamAdmin, TeamAdminK
     Optional<TeamAdmin> findByTeamIdAndUsername(Long teamId, String username);
 
     Set<TeamAdmin> findByTeamId(Long teamId);
+
+    Set<TeamAdmin> findByUsername(String username);
 }

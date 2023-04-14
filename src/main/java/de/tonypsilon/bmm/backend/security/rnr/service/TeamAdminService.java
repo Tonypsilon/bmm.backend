@@ -2,15 +2,18 @@ package de.tonypsilon.bmm.backend.security.rnr.service;
 
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.security.rnr.data.TeamAdmin;
 import de.tonypsilon.bmm.backend.security.rnr.data.TeamAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.TeamAdminRepository;
+import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 import org.springframework.lang.NonNull;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,13 +22,16 @@ public class TeamAdminService {
 
     private final TeamAdminRepository teamAdminRepository;
     private final TeamService teamService;
+    private final OrganizationService organizationService;
     private final UserDetailsManager userDetailsManager;
 
     public TeamAdminService(final TeamAdminRepository teamAdminRepository,
                             final TeamService teamService,
+                            final OrganizationService organizationService,
                             final UserDetailsManager userDetailsManager) {
         this.teamAdminRepository = teamAdminRepository;
         this.teamService = teamService;
+        this.organizationService = organizationService;
         this.userDetailsManager = userDetailsManager;
     }
 
@@ -69,6 +75,21 @@ public class TeamAdminService {
         return teamAdminRepository.findByTeamId(teamId).stream()
                 .map(this::teamAdminToTeamAdminData)
                 .collect(Collectors.toSet());
+    }
+
+    @NonNull
+    public List<String> getTeamNamesOfTeamAdmin(@NonNull String username) {
+        return teamAdminRepository.findByUsername(username).stream()
+                .map(TeamAdmin::getTeamId)
+                .map(teamService::getTeamDataById)
+                .map(this::teamDataToTeamName)
+                .sorted()
+                .toList();
+    }
+
+    private String teamDataToTeamName(TeamData teamData) {
+        return organizationService.getOrganizationById(teamData.organizationId()).name()
+                + " " + teamData.number();
     }
 
     @NonNull

@@ -2,6 +2,7 @@ package de.tonypsilon.bmm.backend.security.rnr.service;
 
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.security.rnr.data.TeamAdmin;
 import de.tonypsilon.bmm.backend.security.rnr.data.TeamAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.TeamAdminRepository;
@@ -21,13 +22,17 @@ class TeamAdminServiceTest {
     private final TeamAdminRepository teamAdminRepository = mock(TeamAdminRepository.class);
     private final TeamService teamService = mock(TeamService.class);
     private final UserDetailsManager userDetailsManager = mock(UserDetailsManager.class);
+    private final OrganizationService organizationService = mock(OrganizationService.class);
     private TeamAdminService teamAdminService;
     private TeamAdmin teamAdmin1;
     private final TeamAdminData teamAdminData1 = new TeamAdminData(1L, "user1");
 
     @BeforeEach
     void setUp() {
-        teamAdminService = new TeamAdminService(teamAdminRepository, teamService, userDetailsManager);
+        teamAdminService = new TeamAdminService(teamAdminRepository,
+                teamService,
+                organizationService,
+                userDetailsManager);
         teamAdmin1 = new TeamAdmin();
         teamAdmin1.setTeamId(1L);
         teamAdmin1.setUsername("user1");
