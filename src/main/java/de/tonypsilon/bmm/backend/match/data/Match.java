@@ -23,7 +23,7 @@ public class Match {
     @Column(name = "away_team_id", nullable = false)
     private Long awayTeamId;
 
-    @Column(unique = false, nullable = true)
+    @Column
     private String date;
 
     @Column(name = "home_team_points", nullable = false)
@@ -50,10 +50,10 @@ public class Match {
      * Note: To avoid strange round off behaviour for half points, points are stored
      * at the doubled amount to guarantee that they are integers.
      */
-    @Column(name = "overruled_away_board_half_points", nullable = true)
+    @Column(name = "overruled_away_board_half_points")
     private Integer overruledAwayBoardHalfPoints;
 
-    @Column(name = "referee_id", nullable = true)
+    @Column(name = "referee_id")
     private Long refereeId;
 
     @NonNull

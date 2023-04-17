@@ -28,7 +28,7 @@ public class ParticipationEligibility {
     @Column(nullable = false)
     private Integer pkz;
 
-    @Column(nullable = true)
+    @Column
     private Integer dwz;
 
     @NonNull

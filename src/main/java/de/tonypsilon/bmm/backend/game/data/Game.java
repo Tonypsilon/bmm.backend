@@ -24,16 +24,16 @@ public class Game {
     @Column(name = "away_participant_id", nullable = false)
     private Long awayParticipantId;
 
-    @Column(name = "played_result_home", nullable = true)
+    @Column(name = "played_result_home")
     private String playedResultHome;
 
-    @Column(name = "overruled_result_home", nullable = true)
+    @Column(name = "overruled_result_home")
     private String overruledResultHome;
 
-    @Column(name = "played_result_away", nullable = true)
+    @Column(name = "played_result_away")
     private String playedResultAway;
 
-    @Column(name = "overruled_result_away", nullable = true)
+    @Column(name = "overruled_result_away")
     private String overruledResultAway;
 
     public Long getId() {
