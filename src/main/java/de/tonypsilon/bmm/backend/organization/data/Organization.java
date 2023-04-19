@@ -15,7 +15,7 @@ public class Organization {
     @Column(name = "season_id", nullable = false)
     private Long seasonId;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)

@@ -43,7 +43,7 @@ public class Match {
      * Note: To avoid strange round off behaviour for half points, points are stored
      * at the doubled amount to guarantee that they are integers.
      */
-    @Column(name = "overruled_home_board_half_points", nullable = true)
+    @Column(name = "overruled_home_board_half_points")
     private Integer overruledHomeBoardHalfPoints;
 
     /**
