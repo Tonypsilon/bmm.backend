@@ -12,28 +12,28 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "match_id", unique = false, nullable = false)
+    @Column(name = "match_id", nullable = false)
     private Long matchId;
 
-    @Column(name = "board_number", unique = false, nullable = false)
+    @Column(name = "board_number", nullable = false)
     private Integer boardNumber;
 
-    @Column(name = "home_participant_id", unique = false, nullable = false)
+    @Column(name = "home_participant_id", nullable = false)
     private Long homeParticipantId;
 
-    @Column(name = "away_participant_id", unique = false, nullable = false)
+    @Column(name = "away_participant_id", nullable = false)
     private Long awayParticipantId;
 
-    @Column(name = "played_result_home", unique = false, nullable = true)
+    @Column(name = "played_result_home")
     private String playedResultHome;
 
-    @Column(name = "overruled_result_home", unique = false, nullable = true)
+    @Column(name = "overruled_result_home")
     private String overruledResultHome;
 
-    @Column(name = "played_result_away", unique = false, nullable = true)
+    @Column(name = "played_result_away")
     private String playedResultAway;
 
-    @Column(name = "overruled_result_away", unique = false, nullable = true)
+    @Column(name = "overruled_result_away")
     private String overruledResultAway;
 
     public Long getId() {

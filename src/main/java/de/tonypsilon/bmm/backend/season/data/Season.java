@@ -14,7 +14,7 @@ public class Season {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private SeasonStage stage;
 

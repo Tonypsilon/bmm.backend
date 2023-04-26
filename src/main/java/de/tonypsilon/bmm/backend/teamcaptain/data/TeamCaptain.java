@@ -13,16 +13,16 @@ public class TeamCaptain {
     @Column(name = "team_id", unique = true, nullable = false)
     private Long teamId;
 
-    @Column(name = "email_address", unique = false, nullable = false)
+    @Column(name = "email_address", nullable = false)
     private String emailAddress;
 
-    @Column(name = "phone_number", unique = false, nullable = false)
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private String forename;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private String surname;
 
     @NonNull

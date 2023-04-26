@@ -14,22 +14,22 @@ public class Match {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "matchday_id", unique = false, nullable = false)
+    @Column(name = "matchday_id", nullable = false)
     private Long matchdayId;
 
-    @Column(name = "home_team_id",  unique = false, nullable = false)
+    @Column(name = "home_team_id",  nullable = false)
     private Long homeTeamId;
 
-    @Column(name = "away_team_id", unique = false, nullable = false)
+    @Column(name = "away_team_id", nullable = false)
     private Long awayTeamId;
 
-    @Column(unique = false, nullable = true)
+    @Column
     private String date;
 
-    @Column(name = "home_team_points", unique = false, nullable = false)
+    @Column(name = "home_team_points", nullable = false)
     private Integer homeTeamPoints;
 
-    @Column(name = "away_team_points", unique = false, nullable = false)
+    @Column(name = "away_team_points", nullable = false)
     private Integer awayTeamPoints;
 
     @Column(name = "venue_id")
@@ -43,17 +43,17 @@ public class Match {
      * Note: To avoid strange round off behaviour for half points, points are stored
      * at the doubled amount to guarantee that they are integers.
      */
-    @Column(name = "overruled_home_board_half_points", unique = false, nullable = true)
+    @Column(name = "overruled_home_board_half_points")
     private Integer overruledHomeBoardHalfPoints;
 
     /**
      * Note: To avoid strange round off behaviour for half points, points are stored
      * at the doubled amount to guarantee that they are integers.
      */
-    @Column(name = "overruled_away_board_half_points", unique = false, nullable = true)
+    @Column(name = "overruled_away_board_half_points")
     private Integer overruledAwayBoardHalfPoints;
 
-    @Column(name = "referee_id", unique = false, nullable = true)
+    @Column(name = "referee_id")
     private Long refereeId;
 
     @NonNull

@@ -10,16 +10,16 @@ public class Division {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private Integer level;
 
-    @Column(unique = false, nullable = false, name = "number_of_boards")
+    @Column(nullable = false, name = "number_of_boards")
     private Integer numberOfBoards;
 
-    @Column(unique = false, nullable = false, name = "season_id")
+    @Column(nullable = false, name = "season_id")
     private Long seasonId;
 
     @NonNull

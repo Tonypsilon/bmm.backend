@@ -10,10 +10,10 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "organization_id", unique = false, nullable = false)
+    @Column(name = "organization_id", nullable = false)
     private Long organizationId;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private Integer number;
 
     @Column(name = "venue_id", nullable = false)

@@ -12,10 +12,10 @@ public class User {
     @Id
     private String username;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private String password;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private Boolean enabled;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

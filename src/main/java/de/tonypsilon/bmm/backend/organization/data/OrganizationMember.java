@@ -10,7 +10,7 @@ public class OrganizationMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "club_id", unique = false, nullable = false)
+    @Column(name = "club_id", nullable = false)
     private Long clubId;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -12,10 +12,10 @@ public class Organization {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "season_id", unique = false, nullable = false)
+    @Column(name = "season_id", nullable = false)
     private Long seasonId;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)

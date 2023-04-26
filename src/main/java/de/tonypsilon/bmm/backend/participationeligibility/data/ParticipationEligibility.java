@@ -13,22 +13,22 @@ public class ParticipationEligibility {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = false, nullable = false, name = "season_id")
+    @Column(nullable = false, name = "season_id")
     private Long seasonId;
 
-    @Column(unique = false, nullable = false, name = "club_id")
+    @Column(nullable = false, name = "club_id")
     private Long clubId;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private String forename;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private String surname;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private Integer pkz;
 
-    @Column(unique = false, nullable = true)
+    @Column
     private Integer dwz;
 
     @NonNull
