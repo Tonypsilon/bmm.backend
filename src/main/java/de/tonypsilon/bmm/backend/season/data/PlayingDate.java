@@ -62,5 +62,4 @@ public class PlayingDate {
 		this.date = date;
 	}
 	
-	
 }
