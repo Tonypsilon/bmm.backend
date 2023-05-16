@@ -30,6 +30,7 @@ public class LoginController {
 
     @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthenticationResponse> user(Principal user) {
+        System.out.println(user.getName());
         return ResponseEntity.ok(new AuthenticationResponse(user.getName(),
                 SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList(),
                 clubAdminService.getClubNamesOfClubAdmin(user.getName()),
