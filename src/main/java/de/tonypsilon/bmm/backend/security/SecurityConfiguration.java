@@ -1,7 +1,6 @@
 package de.tonypsilon.bmm.backend.security;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,7 +21,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .httpBasic()
                 .and().authorizeRequests()
-                .antMatchers("/", "/seasons/**", "/divisions/**", "/user").permitAll()
+                .antMatchers("/", "/seasons/**", "/divisions/**").permitAll()
                 .and().authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
