@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -83,12 +84,11 @@ public class SeasonAdminService {
     }
 
     @NonNull
-    public List<String> getSeasonNamesOfSeasonAdmin(@NonNull String username) {
+    public List<SeasonData> getSeasonsOfSeasonAdmin(@NonNull String username) {
         return seasonAdminRepository.findByUsername(username).stream()
                 .map(SeasonAdmin::getSeasonId)
                 .map(seasonService::getSeasonById)
-                .map(SeasonData::name)
-                .sorted()
+                .sorted(Comparator.comparing(SeasonData::name))
                 .toList();
     }
 

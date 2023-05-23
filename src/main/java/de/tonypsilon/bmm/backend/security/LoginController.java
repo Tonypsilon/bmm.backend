@@ -1,5 +1,6 @@
 package de.tonypsilon.bmm.backend.security;
 
+import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.ClubAdminService;
 import de.tonypsilon.bmm.backend.security.rnr.service.SeasonAdminService;
 import de.tonypsilon.bmm.backend.security.rnr.service.TeamAdminService;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
-import java.util.Collections;
 
 @RestController
 public class LoginController {
@@ -32,10 +32,12 @@ public class LoginController {
     public ResponseEntity<AuthenticationResponse> user(Principal user) {
         System.out.println(user.getName());
         return ResponseEntity.ok(new AuthenticationResponse(user.getName(),
-                SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList(),
-                clubAdminService.getClubNamesOfClubAdmin(user.getName()),
-                teamAdminService.getTeamNamesOfTeamAdmin(user.getName()),
-                seasonAdminService.getSeasonNamesOfSeasonAdmin(user.getName())));
+                SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                        .stream().map(GrantedAuthority::getAuthority).toList()
+                        .contains(Roles.ADMIN),
+                clubAdminService.getClubsOfClubAdmin(user.getName()),
+                teamAdminService.getTeamsOfTeamAdmin(user.getName()),
+                seasonAdminService.getSeasonsOfSeasonAdmin(user.getName())));
     }
 
     @GetMapping(value = "/administration/logout")

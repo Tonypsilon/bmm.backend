@@ -13,6 +13,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -78,12 +79,11 @@ public class TeamAdminService {
     }
 
     @NonNull
-    public List<String> getTeamNamesOfTeamAdmin(@NonNull String username) {
+    public List<TeamData> getTeamsOfTeamAdmin(@NonNull String username) {
         return teamAdminRepository.findByUsername(username).stream()
                 .map(TeamAdmin::getTeamId)
                 .map(teamService::getTeamDataById)
-                .map(this::teamDataToTeamName)
-                .sorted()
+                .sorted(Comparator.comparing(this::teamDataToTeamName))
                 .toList();
     }
 
