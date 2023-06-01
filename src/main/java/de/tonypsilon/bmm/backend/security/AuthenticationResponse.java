@@ -1,6 +1,7 @@
 package de.tonypsilon.bmm.backend.security;
 
 import de.tonypsilon.bmm.backend.club.data.ClubData;
+import de.tonypsilon.bmm.backend.matchadministration.data.MatchAdministrationData;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 
@@ -10,5 +11,6 @@ public record AuthenticationResponse(String username,
                                      boolean isAdmin,
                                      List<ClubData> clubs,
                                      List<TeamData> teams,
-                                     List<SeasonData> seasons) {
+                                     List<SeasonData> seasons,
+                                     List<MatchAdministrationData> matchAdministrationData) {
 }

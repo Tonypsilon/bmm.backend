@@ -43,6 +43,12 @@ public class GameAccessService {
                 matchService.getMatchDataById(gameService.getGameDataById(gameId).matchId()));
     }
 
+    /**
+     * Either the match is open and the user is clubadmin or teamadmin or the user is season admin,
+     * then the state of the match does not matter.
+     * @param username
+     * @param matchData
+     */
     private void verifyUserIsAuthorizedToWorkOnMatch(String username, MatchData matchData) {
         if(matchData.matchState() == MatchState.OPEN
                 && !seasonAdminService.isSeasonAdmin(

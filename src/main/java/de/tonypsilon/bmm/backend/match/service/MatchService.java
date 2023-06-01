@@ -1,14 +1,13 @@
 package de.tonypsilon.bmm.backend.match.service;
 
 import de.tonypsilon.bmm.backend.division.service.DivisionService;
-import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
-import de.tonypsilon.bmm.backend.exception.BadDataException;
-import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.match.data.*;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.referee.data.RefereeData;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
+import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
@@ -17,8 +16,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -79,6 +78,9 @@ public class MatchService {
         }
         matchCreationData.date().ifPresent(validationService::validateDateString);
         Long seasonId = divisionService.getSeasonIdByDivisionId(matchdayData.divisionId());
+        if (SeasonStage.PREPARATION != matchdayService.getSeasonStageOfMatchday(matchCreationData.matchdayId())) {
+            throw new SeasonStageException("Die Saison ist nicht in der Vorbereitungsphase!");
+        }
         matchCreationData.refereeId().ifPresent(refereeId -> verifyRefereeId(refereeId, seasonId));
         Match match = new Match();
         match.setMatchdayId(matchCreationData.matchdayId());
@@ -141,4 +143,13 @@ public class MatchService {
         }
     }
 
+    public Set<MatchData> getAllOpenMatchesOfRunningSeasons() {
+        return matchRepository.findAll().stream()
+                .filter(match ->
+                        MatchState.OPEN == match.getState())
+                .filter(match ->
+                        SeasonStage.RUNNING == matchdayService.getSeasonStageOfMatchday(match.getMatchdayId()))
+                .map(this::matchToMatchData)
+                .collect(Collectors.toSet());
+    }
 }
