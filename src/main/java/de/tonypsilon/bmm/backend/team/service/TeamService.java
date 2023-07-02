@@ -113,6 +113,12 @@ public class TeamService {
         return organizationService.getSeasonIdOfOrganization(getById(teamId).getOrganizationId());
     }
 
+    @NonNull
+    public String getNameOfTeam(@NonNull Long teamId) {
+        Team team = getById(teamId);
+        return organizationService.getOrganizationById(team.getOrganizationId()).name() + " " + team.getNumber();
+    }
+
     private void verifyTeamNumber(TeamCreationData teamCreationData) {
         int maxTeamNumber = getMaxTeamNumberForTeamsOfOrganization(teamCreationData.organizationId());
         if (!teamCreationData.number().equals(maxTeamNumber+1)) {

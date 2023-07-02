@@ -108,6 +108,13 @@ public class OrganizationService {
         return toOrganizationData(getById(organizationId));
     }
 
+    @NonNull
+    public Set<OrganizationData> getAll() {
+        return organizationRepository.findAll().stream()
+                .map(this::toOrganizationData)
+                .collect(Collectors.toSet());
+    }
+
     private Organization getById(Long organizationId) {
         return organizationRepository.findById(organizationId).orElseThrow(
                 () -> new NotFoundException("Es gibt keine Organisation mit der ID %d!"
