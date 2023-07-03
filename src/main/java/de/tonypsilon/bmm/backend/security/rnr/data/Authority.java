@@ -18,6 +18,7 @@ public class Authority {
 
     @Id
     @Enumerated(EnumType.STRING)
+    @Column(name = "authority")
     private Role theAuthority;
 
     @NonNull

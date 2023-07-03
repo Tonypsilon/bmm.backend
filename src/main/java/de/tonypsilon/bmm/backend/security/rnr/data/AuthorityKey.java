@@ -17,7 +17,7 @@ public class AuthorityKey implements Serializable {
 
 	private User user;
 
-    private Role authority;
+    private Role theAuthority;
 
     @NonNull
     public User getUser() {
@@ -33,14 +33,14 @@ public class AuthorityKey implements Serializable {
 
     @NonNull
     public Role getTheAuthority() {
-        return authority;
+        return theAuthority;
     }
 
     public void setTheAuthority(@NonNull Role authority) {
-        if(this.authority != null) {
+        if(this.theAuthority != null) {
             throw new UnsupportedOperationException("Value must not change!");
         }
-        this.authority = authority;
+        this.theAuthority = authority;
     }
 
     @Override
@@ -53,11 +53,11 @@ public class AuthorityKey implements Serializable {
         }
         AuthorityKey otherAuthorityKey = (AuthorityKey) other;
         return Objects.equals(this.user.getUsername(), otherAuthorityKey.user.getUsername())
-                && this.authority == otherAuthorityKey.authority;
+                && this.theAuthority == otherAuthorityKey.theAuthority;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.user.getUsername(), this.authority);
+        return Objects.hash(this.user.getUsername(), this.theAuthority);
     }
 }
