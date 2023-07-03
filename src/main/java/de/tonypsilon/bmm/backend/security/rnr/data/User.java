@@ -3,7 +3,8 @@ package de.tonypsilon.bmm.backend.security.rnr.data;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")

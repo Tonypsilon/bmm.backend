@@ -1,7 +1,6 @@
 package de.tonypsilon.bmm.backend.security;
 
 import de.tonypsilon.bmm.backend.datatypes.IdAndLabel;
-import de.tonypsilon.bmm.backend.matchadministration.service.MatchAdministrationService;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationAdminService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -59,27 +59,48 @@ public class LoginController {
      */
     @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthenticationResponse> user(Principal user) {
+        List<String> authorities = SecurityContextHolder.getContext()
+                .getAuthentication().getAuthorities()
+                .stream().map(GrantedAuthority::getAuthority).toList();
         return ResponseEntity.ok(
-                new AuthenticationResponse(user.getName(),
-                        SecurityContextHolder.getContext().getAuthentication().getAuthorities()
-                                .stream().map(GrantedAuthority::getAuthority).toList()
-                                .contains(Roles.ADMIN),
+                new AuthenticationResponse(
+                        // username
+                        user.getName(),
+
+                        // isAdmin
+                        authorities.contains(Roles.ADMIN),
+
+                        // seasons, if user is season admin
+                        authorities.contains(Roles.SEASON_ADMIN) ?
                         seasonAdminService.getSeasonsOfSeasonAdmin(user.getName()).stream()
                                 .map(seasonData -> new IdAndLabel(seasonData.id(), seasonData.name()))
-                                .toList(),
+                                .toList()
+                                : List.of(),
+
+                        // clubs, if user is club admin
+                        authorities.contains(Roles.CLUB_ADMIN) ?
                         clubAdminService.getClubsOfClubAdmin(user.getName()).stream()
                                 .map(clubData -> new IdAndLabel(clubData.id(), clubData.name()))
-                                .toList(),
+                                .toList()
+                                : List.of(),
+
+                        // organizations, if user is club admin
+                        authorities.contains(Roles.CLUB_ADMIN) ?
                         organizationAdminService.getOrganizationsOfUser(user.getName()).stream()
                                 .filter(organizationData -> Set.of(SeasonStage.REGISTRATION, SeasonStage.PREPARATION, SeasonStage.RUNNING)
                                         .contains(seasonService.getStageOfSeason(organizationData.seasonId())))
                                 .map(organizationData -> new IdAndLabel(organizationData.id(), organizationData.name()))
-                                .toList(),
+                                .toList()
+                                : List.of(),
+
+                        // teams, if user is team admin
+                        authorities.contains(Roles.TEAM_ADMIN) ?
                         teamAdminService.getTeamsOfTeamAdmin(user.getName()).stream()
                                 .filter(teamData -> Set.of(SeasonStage.REGISTRATION, SeasonStage.PREPARATION, SeasonStage.RUNNING)
                                         .contains(seasonService.getStageOfSeason(teamService.getSeasonIdByTeamId(teamData.id()))))
                                 .map(teamData -> new IdAndLabel(teamData.id(), teamService.getNameOfTeam(teamData.id())))
                                 .toList()
+                                : List.of()
                 )
         );
     }

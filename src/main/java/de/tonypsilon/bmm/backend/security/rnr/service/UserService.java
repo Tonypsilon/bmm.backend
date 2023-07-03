@@ -47,7 +47,7 @@ public class UserService {
             for (Role role : createUserData.roles()) {
                 Authority authority = new Authority();
                 authority.setUser(user);
-                authority.setAuthority(role);
+                authority.setTheAuthority(role);
                 user.addAuthority(authority);
             }
         }
@@ -86,7 +86,7 @@ public class UserService {
         return new UserData(user.getUsername(),
                 null,
                 user.getAuthorities().stream()
-                        .map(Authority::getAuthority)
+                        .map(Authority::getTheAuthority)
                         .collect(Collectors.toSet())
         );
     }

@@ -3,6 +3,7 @@ package de.tonypsilon.bmm.backend.security.rnr.data;
 import de.tonypsilon.bmm.backend.security.rnr.Role;
 import org.springframework.lang.NonNull;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -11,7 +12,8 @@ public class AuthorityKey implements Serializable {
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	@Serial
+    private static final long serialVersionUID = 1L;
 
 	private User user;
 
@@ -30,11 +32,11 @@ public class AuthorityKey implements Serializable {
     }
 
     @NonNull
-    public Role getAuthority() {
+    public Role getTheAuthority() {
         return authority;
     }
 
-    public void setAuthority(@NonNull Role authority) {
+    public void setTheAuthority(@NonNull Role authority) {
         if(this.authority != null) {
             throw new UnsupportedOperationException("Value must not change!");
         }

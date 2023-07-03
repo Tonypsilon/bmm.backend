@@ -39,7 +39,7 @@ class UserServiceTest {
         user1.setEnabled(Boolean.TRUE);
         authority1 = new Authority();
         authority1.setUser(user1);
-        authority1.setAuthority(Role.USER);
+        authority1.setTheAuthority(Role.USER);
     }
 
     @Test

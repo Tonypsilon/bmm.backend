@@ -18,7 +18,7 @@ public class Authority {
 
     @Id
     @Enumerated(EnumType.STRING)
-    private Role authority;
+    private Role theAuthority;
 
     @NonNull
     public User getUser() {
@@ -30,12 +30,12 @@ public class Authority {
     }
 
     @NonNull
-    public Role getAuthority() {
-        return authority;
+    public Role getTheAuthority() {
+        return theAuthority;
     }
 
-    public void setAuthority(@NonNull Role authority) {
-        this.authority = authority;
+    public void setTheAuthority(@NonNull Role authority) {
+        this.theAuthority = authority;
     }
 
     @Override
@@ -48,11 +48,11 @@ public class Authority {
         }
         Authority otherAuthority = (Authority) other;
         return Objects.equals(this.user.getUsername(), otherAuthority.user.getUsername())
-                && Objects.equals(this.authority, otherAuthority.authority);
+                && Objects.equals(this.theAuthority, otherAuthority.theAuthority);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.user.getUsername(), this.authority.name());
+        return Objects.hash(this.user.getUsername(), this.theAuthority.name());
     }
 }
