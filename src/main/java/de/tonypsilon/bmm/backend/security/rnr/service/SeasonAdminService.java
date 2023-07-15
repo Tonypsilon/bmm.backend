@@ -4,6 +4,7 @@ import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
+import de.tonypsilon.bmm.backend.security.rnr.Role;
 import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdmin;
 import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdminRepository;
@@ -22,13 +23,16 @@ public class SeasonAdminService {
     private final SeasonAdminRepository seasonAdminRepository;
     private final SeasonService seasonService;
     private final UserDetailsManager userDetailsManager;
+    private final UserService userService;
 
     public SeasonAdminService(final SeasonAdminRepository seasonAdminRepository,
                               final SeasonService seasonService,
-                              final UserDetailsManager userDetailsManager) {
+                              final UserDetailsManager userDetailsManager,
+                              final UserService userService) {
         this.seasonAdminRepository = seasonAdminRepository;
         this.seasonService = seasonService;
         this.userDetailsManager = userDetailsManager;
+        this.userService = userService;
     }
 
     @NonNull
@@ -51,6 +55,7 @@ public class SeasonAdminService {
             throw new AlreadyExistsException("Benutzer %s ist bereits Administrator für die Saison mit ID %d!"
                     .formatted(seasonAdminCreateData.username(), seasonAdminCreateData.seasonId()));
         }
+        userService.assignRoleToUser(seasonAdminCreateData.username(), Role.SEASON_ADMIN);
         SeasonAdmin seasonAdmin = new SeasonAdmin();
         seasonAdmin.setSeasonId(seasonAdminCreateData.seasonId());
         seasonAdmin.setUsername(seasonAdminCreateData.username());

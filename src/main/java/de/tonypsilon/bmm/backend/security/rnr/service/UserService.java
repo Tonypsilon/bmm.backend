@@ -70,6 +70,29 @@ public class UserService {
         return userToUserData(getByUsername(changePasswordData.username()));
     }
 
+    /**
+     * Assigns the given role to the given user if the user does not yet have it.
+     * If the user already has the role, nothing happens.
+     * @param username of the user
+     * @param role to be assigned
+     * @return the updated user
+     */
+    @Transactional
+    @NonNull
+    public UserData assignRoleToUser(@NonNull String username, @NonNull Role role) {
+        User user = getByUsername(username);
+        if (user.getAuthorities().stream()
+                .map(Authority::getTheAuthority)
+                .noneMatch(role::equals)) {
+            Authority authority = new Authority();
+            authority.setUser(user);
+            authority.setTheAuthority(role);
+            user.addAuthority(authority);
+            userRepository.save(user);
+        }
+        return userToUserData(getByUsername(username));
+    }
+
     @NonNull
     private User getByUsername(@NonNull String username) {
         return userRepository.findByUsername(username)
@@ -93,7 +116,7 @@ public class UserService {
 
     /**
      * For now, the only restriction is that the password must have at least length 6.
-     * @param password
+     * @param password to be validated
      */
     private void validatePassword(@Nullable String password) {
         if (password == null || password.isBlank()) {

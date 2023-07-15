@@ -4,6 +4,7 @@ import de.tonypsilon.bmm.backend.club.data.ClubData;
 import de.tonypsilon.bmm.backend.club.service.ClubService;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.security.rnr.Role;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdmin;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminRepository;
@@ -23,13 +24,16 @@ public class ClubAdminService {
     private final ClubAdminRepository clubAdminRepository;
     private final ClubService clubService;
     private final UserDetailsManager userDetailsManager;
+    private final UserService userService;
 
     public ClubAdminService(final ClubAdminRepository clubAdminRepository,
                             final ClubService clubService,
-                            final UserDetailsManager userDetailsManager) {
+                            final UserDetailsManager userDetailsManager,
+                            final UserService userService) {
         this.clubAdminRepository = clubAdminRepository;
         this.clubService = clubService;
         this.userDetailsManager = userDetailsManager;
+        this.userService = userService;
     }
 
     @Transactional
@@ -45,6 +49,7 @@ public class ClubAdminService {
             throw new AlreadyExistsException("Benutzer %s ist bereits Administrator für den Verein mit ID %d!"
                     .formatted(clubAdminCreateData.username(), clubAdminCreateData.clubId()));
         }
+        userService.assignRoleToUser(clubAdminCreateData.username(), Role.CLUB_ADMIN);
         ClubAdmin clubAdmin = new ClubAdmin();
         clubAdmin.setClubId(clubAdminCreateData.clubId());
         clubAdmin.setUsername(clubAdminCreateData.username());

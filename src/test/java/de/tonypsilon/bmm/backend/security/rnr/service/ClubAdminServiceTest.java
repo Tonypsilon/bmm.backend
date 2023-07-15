@@ -3,6 +3,7 @@ package de.tonypsilon.bmm.backend.security.rnr.service;
 import de.tonypsilon.bmm.backend.club.service.ClubService;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.security.rnr.Role;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdmin;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.ClubAdminRepository;
@@ -21,13 +22,14 @@ class ClubAdminServiceTest {
     private final ClubAdminRepository clubAdminRepository = mock(ClubAdminRepository.class);
     private final ClubService clubService = mock(ClubService.class);
     private final UserDetailsManager userDetailsManager = mock(UserDetailsManager.class);
+    private final UserService userService = mock(UserService.class);
     private ClubAdminService clubAdminService;
     private ClubAdmin clubAdmin1;
     private final ClubAdminData clubAdminData1 = new ClubAdminData(1L, "user1");
 
     @BeforeEach
     void setUp() {
-        clubAdminService = new ClubAdminService(clubAdminRepository, clubService, userDetailsManager);
+        clubAdminService = new ClubAdminService(clubAdminRepository, clubService, userDetailsManager, userService);
         clubAdmin1 = new ClubAdmin();
         clubAdmin1.setClubId(1L);
         clubAdmin1.setUsername("user1");
@@ -42,6 +44,7 @@ class ClubAdminServiceTest {
 
         ClubAdminData actual = clubAdminService.createClubAdmin(new ClubAdminData(1L, "user1"));
         assertThat(actual).isEqualTo(clubAdminData1);
+        verify(userService).assignRoleToUser("user1", Role.CLUB_ADMIN);
         verify(clubAdminRepository, times(1)).save(
                 argThat(clubAdmin -> clubAdmin.getClubId().equals(1L)
                 && clubAdmin.getUsername().equals("user1"))

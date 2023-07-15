@@ -5,6 +5,7 @@ import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.security.SecurityConfiguration;
 import de.tonypsilon.bmm.backend.security.rnr.Role;
+import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.data.*;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -156,6 +158,31 @@ class UserServiceTest {
                 () -> userService.changePassword(changePasswordData));
         assertThat(actualException.getMessage())
                 .isEqualTo("Das Passwort muss mindestens sechs Zeichen lang sein!");
+    }
+
+    @Test
+    void testAssignRoleToUser() {
+        User teamAdmin = new User();
+        teamAdmin.setUsername(user1.getUsername());
+        teamAdmin.setPassword(user1.getPassword());
+        teamAdmin.setEnabled(user1.getEnabled());
+        Authority teamAdminAuthority = new Authority();
+        teamAdminAuthority.setTheAuthority(Role.TEAM_ADMIN);
+        teamAdminAuthority.setUser(teamAdmin);
+        teamAdmin.addAuthority(teamAdminAuthority);
+        when(userRepository.findByUsername("user"))
+                .thenReturn(Optional.of(user1))
+                .thenReturn(Optional.of(teamAdmin));
+        UserData actual = userService.assignRoleToUser("user", Role.TEAM_ADMIN);
+        assertThat(actual.username()).isEqualTo(user1.getUsername());
+        assertThat(actual.roles()).isEqualTo(Set.of(Role.TEAM_ADMIN));
+        verify(userRepository).save(argThat(user ->
+                user.getUsername().equals("user")
+                        && user.getAuthorities().stream()
+                        .map(Authority::getTheAuthority)
+                        .collect(Collectors.toSet())
+                        .contains(Role.TEAM_ADMIN)
+        ));
     }
 
 }

@@ -3,6 +3,7 @@ package de.tonypsilon.bmm.backend.security.rnr.service;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
+import de.tonypsilon.bmm.backend.security.rnr.Role;
 import de.tonypsilon.bmm.backend.security.rnr.data.TeamAdmin;
 import de.tonypsilon.bmm.backend.security.rnr.data.TeamAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.TeamAdminRepository;
@@ -25,15 +26,18 @@ public class TeamAdminService {
     private final TeamService teamService;
     private final OrganizationService organizationService;
     private final UserDetailsManager userDetailsManager;
+    private final UserService userService;
 
     public TeamAdminService(final TeamAdminRepository teamAdminRepository,
                             final TeamService teamService,
                             final OrganizationService organizationService,
-                            final UserDetailsManager userDetailsManager) {
+                            final UserDetailsManager userDetailsManager,
+                            final UserService userService) {
         this.teamAdminRepository = teamAdminRepository;
         this.teamService = teamService;
         this.organizationService = organizationService;
         this.userDetailsManager = userDetailsManager;
+        this.userService = userService;
     }
 
     @Transactional
@@ -48,6 +52,7 @@ public class TeamAdminService {
             throw new AlreadyExistsException("Benutzer %s ist bereits Administrator für das Team mit ID %d!"
                     .formatted(teamAdminCreateData.username(), teamAdminCreateData.teamId()));
         }
+        userService.assignRoleToUser(teamAdminCreateData.username(), Role.TEAM_ADMIN);
         TeamAdmin teamAdmin = new TeamAdmin();
         teamAdmin.setTeamId(teamAdminCreateData.teamId());
         teamAdmin.setUsername(teamAdminCreateData.username());

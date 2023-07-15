@@ -3,6 +3,7 @@ package de.tonypsilon.bmm.backend.security.rnr.service;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
+import de.tonypsilon.bmm.backend.security.rnr.Role;
 import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdmin;
 import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdminData;
 import de.tonypsilon.bmm.backend.security.rnr.data.SeasonAdminRepository;
@@ -21,13 +22,17 @@ class SeasonAdminServiceTest {
     private final SeasonAdminRepository seasonAdminRepository = mock(SeasonAdminRepository.class);
     private final SeasonService seasonService = mock(SeasonService.class);
     private final UserDetailsManager userDetailsManager = mock(UserDetailsManager.class);
+    private final UserService userService = mock(UserService.class);
     private SeasonAdminService seasonAdminService;
     private SeasonAdmin seasonAdmin1;
     private final SeasonAdminData seasonAdminData1 = new SeasonAdminData(1L, "user1");
 
     @BeforeEach
     void setUp() {
-        seasonAdminService = new SeasonAdminService(seasonAdminRepository, seasonService, userDetailsManager);
+        seasonAdminService = new SeasonAdminService(seasonAdminRepository,
+                seasonService,
+                userDetailsManager,
+                userService);
         seasonAdmin1 = new SeasonAdmin();
         seasonAdmin1.setSeasonId(1L);
         seasonAdmin1.setUsername("user1");
@@ -42,6 +47,7 @@ class SeasonAdminServiceTest {
 
         SeasonAdminData actual = seasonAdminService.createSeasonAdmin(new SeasonAdminData(1L, "user1"));
         assertThat(actual).isEqualTo(seasonAdminData1);
+        verify(userService).assignRoleToUser("user1", Role.SEASON_ADMIN);
         verify(seasonAdminRepository, times(1)).save(
                 argThat(seasonAdmin -> seasonAdmin.getSeasonId().equals(1L)
                 && seasonAdmin.getUsername().equals("user1"))
