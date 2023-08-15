@@ -4,6 +4,7 @@ import de.tonypsilon.bmm.backend.club.service.ClubService;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import de.tonypsilon.bmm.backend.venue.data.*;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,14 @@ public class VenueService {
     private final VenueRepository venueRepository;
     private final ClubService clubService;
 
+    private final ValidationService validationService;
+
     public VenueService(final VenueRepository venueRepository,
-                        final ClubService clubService) {
+                        final ClubService clubService,
+                        final ValidationService validationService) {
         this.venueRepository = venueRepository;
         this.clubService = clubService;
+        this.validationService = validationService;
     }
 
     @Transactional
@@ -33,18 +38,7 @@ public class VenueService {
         if(creationData.address() == null || creationData.address().isBlank()) {
             throw new BadDataException("Es muss eine Adresse gegeben sein!");
         }
-        if(creationData.address().length() > 128) {
-            throw new BadDataException("Die Adresse darf höchstens 128 Zeichen lang sein!");
-        }
-        Optional.ofNullable(creationData.hints()).ifPresent(hints -> {
-            if (hints.length() > 256) {
-                throw new BadDataException("Die Adresshinweise dürfen höchstens 256 Zeichen lang sein!");
-            }
-        });
-        if(venueRepository.existsByClubIdAndAddress(creationData.clubId(), creationData.address())) {
-            throw new AlreadyExistsException("Es gibt bereits einen Spielort unter der Adresse %s für den Verein %d!"
-                    .formatted(creationData.address(), creationData.clubId()));
-        }
+        validateAddressAndHints(creationData.address(), creationData.hints());
         Venue venue = new Venue();
         venue.setClubId(creationData.clubId());
         venue.setAddress(creationData.address());
@@ -53,6 +47,30 @@ public class VenueService {
 
         return venueToVenueData(
                 venueRepository.getByClubIdAndAddress(creationData.clubId(), creationData.address()));
+    }
+
+    /**
+     * Method to change the address as well as the hints of a venue. The club may not change.
+     * @param updateVenueData the updated venue data
+     * @return the updated venue
+     */
+    @Transactional
+    @NonNull
+    public VenueData updateVenue(@NonNull VenueData updateVenueData) {
+        Venue venueToBeUpdated = getById(updateVenueData.id());
+        if (!venueToBeUpdated.getClubId().equals(updateVenueData.clubId())) {
+            throw new BadDataException("Der Verein für einen Spielort darf sich nicht ändern!");
+        }
+        validateAddressAndHints(updateVenueData.address(), updateVenueData.hints());
+        if(venueRepository.existsByClubIdAndAddress(updateVenueData.clubId(), updateVenueData.address())) {
+            throw new AlreadyExistsException("Es gibt bereits einen Spielort unter der Adresse %s für den Verein %d!"
+                    .formatted(updateVenueData.address(), updateVenueData.clubId()));
+        }
+        venueToBeUpdated.setAddress(updateVenueData.address());
+        venueToBeUpdated.setHints(updateVenueData.hints());
+        venueRepository.save(venueToBeUpdated);
+        return venueToVenueData(
+                venueRepository.getByClubIdAndAddress(updateVenueData.clubId(), updateVenueData.address()));
     }
 
     public void verifyVenueExistsById(@NonNull Long venueId) {
@@ -75,7 +93,14 @@ public class VenueService {
         return new VenueData(venue.getId(),
                 venue.getClubId(),
                 venue.getAddress(),
-                venue.getHints());
+                venue.getHints().orElse(null));
+    }
+
+    private void validateAddressAndHints(String address, String hints) {
+        validationService.validateNoSpecialCharactersAndLength(address, 128);
+        Optional.ofNullable(hints).ifPresent(theHints -> {
+            validationService.validateNoSpecialCharactersAndLength(theHints, 256);
+        });
     }
 
 }

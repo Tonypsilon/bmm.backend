@@ -1,9 +1,9 @@
 package de.tonypsilon.bmm.backend.venue.data;
 
-import java.util.Optional;
+import javax.annotation.Nullable;
 
 public record VenueData(Long id,
                         Long clubId,
                         String address,
-                        Optional<String> hints) {
+                        @Nullable String hints) {
 }

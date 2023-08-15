@@ -181,7 +181,7 @@ public class ClubHelper {
                 .as(VenueData.class);
         assertThat(venueData.clubId()).isEqualTo(clubData.id());
         assertThat(venueData.address()).isEqualTo(clubData.name() + "location 1");
-        assertThat(venueData.hints()).isPresent().hasValue("Hint for " + clubData.name());
+        assertThat(venueData.hints()).isNotNull().isEqualTo("Hint for " + clubData.name());
 
         return venueData;
     }
