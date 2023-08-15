@@ -50,6 +50,11 @@ public class UserService {
                 authority.setTheAuthority(role);
                 user.addAuthority(authority);
             }
+        } else {
+            Authority authority = new Authority();
+            authority.setUser(user);
+            authority.setTheAuthority(Role.USER);
+            user.addAuthority(authority);
         }
         userRepository.save(user);
 
