@@ -39,6 +39,10 @@ public class VenueService {
             throw new BadDataException("Es muss eine Adresse gegeben sein!");
         }
         validateAddressAndHints(creationData.address(), creationData.hints());
+        if(venueRepository.existsByClubIdAndAddress(creationData.clubId(), creationData.address())) {
+            throw new AlreadyExistsException("Es gibt bereits einen Spielort unter der Adresse %s für den Verein %d!"
+                    .formatted(creationData.address(), creationData.clubId()));
+        }
         Venue venue = new Venue();
         venue.setClubId(creationData.clubId());
         venue.setAddress(creationData.address());

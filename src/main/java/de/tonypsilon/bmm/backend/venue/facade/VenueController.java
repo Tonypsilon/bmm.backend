@@ -50,7 +50,7 @@ public class VenueController {
     @PutMapping(value = "/venues/club/{clubId}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<VenueData>> updateVenuesForClub(
+    public ResponseEntity<List<VenueData>> putVenuesForClub(
             RequestEntity<List<VenueData>> venueDataForClubRequestEntity,
             Principal principal,
             @PathVariable Long clubId) {

@@ -57,7 +57,7 @@ class VenueServiceTest {
         VenueCreationData creationData = new VenueCreationData(1L, stringOfLength128+"x", null);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> venueService.createVenue(creationData));
-        assertThat(actualException).hasMessage("Die Adresse darf höchstens 128 Zeichen lang sein!");
+        assertThat(actualException).hasMessage("Die Zeichenkette ist zu lang!");
     }
 
     @Test
@@ -66,7 +66,7 @@ class VenueServiceTest {
                 stringOfLength128 + stringOfLength128 + "x");
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> venueService.createVenue(creationData));
-        assertThat(actualException).hasMessage("Die Adresshinweise dürfen höchstens 256 Zeichen lang sein!");
+        assertThat(actualException).hasMessage("Die Zeichenkette ist zu lang!");
     }
 
     @Test

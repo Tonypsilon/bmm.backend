@@ -6,6 +6,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Set;
 
 /**
  * A service to take over general validation tasks. This is not meant
@@ -20,12 +21,6 @@ public class ValidationService {
     private final EmailValidator emailValidator = EmailValidator.getInstance();
 
     private final String[] invalidNameCharacters = {";", "@", "\\", "\"", "<", ">"};
-
-    /* To be optimized into a regular expression. */
-    private final String[] validCharacters = {"a", "A", "b", "B", "c", "C", "d", "D", "e", "E", "f", "F",
-    "g", "G", "h", "H", "i", "I", "j", "J", "k", "K", "l", "L", "m", "M", "n", "N", "o", "O", "p", "P",
-    "q", "Q", "r", "R", "s", "S", "t", "T", "u", "U", "v", "V", "w", "W", "x", "X", "y", "Y", "z", "Z",
-    "ä", "Ä", "ö", "Ö", "ü", "Ü", "é", "É", "è", "È", "á", "Á", "à", "À", "ß", ".", "-", "_", ","};
 
     /**
      * Validate a date string to not be empty / blank and to contain only
@@ -104,7 +99,7 @@ public class ValidationService {
         if (string.length() > length) {
             throw new BadDataException("Die Zeichenkette ist zu lang!");
         }
-        if(!Arrays.stream(validCharacters).allMatch(string::contains)) {
+        if(string.matches("a-zA-Z0-9äöüÄÖÜ_éÉèÈáÁàÀ\\.-")) {
             throw new BadDataException("Die Zeichenkette enthält ungültige Zeichen!");
         }
     }
