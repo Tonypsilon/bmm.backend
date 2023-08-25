@@ -10,6 +10,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -75,6 +76,15 @@ public class VenueService {
         venueRepository.save(venueToBeUpdated);
         return venueToVenueData(
                 venueRepository.getByClubIdAndAddress(updateVenueData.clubId(), updateVenueData.address()));
+    }
+
+    @Transactional
+    @NonNull
+    public List<VenueData> getVenuesForClub(@NonNull Long clubId) {
+        return venueRepository.findByClubId(clubId)
+                .stream()
+                .map(this::venueToVenueData)
+                .toList();
     }
 
     public void verifyVenueExistsById(@NonNull Long venueId) {

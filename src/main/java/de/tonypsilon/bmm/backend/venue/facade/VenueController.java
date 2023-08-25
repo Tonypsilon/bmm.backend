@@ -7,10 +7,7 @@ import de.tonypsilon.bmm.backend.venue.data.VenueData;
 import de.tonypsilon.bmm.backend.venue.service.VenueService;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
@@ -45,6 +42,15 @@ public class VenueController {
                  .body(venueService.createVenue(venueCreationData));
     }
 
+    @RolesAllowed(Roles.CLUB_ADMIN)
+    @GetMapping(value = "/venues/club/{clubId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<VenueData>> getVenuesForClub(Principal principal,
+                                                            @PathVariable Long clubId) {
+        authorizationService.verifyUserIsClubAdminOfAnyClub(principal.getName(),
+                Set.of(Objects.requireNonNull(clubId)));
+        return ResponseEntity.ok(venueService.getVenuesForClub(clubId));
+    }
+
     @Transactional
     @RolesAllowed(Roles.CLUB_ADMIN)
     @PutMapping(value = "/venues/club/{clubId}",
@@ -57,19 +63,19 @@ public class VenueController {
          Objects.requireNonNull(venueDataForClubRequestEntity);
          authorizationService.verifyUserIsClubAdminOfAnyClub(principal.getName(),
                  Set.of(Objects.requireNonNull(clubId)));
-        List<VenueData> venueDataForClub = Objects.requireNonNull(venueDataForClubRequestEntity.getBody()).stream()
+         List<VenueData> venueDataForClub = Objects.requireNonNull(venueDataForClubRequestEntity.getBody()).stream()
                 .filter(venueData -> venueData.clubId().equals(clubId))
                 .toList();
-        List<VenueData> updatedVenues = venueDataForClub.stream()
+         List<VenueData> updatedVenues = venueDataForClub.stream()
                 .filter(venueData -> venueData.id() != null)
                 .map(venueService::updateVenue)
                 .toList();
-        List<VenueData> createdVenues = venueDataForClub.stream()
+         List<VenueData> createdVenues = venueDataForClub.stream()
                 .filter(venueData -> venueData.id() == null)
                 .map(venueData -> new VenueCreationData(venueData.clubId(), venueData.address(), venueData.hints()))
                 .map(venueService::createVenue)
                 .toList();
          return ResponseEntity
-                 .ok(Stream.of(createdVenues, updatedVenues).flatMap(List::stream).toList());
+                .ok(Stream.of(createdVenues, updatedVenues).flatMap(List::stream).toList());
     }
 }
