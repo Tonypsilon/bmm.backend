@@ -10,6 +10,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,6 +86,31 @@ public class VenueService {
                 .stream()
                 .map(this::venueToVenueData)
                 .toList();
+    }
+
+    @Transactional
+    @NonNull
+    public List<VenueData> putVenuesForClub(@NonNull List<VenueData> venues) {
+        List<VenueData> putVenues = new ArrayList<>();
+        for(VenueData venue : venues) {
+            if(venueRepository.existsByClubIdAndAddress(venue.clubId(), venue.address())) {
+                putVenues.add(updateHints(venue));
+            } else {
+                putVenues.add(createVenue(new VenueCreationData(venue.clubId(), venue.address(), venue.hints())));
+            }
+        }
+        return putVenues;
+    }
+
+    @NonNull
+    private VenueData updateHints(VenueData venueData) {
+        Venue venueToBeUpdated = venueRepository.findByClubIdAndAddress(venueData.clubId(), venueData.address())
+                .orElseThrow(() -> new NotFoundException("Es gibt keine Adresse %s für Verein %d!"
+                        .formatted(venueData.address(), venueData.clubId())));
+        venueToBeUpdated.setHints(venueData.hints());
+        venueRepository.save(venueToBeUpdated);
+        return venueToVenueData(
+                venueRepository.getByClubIdAndAddress(venueData.clubId(), venueData.address()));
     }
 
     public void verifyVenueExistsById(@NonNull Long venueId) {

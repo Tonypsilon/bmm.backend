@@ -66,16 +66,7 @@ public class VenueController {
          List<VenueData> venueDataForClub = Objects.requireNonNull(venueDataForClubRequestEntity.getBody()).stream()
                 .filter(venueData -> venueData.clubId().equals(clubId))
                 .toList();
-         List<VenueData> updatedVenues = venueDataForClub.stream()
-                .filter(venueData -> venueData.id() != null)
-                .map(venueService::updateVenue)
-                .toList();
-         List<VenueData> createdVenues = venueDataForClub.stream()
-                .filter(venueData -> venueData.id() == null)
-                .map(venueData -> new VenueCreationData(venueData.clubId(), venueData.address(), venueData.hints()))
-                .map(venueService::createVenue)
-                .toList();
          return ResponseEntity
-                .ok(Stream.of(createdVenues, updatedVenues).flatMap(List::stream).toList());
+                .ok(venueService.putVenuesForClub(venueDataForClub));
     }
 }
