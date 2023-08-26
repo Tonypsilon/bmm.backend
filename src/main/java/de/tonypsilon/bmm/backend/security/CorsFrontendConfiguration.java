@@ -23,7 +23,7 @@ public class CorsFrontendConfiguration {
                 registry.addMapping("/**")
                         .allowedOrigins(url)
                         .allowCredentials(true)
-                        .allowedMethods("GET","POST","OPTIONS","PATCH","DELETE");
+                        .allowedMethods("GET","POST", "PUT", "OPTIONS","PATCH","DELETE");
             }
         };
     }
