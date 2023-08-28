@@ -47,8 +47,8 @@ class VenueControllerTest {
         var putVenuesData = List.of(new VenueData(1L, 2L, "address1", "hints1"),
                 new VenueData(null, 2L, "address2", null),
                 new VenueData(3L, 4L, "address3", "hints3"));
-        when(venueService.updateVenue(any()))
-                .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0, VenueData.class));
+        when(venueService.putVenuesForClub(any()))
+                .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
         var actualResponse = mockMvc
                 .perform(put("/venues/club/2")
                         .with(csrf())
@@ -62,16 +62,6 @@ class VenueControllerTest {
                 }
         );
         assertThat(actual).hasSize(2);
-        verify(venueService).createVenue(argThat(venueCreationData ->
-                venueCreationData.clubId().equals(2L)
-                        && venueCreationData.address().equals("address2")
-                        && venueCreationData.hints() == null));
-        verify(venueService).updateVenue(argThat(venueData ->
-                venueData.id().equals(1L)
-                        && venueData.clubId().equals(2L)
-                        && venueData.address().equals("address1")
-                        && "hints1".equals(venueData.hints())));
-        verifyNoMoreInteractions(venueService);
         verify(authorizationService).verifyUserIsClubAdminOfAnyClub(username, Set.of(2L));
         verifyNoMoreInteractions(authorizationService);
     }

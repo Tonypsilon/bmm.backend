@@ -4,6 +4,7 @@ import de.tonypsilon.bmm.backend.club.service.ClubService;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import de.tonypsilon.bmm.backend.venue.data.*;
 import org.springframework.lang.NonNull;
@@ -19,15 +20,17 @@ public class VenueService {
 
     private final VenueRepository venueRepository;
     private final ClubService clubService;
-
     private final ValidationService validationService;
+    private final OrganizationService organizationService;
 
     public VenueService(final VenueRepository venueRepository,
                         final ClubService clubService,
-                        final ValidationService validationService) {
+                        final ValidationService validationService,
+                        final OrganizationService organizationService) {
         this.venueRepository = venueRepository;
         this.clubService = clubService;
         this.validationService = validationService;
+        this.organizationService = organizationService;
     }
 
     @Transactional
@@ -85,6 +88,16 @@ public class VenueService {
         return venueRepository.findByClubId(clubId)
                 .stream()
                 .map(this::venueToVenueData)
+                .toList();
+    }
+
+    @Transactional
+    @NonNull
+    public List<VenueData> getVenuesForOrganization(@NonNull Long organizationId) {
+        return organizationService.getOrganizationById(organizationId).clubIds()
+                .stream()
+                .map(this::getVenuesForClub)
+                .flatMap(List::stream)
                 .toList();
     }
 

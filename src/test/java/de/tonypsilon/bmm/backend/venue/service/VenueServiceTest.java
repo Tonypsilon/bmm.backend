@@ -4,6 +4,7 @@ import de.tonypsilon.bmm.backend.club.service.ClubService;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import de.tonypsilon.bmm.backend.venue.data.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,7 @@ class VenueServiceTest {
 
     private final VenueRepository venueRepository = mock(VenueRepository.class);
     private final ClubService clubService = mock(ClubService.class);
+    private final OrganizationService organizationService = mock(OrganizationService.class);
     private VenueService venueService;
     private Venue venue;
     private static final String stringOfLength128 = "1abcdefghijklmnopqrstuvwx2abcdefghijklmnopqrstuvwx" +
@@ -28,7 +30,7 @@ class VenueServiceTest {
 
     @BeforeEach
     void setUp() {
-        venueService = new VenueService(venueRepository, clubService, new ValidationService());
+        venueService = new VenueService(venueRepository, clubService, new ValidationService(), organizationService);
         venue = new Venue();
         venue.setId(2L);
         venue.setClubId(1L);

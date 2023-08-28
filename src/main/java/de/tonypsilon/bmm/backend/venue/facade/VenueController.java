@@ -69,4 +69,16 @@ public class VenueController {
          return ResponseEntity
                 .ok(venueService.putVenuesForClub(venueDataForClub));
     }
+
+    @RolesAllowed(Roles.CLUB_ADMIN)
+    @GetMapping(value = "/venues/organization/{organizationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<VenueData>> getVenuesForOrganization(Principal principal,
+                                                                    @PathVariable Long organizationId) {
+         authorizationService.verifyUserIsClubAdminOfOrganization(
+                 principal.getName(),
+                 Objects.requireNonNull(organizationId));
+         return ResponseEntity
+                 .ok(venueService.getVenuesForOrganization(organizationId));
+    }
+
 }
