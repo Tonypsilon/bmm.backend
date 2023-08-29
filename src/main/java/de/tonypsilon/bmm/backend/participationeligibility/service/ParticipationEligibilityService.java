@@ -121,7 +121,7 @@ public class ParticipationEligibilityService {
                 participationEligibility.getForename(),
                 participationEligibility.getSurname(),
                 participationEligibility.getPkz(),
-                participationEligibility.getDwz());
+                participationEligibility.getDwz().orElse(null));
     }
 
 }

@@ -35,11 +35,11 @@ class ParticipationEligibilityServiceTest {
     private final ValidationService validationService = new ValidationService();
     private ParticipationEligibilityService participationEligibilityService;
     private final ParticipationEligibilityData participationEligibilityData1 =
-            new ParticipationEligibilityData(1L, 2L, 3L, "Max", "Mustermann", 1, Optional.empty());
+            new ParticipationEligibilityData(1L, 2L, 3L, "Max", "Mustermann", 1, null);
     private final ParticipationEligibilityData participationEligibilityData2 =
-            new ParticipationEligibilityData(2L, 2L, 3L, "Erika", "Musterfrau", 2, Optional.empty());
+            new ParticipationEligibilityData(2L, 2L, 3L, "Erika", "Musterfrau", 2, null);
     private final ParticipationEligibilityData participationEligibilityData4 =
-            new ParticipationEligibilityData(4L, 2L, 4L, "Hal", "Lo", 1, Optional.empty());
+            new ParticipationEligibilityData(4L, 2L, 4L, "Hal", "Lo", 1, null);
     private ParticipationEligibility participationEligibility1, participationEligibility2,
             participationEligibility3, participationEligibility4;
 

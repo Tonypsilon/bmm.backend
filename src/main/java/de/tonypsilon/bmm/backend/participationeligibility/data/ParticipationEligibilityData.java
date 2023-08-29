@@ -8,5 +8,5 @@ public record ParticipationEligibilityData(Long id,
                                            String forename,
                                            String surname,
                                            Integer pkz,
-                                           Optional<Integer> dwz) {
+                                           Integer dwz) {
 }

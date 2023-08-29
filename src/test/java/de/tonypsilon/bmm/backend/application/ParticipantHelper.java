@@ -83,7 +83,7 @@ public class ParticipantHelper {
         assertThat(participationEligibility.forename()).isEqualTo(creationData.forename());
         assertThat(participationEligibility.surname()).isEqualTo(creationData.surname());
         assertThat(participationEligibility.pkz()).isEqualTo(creationData.pkz());
-        assertThat(participationEligibility.dwz()).isEqualTo(Optional.ofNullable(creationData.dwz()));
+        assertThat(participationEligibility.dwz()).isEqualTo(creationData.dwz());
 
         return participationEligibility;
     }
