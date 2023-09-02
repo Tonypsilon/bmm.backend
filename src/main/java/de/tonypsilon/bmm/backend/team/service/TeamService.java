@@ -87,7 +87,7 @@ public class TeamService {
     }
 
     @Transactional
-    public void deleteAllTeamsOfOrganization(Long organizationId) {
+    public void deleteTeamsOfOrganization(Long organizationId) {
         if(seasonService.getStageOfSeason(organizationService.getSeasonIdOfOrganization(organizationId))
                 != SeasonStage.REGISTRATION) {
             throw new SeasonStageException("Saison ist nicht in der Registrierungsphase!");
@@ -110,6 +110,13 @@ public class TeamService {
         return teamRepository.findByOrganizationIdIn(organizationIds).stream()
                 .map(this::teamToTeamData)
                 .collect(Collectors.toSet());
+    }
+
+    @NonNull
+    public List<TeamData> getTeamsOfOrganization(@NonNull Long organizationId) {
+        return teamRepository.findByOrganizationId(organizationId).stream()
+                .map(this::teamToTeamData)
+                .toList();
     }
 
     @NonNull

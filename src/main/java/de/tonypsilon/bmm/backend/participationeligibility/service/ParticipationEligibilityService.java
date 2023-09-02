@@ -4,6 +4,7 @@ import de.tonypsilon.bmm.backend.club.service.ClubService;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.exception.SeasonStageException;
+import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibility;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityCreationData;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Service
 public class ParticipationEligibilityService {
@@ -110,6 +112,21 @@ public class ParticipationEligibilityService {
     @NonNull
     public Boolean existsById(@NonNull Long participationEligibilityId) {
         return participationEligibilityRepository.existsById(participationEligibilityId);
+    }
+
+    @NonNull
+    public Predicate<Long> isValidParticipationEligibilityForOrganization(OrganizationData organizationData) {
+        return participationEligibilityId -> {
+            ParticipationEligibility participationEligibility = getById(participationEligibilityId);
+            return organizationData.clubIds().contains(participationEligibility.getClubId())
+                    && organizationData.seasonId().equals(participationEligibility.getSeasonId());
+        };
+    }
+
+    private ParticipationEligibility getById(Long participationEligibilityId) {
+        return participationEligibilityRepository.findById(participationEligibilityId)
+                .orElseThrow(() -> new NotFoundException("Es gibt keine Spielberechtigung mit der ID %d!"
+                        .formatted(participationEligibilityId)));
     }
 
     @NonNull

@@ -9,6 +9,7 @@ import de.tonypsilon.bmm.backend.participant.data.*;
 import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationEligibilityService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
+import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ParticipantService {
@@ -120,6 +122,18 @@ public class ParticipantService {
         }
         participantRepository.delete(participantToDelete);
         validateParticipantsNumbersOfTeam(participantToDelete.getTeamId());
+    }
+
+    @Transactional
+    public void deleteParticipantsOfOrganization(@NonNull Long organizationId) {
+        if(SeasonStage.REGISTRATION != seasonService.getStageOfSeason(
+                organizationService.getSeasonIdOfOrganization(organizationId))) {
+            throw new SeasonStageException("In dieser Saisonphase kann kein Teilnehmer entfernt werden!");
+        }
+        teamService.getTeamsOfOrganization(organizationId).stream()
+                .map(TeamData::id)
+                .map(participantRepository::findByTeamId)
+                .forEach(participantRepository::deleteAll);
     }
 
     @NonNull
