@@ -7,6 +7,7 @@ import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
 import liquibase.repackaged.org.apache.commons.lang3.NotImplementedException;
 import org.springframework.http.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +45,7 @@ public class ParticipationEligibilityController {
                 .body(participationEligibilityService.createParticipationEligibility(creationData));
     }
 
+    @Transactional
     @RolesAllowed(Roles.SEASON_ADMIN)
     @PostMapping(value = "/seasons/{seasonId}/participationeligibilities",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -52,7 +54,16 @@ public class ParticipationEligibilityController {
             RequestEntity<List<ParticipationEligibilityCreationData>> participationEligibilitiesRequestEntity,
             Principal principal,
             @PathVariable Long seasonId) {
-        throw new NotImplementedException();
+        authorizationService.verifyUserIsSeasonAdminOfSeason(principal.getName(), Objects.requireNonNull(seasonId));
+        List<ParticipationEligibilityCreationData> participationEligibilityCreationDataList =
+                Objects.requireNonNull(participationEligibilitiesRequestEntity).getBody();
+        Objects.requireNonNull(participationEligibilityCreationDataList);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(participationEligibilityCreationDataList.stream()
+                        .filter(Objects::nonNull)
+                        .map(participationEligibilityService::createParticipationEligibility)
+                        .toList());
     }
 
 }
