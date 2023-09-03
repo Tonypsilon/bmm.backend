@@ -19,6 +19,7 @@ import de.tonypsilon.bmm.backend.venue.data.VenueData;
 import de.tonypsilon.bmm.backend.venue.service.VenueService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -59,6 +60,7 @@ public class OrganizationSetupService {
      * @param organizationId the organization to create a setup for.
      * @param teamsSetupData the setup to be made.
      */
+    @Transactional
     public List<TeamSetupData> setUpTeamsOfOrganization(@NonNull Long organizationId,
                                          @NonNull List<TeamSetupData> teamsSetupData) {
         if (!teamsSetupData.stream()
