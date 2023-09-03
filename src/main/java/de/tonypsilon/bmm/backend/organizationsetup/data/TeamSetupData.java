@@ -8,5 +8,5 @@ public record TeamSetupData(Long organizationId,
                             Integer number,
                             Long venueId,
                             String name,
-                            List<ParticipationEligibilityData> participants /* participation eligibility ids */ ) {
+                            List<ParticipationEligibilityData> participants) {
 }
