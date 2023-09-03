@@ -27,39 +27,39 @@ public class ParticipantHelper {
     List<ParticipationEligibilityData> createParticipationEligibilities(
             Long seasonId, Collection<OrganizationData> organizations, HttpHeaders headers) throws Exception {
         List<ParticipationEligibilityData> participationEligibilities = new ArrayList<>();
-        for (OrganizationData organiztation : organizations) {
+        for (OrganizationData organization : organizations) {
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "John", "Doe", 1, 2005), headers));
+                    seasonId, organization.clubIds().iterator().next(), "John", "Doe", 1, 2005), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "Jane", "Doe", 2, 1827), headers));
+                    seasonId, organization.clubIds().iterator().next(), "Jane", "Doe", 2, 1827), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "Peter", "Pane", 3, 1901), headers));
+                    seasonId, organization.clubIds().iterator().next(), "Peter", "Pane", 3, 1901), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "Harry", "Hello", 4, 725), headers));
+                    seasonId, organization.clubIds().iterator().next(), "Harry", "Hello", 4, 725), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "Lara", "Larry", 5, null), headers));
+                    seasonId, organization.clubIds().iterator().next(), "Lara", "Larry", 5, null), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "Cinder", "Ella", 6, null), headers));
+                    seasonId, organization.clubIds().iterator().next(), "Cinder", "Ella", 6, null), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "Cinder", "Ace", 7, null), headers));
+                    seasonId, organization.clubIds().iterator().next(), "Cinder", "Ace", 7, null), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "Miss", "Ter", 8, null), headers));
+                    seasonId, organization.clubIds().iterator().next(), "Miss", "Ter", 8, null), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "Crazy", "Frog", 9, null), headers));
+                    seasonId, organization.clubIds().iterator().next(), "Crazy", "Frog", 9, null), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "Lucy", "Ferr", 10, null), headers));
+                    seasonId, organization.clubIds().iterator().next(), "Lucy", "Ferr", 10, null), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "Aman A", "Deal", 11, null), headers));
+                    seasonId, organization.clubIds().iterator().next(), "Aman A", "Deal", 11, null), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "Hugo", "Hurtig", 12, null), headers));
+                    seasonId, organization.clubIds().iterator().next(), "Hugo", "Hurtig", 12, null), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "No", "Name", 13, null), headers));
+                    seasonId, organization.clubIds().iterator().next(), "No", "Name", 13, null), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "No", "Brainer", 14, null), headers));
+                    seasonId, organization.clubIds().iterator().next(), "No", "Brainer", 14, null), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "Regular", "Frog", 15, null), headers));
+                    seasonId, organization.clubIds().iterator().next(), "Regular", "Frog", 15, null), headers));
             participationEligibilities.add(createParticipationEligibility(new ParticipationEligibilityCreationData(
-                    seasonId, organiztation.clubIds().iterator().next(), "Tom", "Ato", 16, null), headers));
+                    seasonId, organization.clubIds().iterator().next(), "Tom", "Ato", 16, null), headers));
         }
         return participationEligibilities;
     }

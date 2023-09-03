@@ -5,12 +5,15 @@ import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationElig
 import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationEligibilityService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
+import liquibase.repackaged.org.apache.commons.lang3.NotImplementedException;
 import org.springframework.http.*;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -40,4 +43,16 @@ public class ParticipationEligibilityController {
                 .status(HttpStatus.CREATED)
                 .body(participationEligibilityService.createParticipationEligibility(creationData));
     }
+
+    @RolesAllowed(Roles.SEASON_ADMIN)
+    @PostMapping(value = "/seasons/{seasonId}/participationeligibilities",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ParticipationEligibilityData>> createParticipationEligibilitiesForSeason(
+            RequestEntity<List<ParticipationEligibilityCreationData>> participationEligibilitiesRequestEntity,
+            Principal principal,
+            @PathVariable Long seasonId) {
+        throw new NotImplementedException();
+    }
+
 }

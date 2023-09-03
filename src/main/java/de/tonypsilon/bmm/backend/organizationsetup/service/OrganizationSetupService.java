@@ -6,6 +6,7 @@ import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.organizationsetup.data.TeamSetupData;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantCreationData;
+import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantsCreationData;
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
 import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationEligibilityService;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
 
@@ -50,7 +52,6 @@ public class OrganizationSetupService {
 
     /**
      * Checks if the given setup of an organization is valid.
-     * The given ParticipationEligibilities are ignored, they are only relevant for the get use case.
      * If yes, delete all current teams and their participants and creat a new configuration for the
      * organization.
      * If no, throw a suitable exception.
@@ -112,6 +113,19 @@ public class OrganizationSetupService {
                     new ParticipantsCreationData(createdTeam.id(), participantCreationDataList));
         }
         return teamsSetupData;
+    }
+
+    public List<TeamSetupData> getOrganizationSetup(@NonNull Long organizationId) {
+        return Stream.of(organizationId)
+                .map(teamService::getTeamsOfOrganization)
+                .flatMap(List::stream)
+                .map(teamData -> new TeamSetupData(organizationId,
+                        teamData.number(),
+                        teamData.venueId(),
+                        organizationService.getOrganizationById(organizationId).name() + " " + teamData.number(),
+                        participantService.getParticipantsOfTeamOrderedByNumberAsc(teamData.id()).stream()
+                                .map(ParticipantData::id).toList()))
+                .toList();
     }
 
     private TeamCreationData teamCreationDataFromTeamSetupData(TeamSetupData teamSetupData) {
