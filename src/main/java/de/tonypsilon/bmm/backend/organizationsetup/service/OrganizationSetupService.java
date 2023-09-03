@@ -9,6 +9,7 @@ import de.tonypsilon.bmm.backend.participant.data.ParticipantCreationData;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantsCreationData;
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
+import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
 import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationEligibilityService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
@@ -83,6 +84,7 @@ public class OrganizationSetupService {
         if(!teamsSetupData.stream()
                 .map(TeamSetupData::participants)
                 .flatMap(List::stream)
+                .map(ParticipationEligibilityData::id)
                 .allMatch(participationEligibilityService
                         .isValidParticipationEligibilityForOrganization(organization))) {
             throw new BadDataException("Mindestens ein Spieler hat nicht die notwendige Spielberechtigung!");
@@ -109,7 +111,9 @@ public class OrganizationSetupService {
             var participantCreationDataList = new ArrayList<ParticipantCreationData>();
             for(int i = 0; i < teamSetupData.participants().size(); ++i) {
                 participantCreationDataList.add(new ParticipantCreationData(
-                        createdTeam.id(), teamSetupData.participants().get(i), i+1));
+                        createdTeam.id(),
+                        teamSetupData.participants().get(i).id(),
+                        i+1));
             }
             participantService.createValidParticipantConfigurationForTeam(
                     new ParticipantsCreationData(createdTeam.id(), participantCreationDataList));
@@ -126,7 +130,9 @@ public class OrganizationSetupService {
                         teamData.venueId(),
                         organizationService.getOrganizationById(organizationId).name() + " " + teamData.number(),
                         participantService.getParticipantsOfTeamOrderedByNumberAsc(teamData.id()).stream()
-                                .map(ParticipantData::id).toList()))
+                                .map(ParticipantData::participationEligibilityId)
+                                .map(participationEligibilityService::getParticipationEligibilityById)
+                                .toList()))
                 .toList();
     }
 
@@ -138,6 +144,7 @@ public class OrganizationSetupService {
         Set<Long> duplicates = new HashSet<>();
         return teams.stream().map(TeamSetupData::participants)
                 .flatMap(List::stream)
+                .map(ParticipationEligibilityData::id)
                 .anyMatch(not(duplicates::add));
     }
 }

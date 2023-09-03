@@ -123,6 +123,10 @@ public class ParticipationEligibilityService {
         };
     }
 
+    public ParticipationEligibilityData getParticipationEligibilityById(Long participationEligibilityId) {
+        return participationEligibilityToParticipationEligibilityData(getById(participationEligibilityId));
+    }
+
     private ParticipationEligibility getById(Long participationEligibilityId) {
         return participationEligibilityRepository.findById(participationEligibilityId)
                 .orElseThrow(() -> new NotFoundException("Es gibt keine Spielberechtigung mit der ID %d!"

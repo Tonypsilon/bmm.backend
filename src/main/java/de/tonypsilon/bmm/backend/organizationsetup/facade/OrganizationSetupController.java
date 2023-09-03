@@ -58,7 +58,7 @@ public class OrganizationSetupController {
                 .flatMap(List::stream)
                 .toList();
         List<TeamSetupData> teams = organizationSetupService.getOrganizationSetup(organizationId);
-        List<Long> participantsInTeams = teams.stream()
+        List<ParticipationEligibilityData> participantsInTeams = teams.stream()
                 .map(TeamSetupData::participants)
                 .flatMap(List::stream)
                 .toList();
