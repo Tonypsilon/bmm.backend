@@ -21,6 +21,7 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @RestController
@@ -42,7 +43,7 @@ public class OrganizationSetupController {
     }
 
     @RolesAllowed(Roles.CLUB_ADMIN)
-    @GetMapping(value = "/organizations/setup/{organizationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/organizations/{organizationId}/setup", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrganizationSetupData> getOrganizationSetup(Principal principal,
                                                                       @PathVariable Long organizationId) {
         authorizationService.verifyUserIsClubAdminOfOrganization(principal.getName(),
@@ -65,14 +66,14 @@ public class OrganizationSetupController {
         return ResponseEntity
                 .ok(new OrganizationSetupData(
                         availablePlayers.stream()
-                                .filter(availablePlayer -> !participantsInTeams.contains(availablePlayer.id()))
+                                .filter(Predicate.not(participantsInTeams::contains))
                                 .toList(),
                         teams)
                 );
     }
 
     @RolesAllowed(Roles.CLUB_ADMIN)
-    @PutMapping(value = "/organizations/setup/{organizationId}",
+    @PutMapping(value = "/organizations/{organizationId}/setup",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<TeamSetupData>> putOrganizationSetup(
