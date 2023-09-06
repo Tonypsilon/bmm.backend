@@ -901,3 +901,16 @@ databaseChangeLog:
       changes:
         - dropTable:
             tableName: teamcaptain
+  - changeSet:
+      id: 36
+      author: Tonypsilon
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: email
+                  type: varchar(128)
+              - column:
+                  name: phone
+                  type: varchar(32)

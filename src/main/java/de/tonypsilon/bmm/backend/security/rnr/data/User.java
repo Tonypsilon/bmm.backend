@@ -22,6 +22,12 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Authority> authorities = new HashSet<>();
 
+    @Column(nullable = false)
+    private String email;
+
+    @Column
+    private String phone;
+
     @NonNull
     public String getUsername() {
         return username;
@@ -64,5 +70,22 @@ public class User {
     @NonNull
     public Set<Authority> getAuthorities() {
         return authorities;
+    }
+
+    @NonNull
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@NonNull String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

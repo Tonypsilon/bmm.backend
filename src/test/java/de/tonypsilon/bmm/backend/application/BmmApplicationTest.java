@@ -80,7 +80,9 @@ class BmmApplicationTest {
         UserData seasonAdminUser = userHelper.createUser(
                 new UserData(configuration.seasonAdminUsername(),
                         configuration.seasonAdminPassword(),
-                        Set.of(Role.SEASON_ADMIN)),
+                        Set.of(Role.SEASON_ADMIN),
+                        "myEmail@mail.com",
+                        null),
                 headersAdmin);
 
         SeasonAdminData seasonAdminData = userHelper.createSeasonAdmin(

@@ -79,7 +79,9 @@ public class ClubHelper {
                 .body(objectMapper.writeValueAsString(
                         new UserData(clubData.name() + "Admin",
                                 loginHelper.CLUB_ADMIN_PASSWORD,
-                                Set.of(Role.CLUB_ADMIN))))
+                                Set.of(Role.CLUB_ADMIN),
+                                "myEmail@mail.com",
+                                null)))
                 .when()
                 .post(baseUrl + "/users")
                 .then()

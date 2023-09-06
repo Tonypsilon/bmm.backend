@@ -46,7 +46,8 @@ class UserServiceTest {
 
     @Test
     void testCreateUserOk() {
-        UserData createUserData = new UserData("user", "secret", Set.of(Role.USER));
+        UserData createUserData = new UserData(
+                "user", "secret", Set.of(Role.USER), "myEmail@mail.com", null);
         when(userRepository.existsById("user")).thenReturn(Boolean.FALSE);
         when(userRepository.findByUsername("user")).thenReturn(Optional.ofNullable(user1));
         UserData actual = userService.createUser(createUserData);
@@ -62,7 +63,8 @@ class UserServiceTest {
     @ParameterizedTest
     @NullAndEmptySource
     void testCreateUserBlankName(String name) {
-        UserData createUserData = new UserData(name, "secret", null);
+        UserData createUserData = new UserData(
+                name, "secret", null, "myEmail@mail.com", null);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> userService.createUser(createUserData));
         assertThat(actualException.getMessage()).isEqualTo("Der Name darf nicht leer sein!");
@@ -70,7 +72,8 @@ class UserServiceTest {
 
     @Test
     void testCreateUserAlreadyExists() {
-        UserData createUserData = new UserData("user", "secret", null);
+        UserData createUserData = new UserData(
+                "user", "secret", null, "myEmail@mail.com", null);
         when(userRepository.existsById("user")).thenReturn(Boolean.TRUE);
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> userService.createUser(createUserData));
@@ -81,7 +84,8 @@ class UserServiceTest {
     @ParameterizedTest
     @NullAndEmptySource
     void testCreateUserBlankPassword(String password) {
-        UserData createUserData = new UserData("user", password, null);
+        UserData createUserData = new UserData(
+                "user", password, null, "myEmail@mail.com", null);
         when(userRepository.existsById("user")).thenReturn(Boolean.FALSE);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> userService.createUser(createUserData));
@@ -92,7 +96,8 @@ class UserServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"short"})
     void testCreateUserInvalidPassword(String password) {
-        UserData createUserData = new UserData("user", password, null);
+        UserData createUserData = new UserData(
+                "user", password, null, "myEmail@mail.com", null);
         when(userRepository.existsById("user")).thenReturn(Boolean.FALSE);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> userService.createUser(createUserData));

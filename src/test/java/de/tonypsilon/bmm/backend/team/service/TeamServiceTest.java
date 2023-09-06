@@ -69,7 +69,8 @@ class TeamServiceTest {
         when(organizationService.getOrganizationById(1L)).thenReturn(new OrganizationData(1L, 1L, "org", Set.of(2L)));
         when(venueService.getClubIdByVenueId(1L)).thenReturn(2L);
         when(userService.getUserDataByUsername("captain2"))
-                .thenReturn(new UserData("captain2", null, Set.of(Role.USER)));
+                .thenReturn(new UserData("captain2",
+                        null, Set.of(Role.USER), "myEmail@mail.com", null));
 
         TeamData actual = teamService.createTeam(new TeamCreationData(
                 1L, 2, 1L, "team2", "captain2"));

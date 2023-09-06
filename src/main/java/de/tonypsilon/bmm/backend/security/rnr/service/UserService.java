@@ -38,6 +38,7 @@ public class UserService {
                     .formatted(createUserData.username()));
         }
         validatePassword(createUserData.password());
+        validationService.validateEmailAddress(createUserData.email());
 
         User user = new User();
         user.setUsername(createUserData.username());
@@ -56,6 +57,8 @@ public class UserService {
             authority.setTheAuthority(Role.USER);
             user.addAuthority(authority);
         }
+        user.setEmail(createUserData.email());
+        user.setPhone(createUserData.phone());
         userRepository.save(user);
 
         return userToUserData(getByUsername(createUserData.username()));
@@ -119,7 +122,9 @@ public class UserService {
                 null,
                 user.getAuthorities().stream()
                         .map(Authority::getTheAuthority)
-                        .collect(Collectors.toSet())
+                        .collect(Collectors.toSet()),
+                user.getEmail(),
+                user.getPhone()
         );
     }
 
