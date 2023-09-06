@@ -98,6 +98,10 @@ public class UserService {
         return userToUserData(getByUsername(username));
     }
 
+    public UserData getUserDataByUsername(@NonNull String username) {
+        return userToUserData(getByUsername(username));
+    }
+
     @NonNull
     private User getByUsername(@NonNull String username) {
         return userRepository.findByUsername(username)

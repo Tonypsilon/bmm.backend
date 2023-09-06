@@ -66,8 +66,10 @@ class MatchServiceTest {
     @Test
     void testCreateMatchOk() {
         when(matchdayService.getMatchdayDataById(1L)).thenReturn(matchdayData);
-        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 1L, 1, 1L));
-        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(2L, 2L, 2, 2L));
+        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(
+                1L, 1L, 1, 1L, null, "captain"));
+        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(
+                2L, 2L, 2, 2L, null, "captain"));
         when(teamDivisionLinkService.getDivisionIdOfTeam(1L)).thenReturn(2L);
         when(teamDivisionLinkService.getDivisionIdOfTeam(2L)).thenReturn(2L);
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.FALSE);
@@ -95,7 +97,8 @@ class MatchServiceTest {
     @Test
     void testCreateMatchAwayTeamDoesNotExist() {
         when(matchdayService.getMatchdayDataById(1L)).thenReturn(matchdayData);
-        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 1L, 1, 1L));
+        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(
+                1L, 1L, 1, 1L, null, "captain"));
         when(teamService.getTeamDataById(-1L)).thenThrow(new NotFoundException("Es gibt kein Team mit ID -1!"));
         MatchCreationData matchCreationData = new MatchCreationData(1L, 1L, -1L,
                 Optional.empty(), Optional.empty());
@@ -107,8 +110,10 @@ class MatchServiceTest {
     @Test
     void testCreateMatchWrongDivision() {
         when(matchdayService.getMatchdayDataById(1L)).thenReturn(matchdayData);
-        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 1L, 1, 1L));
-        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(2L, 2L, 2, 2L));
+        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(
+                1L, 1L, 1, 1L, null, "captain"));
+        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(
+                2L, 2L, 2, 2L, null, "captain"));
         when(teamDivisionLinkService.getDivisionIdOfTeam(1L)).thenReturn(2L);
         when(teamDivisionLinkService.getDivisionIdOfTeam(2L)).thenReturn(5L);
         MatchCreationData matchCreationData = new MatchCreationData(1L, 1L, 2L,
@@ -122,8 +127,10 @@ class MatchServiceTest {
     @Test
     void testCreateMatchHomeTeamAlreadyHasMatch() {
         when(matchdayService.getMatchdayDataById(1L)).thenReturn(matchdayData);
-        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 1L, 1, 1L));
-        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(2L, 2L, 2, 2L));
+        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(
+                1L, 1L, 1, 1L, null, "captain"));
+        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(
+                2L, 2L, 2, 2L, null, "captain"));
         when(teamDivisionLinkService.getDivisionIdOfTeam(1L)).thenReturn(2L);
         when(teamDivisionLinkService.getDivisionIdOfTeam(2L)).thenReturn(2L);
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.TRUE);
@@ -138,8 +145,10 @@ class MatchServiceTest {
     @Test
     void testCreateMatchAwayTeamAlreadyHasMatch() {
         when(matchdayService.getMatchdayDataById(1L)).thenReturn(matchdayData);
-        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 1L, 1, 1L));
-        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(2L, 2L, 2, 2L));
+        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(
+                1L, 1L, 1, 1L, null, "captain"));
+        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(
+                2L, 2L, 2, 2L, null, "captain"));
         when(teamDivisionLinkService.getDivisionIdOfTeam(1L)).thenReturn(2L);
         when(teamDivisionLinkService.getDivisionIdOfTeam(2L)).thenReturn(2L);
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.FALSE);
@@ -155,8 +164,10 @@ class MatchServiceTest {
     @Test
     void testCreateMatchInvalidDateString() {
         when(matchdayService.getMatchdayDataById(1L)).thenReturn(matchdayData);
-        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 1L, 1, 1L));
-        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(2L, 2L, 2, 2L));
+        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(
+                1L, 1L, 1, 1L, null, "captain"));
+        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(
+                2L, 2L, 2, 2L, null, "captain"));
         when(teamDivisionLinkService.getDivisionIdOfTeam(1L)).thenReturn(2L);
         when(teamDivisionLinkService.getDivisionIdOfTeam(2L)).thenReturn(2L);
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.FALSE);
@@ -171,8 +182,10 @@ class MatchServiceTest {
     @Test
     void testCreateMatchRefereeDoesNotExist() {
         when(matchdayService.getMatchdayDataById(1L)).thenReturn(matchdayData);
-        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 1L, 1, 1L));
-        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(2L, 2L, 2, 2L));
+        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(
+                1L, 1L, 1, 1L, null, "captain"));
+        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(
+                2L, 2L, 2, 2L, null, "captain"));
         when(teamDivisionLinkService.getDivisionIdOfTeam(1L)).thenReturn(2L);
         when(teamDivisionLinkService.getDivisionIdOfTeam(2L)).thenReturn(2L);
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.FALSE);
@@ -193,8 +206,10 @@ class MatchServiceTest {
             names = {"PREPARATION"})
     void testCreateMatchWronSeasonStage(SeasonStage stage) {
         when(matchdayService.getMatchdayDataById(1L)).thenReturn(matchdayData);
-        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 1L, 1, 1L));
-        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(2L, 2L, 2, 2L));
+        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(
+                1L, 1L, 1, 1L, null, "captain"));
+        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(
+                2L, 2L, 2, 2L, null, "captain"));
         when(teamDivisionLinkService.getDivisionIdOfTeam(1L)).thenReturn(2L);
         when(teamDivisionLinkService.getDivisionIdOfTeam(2L)).thenReturn(2L);
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.FALSE);
@@ -209,8 +224,10 @@ class MatchServiceTest {
     @Test
     void testCreateMatchRefereeNotValidForSeason() {
         when(matchdayService.getMatchdayDataById(1L)).thenReturn(matchdayData);
-        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(1L, 1L, 1, 1L));
-        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(2L, 2L, 2, 2L));
+        when(teamService.getTeamDataById(1L)).thenReturn(new TeamData(
+                1L, 1L, 1, 1L, null, "captain"));
+        when(teamService.getTeamDataById(2L)).thenReturn(new TeamData(
+                2L, 2L, 2, 2L, null, "captain"));
         when(teamDivisionLinkService.getDivisionIdOfTeam(1L)).thenReturn(2L);
         when(teamDivisionLinkService.getDivisionIdOfTeam(2L)).thenReturn(2L);
         when(matchRepository.existsByMatchdayIdAndHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(Boolean.FALSE);

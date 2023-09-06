@@ -882,3 +882,22 @@ databaseChangeLog:
               - column:
                   name: state
                   type: varchar(64)
+  - changeSet:
+      id: 34
+      author: Tonypsilon
+      changes:
+        - addColumn:
+            tableName: team
+            columns:
+              - column:
+                  name: captain_username
+                  type: varchar(50)
+              - column:
+                  name: name
+                  type: varchar(64)
+  - changeSet:
+      id: 35
+      author: Tonypsilon
+      changes:
+        - dropTable:
+            tableName: teamcaptain

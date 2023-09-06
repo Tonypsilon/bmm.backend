@@ -38,8 +38,12 @@ public class TeamHelper {
             VenueData venueData = venues.get(clubData);
             HttpHeaders clubAdminHeaders = loginHelper.login(clubData);
             teams.put(organizationData, List.of(
-                    createTeam(new TeamCreationData(organizationData.id(), 1, venueData.id()), clubAdminHeaders),
-                    createTeam(new TeamCreationData(organizationData.id(), 2, venueData.id()), clubAdminHeaders)
+                    createTeam(new TeamCreationData(
+                            organizationData.id(), 1, venueData.id(), null, "admin"),
+                            clubAdminHeaders),
+                    createTeam(new TeamCreationData(
+                            organizationData.id(), 2, venueData.id(), null, "admin"),
+                            clubAdminHeaders)
             ));
         }
         return teams;

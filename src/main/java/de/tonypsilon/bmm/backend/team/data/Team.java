@@ -19,6 +19,12 @@ public class Team {
     @Column(name = "venue_id", nullable = false)
     private Long venueId;
 
+    @Column(name = "captain_username", nullable = false)
+    private String captainUsername;
+
+    @Column
+    private String name;
+
     @NonNull
     public Long getId() {
         return id;
@@ -53,5 +59,22 @@ public class Team {
 
     public void setVenueId(@NonNull Long venueId) {
         this.venueId = venueId;
+    }
+
+    @NonNull
+    public String getCaptainUsername() {
+        return captainUsername;
+    }
+
+    public void setCaptainUsername(@NonNull String captainUsername) {
+        this.captainUsername = captainUsername;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

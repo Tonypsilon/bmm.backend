@@ -1,5 +1,4 @@
 delete from game;
-delete from teamcaptain;
 delete from venue;
 delete from playingdate;
 delete from teamdivisionlink;

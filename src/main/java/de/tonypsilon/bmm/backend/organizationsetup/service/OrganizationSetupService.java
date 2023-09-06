@@ -132,12 +132,18 @@ public class OrganizationSetupService {
                         participantService.getParticipantsOfTeamOrderedByNumberAsc(teamData.id()).stream()
                                 .map(ParticipantData::participationEligibilityId)
                                 .map(participationEligibilityService::getParticipationEligibilityById)
-                                .toList()))
+                                .toList(),
+                        teamData.captainUsername()))
                 .toList();
     }
 
     private TeamCreationData teamCreationDataFromTeamSetupData(TeamSetupData teamSetupData) {
-        return new TeamCreationData(teamSetupData.organizationId(), teamSetupData.number(), teamSetupData.venueId());
+        return new TeamCreationData(
+                teamSetupData.organizationId(),
+                teamSetupData.number(),
+                teamSetupData.venueId(),
+                teamSetupData.name(),
+                teamSetupData.captainUsername());
     }
 
     private boolean containsDuplicateParticipants(Collection<TeamSetupData> teams) {

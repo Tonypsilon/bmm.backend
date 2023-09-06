@@ -6,6 +6,10 @@ import de.tonypsilon.bmm.backend.exception.SeasonStageException;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
+import de.tonypsilon.bmm.backend.security.rnr.Role;
+import de.tonypsilon.bmm.backend.security.rnr.data.User;
+import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
+import de.tonypsilon.bmm.backend.security.rnr.service.UserService;
 import de.tonypsilon.bmm.backend.team.data.*;
 import de.tonypsilon.bmm.backend.venue.service.VenueService;
 import org.springframework.lang.NonNull;
@@ -23,15 +27,18 @@ public class TeamService {
     private final SeasonService seasonService;
     private final OrganizationService organizationService;
     private final VenueService venueService;
+    private final UserService userService;
 
     public TeamService(final TeamRepository teamRepository,
                        final SeasonService seasonService,
                        final OrganizationService organizationService,
-                       final VenueService venueService) {
+                       final VenueService venueService,
+                       final UserService userService) {
         this.teamRepository = teamRepository;
         this.seasonService = seasonService;
         this.organizationService = organizationService;
         this.venueService = venueService;
+        this.userService = userService;
     }
 
     @Transactional
@@ -51,10 +58,21 @@ public class TeamService {
 
         verifyTeamNumber(teamCreationData);
 
+        UserData userData = userService.getUserDataByUsername(teamCreationData.captainUsername());
+        if(!userData.roles().contains(Role.TEAM_ADMIN)) {
+            userService.assignRoleToUser(userData.username(), Role.TEAM_ADMIN);
+        }
+
+        if(teamCreationData.name() != null && teamCreationData.name().length() > 64) {
+            throw new BadDataException("Der Name des Teams ist zu lang, maximal 64 Zeichen!");
+        }
+
         Team team = new Team();
         team.setOrganizationId(teamCreationData.organizationId());
         team.setNumber(teamCreationData.number());
         team.setVenueId(teamCreationData.venueId());
+        team.setName(teamCreationData.name());
+        team.setCaptainUsername(teamCreationData.captainUsername());
 
         teamRepository.save(team);
 
@@ -157,7 +175,9 @@ public class TeamService {
         return new TeamData(team.getId(),
                 team.getOrganizationId(),
                 team.getNumber(),
-                team.getVenueId());
+                team.getVenueId(),
+                team.getName(),
+                team.getCaptainUsername());
     }
 
 }

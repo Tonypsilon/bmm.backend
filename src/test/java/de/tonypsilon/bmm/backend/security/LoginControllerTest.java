@@ -151,7 +151,7 @@ class LoginControllerTest {
     @Test
     @WithMockUser(username = username, authorities = {Roles.TEAM_ADMIN})
     void testGetUserTeamAdmin() throws Exception {
-        TeamData team1 = new TeamData(1L, 2L, 3, 4L);
+        TeamData team1 = new TeamData(1L, 2L, 3, 4L, null, username);
         when(teamAdminService.getTeamsOfTeamAdmin(username)).thenReturn(List.of(team1));
         when(teamService.getSeasonIdByTeamId(1L)).thenReturn(5L);
         when(seasonService.getStageOfSeason(5L)).thenReturn(SeasonStage.RUNNING);

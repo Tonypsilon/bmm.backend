@@ -71,9 +71,9 @@ class OrganizationSetupServiceTest {
     @Test
     void testSetUpTeamsOfOrganizationWrongOrganization() {
         TeamSetupData teamSetupData1 = new TeamSetupData(
-                organizationId, 1, 1L, null, Collections.emptyList());
+                organizationId, 1, 1L, null, Collections.emptyList(), "captain");
         TeamSetupData teamSetupData2 = new TeamSetupData(
-                2L, 2, 1L, null, Collections.emptyList());
+                2L, 2, 1L, null, Collections.emptyList(), "captain");
         assertThatExceptionOfType(BadDataException.class)
                 .isThrownBy(() -> organizationSetupService.setUpTeamsOfOrganization(organizationId,
                         List.of(teamSetupData1, teamSetupData2)))
@@ -83,9 +83,9 @@ class OrganizationSetupServiceTest {
     @Test
     void testSetUpTeamsOfOrganizationDuplicates() {
         TeamSetupData teamSetupData1 = new TeamSetupData(organizationId, 1, 1L, null,
-                List.of(p1, p2, p3));
+                List.of(p1, p2, p3), "captain");
         TeamSetupData teamSetupData2 = new TeamSetupData(organizationId, 2, 1L, null,
-                List.of(p3, p4, p5));
+                List.of(p3, p4, p5), "captain");
         assertThatExceptionOfType(BadDataException.class)
                 .isThrownBy(() -> organizationSetupService.setUpTeamsOfOrganization(organizationId,
                         List.of(teamSetupData1, teamSetupData2)))
@@ -98,9 +98,9 @@ class OrganizationSetupServiceTest {
             names = {"REGISTRATION"})
     void testSetUpTeamsOfOrganizationWrongSeasonStage(SeasonStage seasonStage) {
         TeamSetupData teamSetupData1 = new TeamSetupData(organizationId, 1, 1L, null,
-                List.of(p1, p2, p3));
+                List.of(p1, p2, p3), "captain");
         TeamSetupData teamSetupData2 = new TeamSetupData(organizationId, 2, 1L, null,
-                List.of(p4, p5, p6));
+                List.of(p4, p5, p6), "captain");
         when(organizationService.getOrganizationById(organizationId)).thenReturn(organizationData);
         when(seasonService.getStageOfSeason(organizationData.seasonId())).thenReturn(seasonStage);
         assertThatExceptionOfType(SeasonStageException.class)
@@ -112,9 +112,9 @@ class OrganizationSetupServiceTest {
     @Test
     void testSetUpTeamsOfOrganizationBadTeamNumbers() {
         TeamSetupData teamSetupData1 = new TeamSetupData(organizationId, 1, 1L, null,
-                List.of(p1, p2, p3));
+                List.of(p1, p2, p3), "captain");
         TeamSetupData teamSetupData2 = new TeamSetupData(organizationId, 3, 1L, null,
-                List.of(p4, p5, p6));
+                List.of(p4, p5, p6), "captain");
         when(organizationService.getOrganizationById(organizationId)).thenReturn(organizationData);
         when(seasonService.getStageOfSeason(organizationData.seasonId())).thenReturn(SeasonStage.REGISTRATION);
         assertThatExceptionOfType(BadDataException.class)
@@ -126,9 +126,9 @@ class OrganizationSetupServiceTest {
     @Test
     void testSetUpTeamsOfOrganizationInvalidParticipationEligibility() {
         TeamSetupData teamSetupData1 = new TeamSetupData(organizationId, 1, 1L, null,
-                List.of(p1, p2));
+                List.of(p1, p2), "captain");
         TeamSetupData teamSetupData2 = new TeamSetupData(organizationId, 2, 1L, null,
-                List.of(p4, p5));
+                List.of(p4, p5), "captain");
         when(organizationService.getOrganizationById(organizationId)).thenReturn(organizationData);
         when(seasonService.getStageOfSeason(organizationData.seasonId())).thenReturn(SeasonStage.REGISTRATION);
         when(participationEligibilityService.isValidParticipationEligibilityForOrganization(organizationData))
@@ -153,10 +153,11 @@ class OrganizationSetupServiceTest {
                         new ParticipationEligibilityData(14L, 2L, 3L, "fore", "sur", 3, null),
                         new ParticipationEligibilityData(15L, 2L, 3L, "fore", "sur", 3, null),
                         new ParticipationEligibilityData(16L, 2L, 3L, "fore", "sur", 3, null),
-                        new ParticipationEligibilityData(17L, 2L, 3L, "fore", "sur", 3, null)));
+                        new ParticipationEligibilityData(17L, 2L, 3L, "fore", "sur", 3, null))
+                , "captain");
         TeamSetupData teamSetupData2 = new TeamSetupData(organizationId, 2, 1L, null,
                 List.of(new ParticipationEligibilityData(18L, 2L, 3L, "fore", "sur", 3, null),
-                        new ParticipationEligibilityData(19L, 2L, 3L, "fore", "sur", 3, null)));
+                        new ParticipationEligibilityData(19L, 2L, 3L, "fore", "sur", 3, null)), "captain");
         when(organizationService.getOrganizationById(organizationId)).thenReturn(organizationData);
         when(seasonService.getStageOfSeason(organizationData.seasonId())).thenReturn(SeasonStage.REGISTRATION);
         when(participationEligibilityService.isValidParticipationEligibilityForOrganization(organizationData))
@@ -170,9 +171,9 @@ class OrganizationSetupServiceTest {
     @Test
     void testSetUpTeamsOfOrganizationMissingVenue() {
         TeamSetupData teamSetupData1 = new TeamSetupData(organizationId, 1, 1L, null,
-                List.of(p1, p2, p3));
+                List.of(p1, p2, p3), "captain");
         TeamSetupData teamSetupData2 = new TeamSetupData(organizationId, 2, 1L, null,
-                List.of(p4, p5, p6));
+                List.of(p4, p5, p6), "captain");
         when(organizationService.getOrganizationById(organizationId)).thenReturn(organizationData);
         when(seasonService.getStageOfSeason(organizationData.seasonId())).thenReturn(SeasonStage.REGISTRATION);
         when(participationEligibilityService.isValidParticipationEligibilityForOrganization(organizationData))
@@ -188,19 +189,19 @@ class OrganizationSetupServiceTest {
     @Test
     void testSetUpTeamsOfOrganizationSuccess() {
         TeamSetupData teamSetupData1 = new TeamSetupData(organizationId, 1, 1L, null,
-                List.of(p1, p2, p3));
+                List.of(p1, p2, p3), "captain");
         TeamSetupData teamSetupData2 = new TeamSetupData(organizationId, 2, 1L, null,
-                List.of(p4, p5, p6));
+                List.of(p4, p5, p6), "captain");
         when(organizationService.getOrganizationById(organizationId)).thenReturn(organizationData);
         when(seasonService.getStageOfSeason(organizationData.seasonId())).thenReturn(SeasonStage.REGISTRATION);
         when(participationEligibilityService.isValidParticipationEligibilityForOrganization(organizationData))
                 .thenReturn(i -> i < 7L);
         when(venueService.getVenuesForOrganization(organizationId))
                 .thenReturn(List.of(new VenueData(1L, 3L, "address", "hints")));
-        when(teamService.createTeam(new TeamCreationData(organizationId, 1, 1L)))
-                .thenReturn(new TeamData(1L, 1L, 1, 1L));
-        when(teamService.createTeam(new TeamCreationData(organizationId, 2, 1L)))
-                .thenReturn(new TeamData(2L, 1L, 2, 1L));
+        when(teamService.createTeam(new TeamCreationData(organizationId, 1, 1L, null, "captain")))
+                .thenReturn(new TeamData(1L, 1L, 1, 1L, null, "captain"));
+        when(teamService.createTeam(new TeamCreationData(organizationId, 2, 1L, null, "captain")))
+                .thenReturn(new TeamData(2L, 1L, 2, 1L, null, "captain"));
         List<TeamSetupData> actual = organizationSetupService.setUpTeamsOfOrganization(organizationId,
                 List.of(teamSetupData1, teamSetupData2));
         assertThat(actual).isEqualTo(List.of(teamSetupData1, teamSetupData2));
