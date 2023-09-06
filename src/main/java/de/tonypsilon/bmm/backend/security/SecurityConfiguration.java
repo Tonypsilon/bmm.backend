@@ -1,6 +1,9 @@
 package de.tonypsilon.bmm.backend.security;
 
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
+import org.springframework.security.authentication.event.LoggerListener;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -45,5 +48,10 @@ public class SecurityConfiguration {
         securityContextLogoutHandler.setClearAuthentication(true);
         securityContextLogoutHandler.setInvalidateHttpSession(true);
         return securityContextLogoutHandler;
+    }
+
+    @Bean
+    public ApplicationListener<AbstractAuthenticationEvent> loginListener() {
+        return new LoggerListener();
     }
 }

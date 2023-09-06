@@ -8,6 +8,8 @@ import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationElig
 import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationEligibilityService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,7 @@ import java.util.stream.Stream;
 @RestController
 public class OrganizationSetupController {
 
+    private final Logger logger = LoggerFactory.getLogger(OrganizationSetupController.class);
     private final OrganizationSetupService organizationSetupService;
     private final ParticipationEligibilityService participationEligibilityService;
     private final OrganizationService organizationService;
@@ -84,6 +87,8 @@ public class OrganizationSetupController {
                 Objects.requireNonNull(organizationId));
         List<TeamSetupData> teamsSetupData = Objects.requireNonNull(teamsSetupDataRequestEntity).getBody();
         Objects.requireNonNull(teamsSetupData);
+        logger.info("User %s, PUT on /organizations/%d/setup, body: %s"
+                .formatted(principal.getName(), organizationId, teamsSetupData));
         return ResponseEntity
                 .ok(organizationSetupService.setUpTeamsOfOrganization(
                         organizationId,

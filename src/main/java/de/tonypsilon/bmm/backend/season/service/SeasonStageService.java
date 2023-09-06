@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 @Service
 public class SeasonStageService {
 
-    final Logger logger = LoggerFactory.getLogger(SeasonStageService.class);
+    private final Logger logger = LoggerFactory.getLogger(SeasonStageService.class);
 
     private final SeasonService seasonService;
     private final OrganizationService organizationService;
