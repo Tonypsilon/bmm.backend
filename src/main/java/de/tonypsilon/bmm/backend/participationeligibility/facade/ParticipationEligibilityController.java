@@ -5,7 +5,8 @@ import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationElig
 import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationEligibilityService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
-import liquibase.repackaged.org.apache.commons.lang3.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import java.util.Objects;
 @RestController
 public class ParticipationEligibilityController {
 
+    private final Logger logger = LoggerFactory.getLogger(ParticipationEligibilityController.class);
     private final ParticipationEligibilityService participationEligibilityService;
     private final AuthorizationService authorizationService;
 
@@ -38,6 +40,8 @@ public class ParticipationEligibilityController {
             Principal principal) {
         ParticipationEligibilityCreationData creationData = Objects.requireNonNull(creationDataRequestEntity).getBody();
         Objects.requireNonNull(creationData);
+        logger.info("User %s, POST on /participationeligibilities, body: %s"
+                .formatted(principal.getName(), creationData));
         authorizationService.verifyUserIsSeasonAdminOfSeason(principal.getName(),
                 Objects.requireNonNull(creationData.seasonId()));
         return ResponseEntity
@@ -58,6 +62,8 @@ public class ParticipationEligibilityController {
         List<ParticipationEligibilityCreationData> participationEligibilityCreationDataList =
                 Objects.requireNonNull(participationEligibilitiesRequestEntity).getBody();
         Objects.requireNonNull(participationEligibilityCreationDataList);
+        logger.info("User %s, POST on /seasons/%s/participationeligibilities, body: %s"
+                .formatted(principal.getName(), seasonId, participationEligibilityCreationDataList));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(participationEligibilityCreationDataList.stream()

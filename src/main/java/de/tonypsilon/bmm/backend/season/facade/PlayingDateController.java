@@ -5,6 +5,8 @@ import de.tonypsilon.bmm.backend.season.data.PlayingDateData;
 import de.tonypsilon.bmm.backend.season.service.PlayingDateService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +18,7 @@ import java.util.Objects;
 @RestController
 public class PlayingDateController {
 
+    private final Logger logger = LoggerFactory.getLogger(PlayingDateController.class);
     private final PlayingDateService playingDateService;
     private final AuthorizationService authorizationService;
 
@@ -34,6 +37,7 @@ public class PlayingDateController {
             Principal principal) {
         PlayingDateCreationData creationData = Objects.requireNonNull(playingDateCreationDataRequestEntity).getBody();
         Objects.requireNonNull(creationData);
+        logger.info("User %s, POST on /playingdates, body: %s".formatted(principal.getName(), creationData));
         authorizationService.verifyUserIsSeasonAdminOfSeason(principal.getName(),
                 Objects.requireNonNull(creationData.seasonId()));
         return ResponseEntity

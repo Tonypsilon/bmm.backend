@@ -6,6 +6,8 @@ import de.tonypsilon.bmm.backend.game.service.GameAccessService;
 import de.tonypsilon.bmm.backend.game.service.GameService;
 import de.tonypsilon.bmm.backend.game.service.ResultData;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,7 @@ import java.util.Objects;
 @RestController
 public class GameController {
 
+    private final Logger logger = LoggerFactory.getLogger(GameController.class);
     private final GameAccessService gameAccessService;
     private final GameService gameService;
 
@@ -33,6 +36,7 @@ public class GameController {
                                                Principal principal) {
         GameCreationData creationData = Objects.requireNonNull(creationDataRequestEntity).getBody();
         Objects.requireNonNull(creationData);
+        logger.info("User %s, POST on /games, body: %s".formatted(principal.getName(),creationData));
         gameAccessService.verifyGameCanBeCreated(principal.getName(), creationData);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -48,6 +52,8 @@ public class GameController {
                                                        Principal principal) {
         ResultData resultData = Objects.requireNonNull(resultDataRequestEntity).getBody();
         Objects.requireNonNull(resultData);
+        logger.info("User %s, PATCH on /games/%s/playedResult, body: %s"
+                .formatted(principal.getName(), gameId, resultData));
         Objects.requireNonNull(resultData.homeResult());
         Objects.requireNonNull(resultData.awayResult());
         gameAccessService.verifyResultCanBeChanged(principal.getName(), gameId);
@@ -64,6 +70,8 @@ public class GameController {
                                                        Principal principal) {
         ResultData resultData = Objects.requireNonNull(resultDataRequestEntity).getBody();
         Objects.requireNonNull(resultData);
+        logger.info("User %s, PATCH on /games/%s/overruledResults, body: %s"
+                .formatted(principal.getName(), gameId, resultData));
         Objects.requireNonNull(resultData.homeResult());
         Objects.requireNonNull(resultData.awayResult());
         gameAccessService.verifyResultCanBeChanged(principal.getName(), gameId);
@@ -76,6 +84,7 @@ public class GameController {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteGame(@PathVariable Long gameId, Principal principal) {
         Objects.requireNonNull(gameId);
+        logger.info("User, %s, DELETE on /games/%s.".formatted(principal.getName(), gameId));
         gameAccessService.verifyResultCanBeChanged(principal.getName(), gameId);
         gameService.deleteGame(gameId);
         return ResponseEntity.noContent().build();

@@ -6,6 +6,8 @@ import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
 import de.tonypsilon.bmm.backend.security.rnr.service.TeamAdminService;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +20,7 @@ import java.util.Objects;
 @RestController
 public class TeamAdminController {
 
+    private final Logger logger = LoggerFactory.getLogger(TeamAdminController.class);
     private final TeamAdminService teamAdminService;
     private final TeamService teamService;
     private final AuthorizationService authorizationService;
@@ -36,7 +39,9 @@ public class TeamAdminController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TeamAdminData> createTeamAdmin(RequestEntity<TeamAdminData> teamAdminDataRequestEntity,
                                                          Principal principal) {
-        TeamAdminData teamAdminData = Objects.requireNonNull(teamAdminDataRequestEntity.getBody());
+        TeamAdminData teamAdminData = Objects.requireNonNull(teamAdminDataRequestEntity).getBody();
+        Objects.requireNonNull(teamAdminData);
+        logger.info("User %s, POST on /teamadmins, body: %s".formatted(principal.getName(), teamAdminData));
         Objects.requireNonNull(teamAdminData.username());
         Long teamId = Objects.requireNonNull(teamAdminData.teamId());
         TeamData teamData = teamService.getTeamDataById(teamId);
@@ -50,7 +55,9 @@ public class TeamAdminController {
     @DeleteMapping(value = "/teamadmins", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteTeamAdmin(RequestEntity<TeamAdminData> teamAdminDataRequestEntity,
                                                 Principal principal) {
-        TeamAdminData teamAdminData = Objects.requireNonNull(teamAdminDataRequestEntity.getBody());
+        TeamAdminData teamAdminData = Objects.requireNonNull(teamAdminDataRequestEntity).getBody();
+        Objects.requireNonNull(teamAdminData);
+        logger.info("User %s, DELETE on /teamadmins, body: %s".formatted(principal.getName(), teamAdminData));
         Objects.requireNonNull(teamAdminData.username());
         Long teamId = Objects.requireNonNull(teamAdminData.teamId());
         TeamData teamData = teamService.getTeamDataById(teamId);

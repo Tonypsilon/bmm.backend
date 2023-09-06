@@ -4,6 +4,8 @@ import de.tonypsilon.bmm.backend.referee.data.RefereeCreationData;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +17,7 @@ import java.util.Objects;
 @RestController
 public class RefereeController {
 
+    private final Logger logger = LoggerFactory.getLogger(RefereeController.class);
     private final RefereeService refereeService;
     private final AuthorizationService authorizationService;
 
@@ -33,6 +36,7 @@ public class RefereeController {
             Principal principal) {
         RefereeCreationData creationData = Objects.requireNonNull(creationDataRequestEntity).getBody();
         Objects.requireNonNull(creationData);
+        logger.info("User %s, POST on /referees, body: %s".formatted(principal.getName(), creationData));
         authorizationService.verifyUserIsSeasonAdminOfSeason(principal.getName(),
                 Objects.requireNonNull(creationData.seasonId()));
         return ResponseEntity

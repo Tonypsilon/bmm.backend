@@ -9,6 +9,8 @@ import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import javax.annotation.security.RolesAllowed;
 
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -24,6 +26,7 @@ import java.util.Objects;
 @RestController
 public class DivisionController {
 
+    private final Logger logger = LoggerFactory.getLogger(DivisionController.class);
     private final DivisionService divisionService;
     private final SeasonService seasonService;
     private final AuthorizationService authorizationService;
@@ -52,6 +55,8 @@ public class DivisionController {
     public ResponseEntity<DivisionData> createDivision(RequestEntity<DivisionCreationData> divisionCreationDataRequestEntity,
                                                        Principal principal) {
         DivisionCreationData divisionCreationData = Objects.requireNonNull(divisionCreationDataRequestEntity.getBody());
+        Objects.requireNonNull(divisionCreationData);
+        logger.info("User %s, POST on /divisions, body: %s".formatted(principal.getName(), divisionCreationData));
         authorizationService.verifyUserIsSeasonAdminOfSeason(principal.getName(), Objects.requireNonNull(divisionCreationData.seasonId()));
         return ResponseEntity
                 .status(HttpStatus.CREATED)

@@ -5,6 +5,8 @@ import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.data.ChangePasswordData;
 import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
 import de.tonypsilon.bmm.backend.security.rnr.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import java.util.Objects;
 @RestController
 public class UserController {
 
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
     public UserController(final UserService userService) {
@@ -26,9 +29,11 @@ public class UserController {
     @PostMapping(value = "/users",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserData> createUser(RequestEntity<UserData> userDataRequestEntity) {
+    public ResponseEntity<UserData> createUser(RequestEntity<UserData> userDataRequestEntity,
+                                               Principal principal) {
         UserData createUserData = Objects.requireNonNull(userDataRequestEntity).getBody();
         Objects.requireNonNull(createUserData);
+        logger.info("User %s, POST on /users, body %s".formatted(principal.getName(), createUserData));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userService.createUser(createUserData));

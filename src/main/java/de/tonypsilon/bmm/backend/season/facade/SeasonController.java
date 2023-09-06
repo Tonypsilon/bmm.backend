@@ -9,6 +9,8 @@ import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStageService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.SeasonAdminService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -24,6 +26,7 @@ import java.util.Objects;
 @RestController
 public class SeasonController {
 
+    private final Logger logger = LoggerFactory.getLogger(SeasonController.class);
     private final SeasonService seasonService;
     private final SeasonAdminService seasonAdminService;
     private final SeasonStageService seasonStageService;
@@ -52,11 +55,11 @@ public class SeasonController {
     @PostMapping(value = "/seasons",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SeasonData> createSeason(RequestEntity<SeasonCreationData> createSeasonDataRequestEntity) {
-        SeasonCreationData seasonCreationData = createSeasonDataRequestEntity.getBody();
-        if (seasonCreationData == null) {
-            throw new BadDataException("Unvollständige Daten gegeben!");
-        }
+    public ResponseEntity<SeasonData> createSeason(RequestEntity<SeasonCreationData> createSeasonDataRequestEntity,
+                                                   Principal principal) {
+        SeasonCreationData seasonCreationData = Objects.requireNonNull(createSeasonDataRequestEntity).getBody();
+        Objects.requireNonNull(seasonCreationData);
+        logger.info("User %s, POST on /seasons, body: %s".formatted(principal.getName(), seasonCreationData));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(seasonService.createSeason(seasonCreationData));
@@ -70,6 +73,9 @@ public class SeasonController {
                                                         @NonNull @PathVariable String seasonName,
                                                         Principal principal) {
         SeasonStageChangeData seasonStageChangeData = Objects.requireNonNull(patchedSeasonRequestEntity.getBody());
+        Objects.requireNonNull(seasonStageChangeData);
+        logger.info("User %s, PATCH on /seasons/%s, body: %s"
+                .formatted(principal.getName(), seasonName, seasonStageChangeData));
         if (!seasonName.equals(Objects.requireNonNull(seasonStageChangeData.seasonName()))) {
             throw new BadDataException("Der Saisonname im Request passt nicht zum Requestbody.");
         }

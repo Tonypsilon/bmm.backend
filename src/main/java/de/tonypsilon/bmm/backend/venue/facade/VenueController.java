@@ -5,6 +5,8 @@ import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
 import de.tonypsilon.bmm.backend.venue.data.VenueCreationData;
 import de.tonypsilon.bmm.backend.venue.data.VenueData;
 import de.tonypsilon.bmm.backend.venue.service.VenueService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +16,11 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 
 @RestController
 public class VenueController {
 
+    private final Logger logger = LoggerFactory.getLogger(VenueController.class);
      private final VenueService venueService;
      private final AuthorizationService authorizationService;
 
@@ -34,7 +36,9 @@ public class VenueController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VenueData> createVenue(RequestEntity<VenueCreationData> venueCreationDataRequestEntity,
                                                  Principal principal) {
-         VenueCreationData venueCreationData = Objects.requireNonNull(venueCreationDataRequestEntity.getBody());
+         VenueCreationData venueCreationData = Objects.requireNonNull(venueCreationDataRequestEntity).getBody();
+         Objects.requireNonNull(venueCreationData);
+         logger.info("User %s, POST on /venues, body: %s".formatted(principal.getName(), venueCreationData));
          authorizationService.verifyUserIsClubAdminOfAnyClub(principal.getName(),
                  Set.of(Objects.requireNonNull(venueCreationData.clubId())));
          return ResponseEntity

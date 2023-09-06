@@ -5,6 +5,8 @@ import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
 import de.tonypsilon.bmm.backend.team.data.TeamCreationData;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,7 @@ import java.util.Objects;
 @RestController
 public class TeamController {
 
+    private final Logger logger = LoggerFactory.getLogger(TeamController.class);
     private final TeamService teamService;
     private final AuthorizationService authorizationService;
 
@@ -31,7 +34,9 @@ public class TeamController {
     public ResponseEntity<TeamData> createTeam(
             RequestEntity<TeamCreationData> teamCreationDataRequestEntity,
             Principal principal) {
-        TeamCreationData teamCreationData = Objects.requireNonNull(teamCreationDataRequestEntity.getBody());
+        TeamCreationData teamCreationData = Objects.requireNonNull(teamCreationDataRequestEntity).getBody();
+        Objects.requireNonNull(teamCreationData);
+        logger.info("User %s: POST on /teams, body: %s".formatted(principal.getName(), teamCreationData));
         authorizationService.verifyUserIsClubAdminOfOrganization(principal.getName(), teamCreationData.organizationId());
         return ResponseEntity
                 .status(HttpStatus.CREATED)

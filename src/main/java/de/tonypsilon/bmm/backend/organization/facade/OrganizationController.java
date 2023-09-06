@@ -9,6 +9,8 @@ import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -26,6 +28,7 @@ import java.util.Set;
 @RestController
 public class OrganizationController {
 
+    private final Logger logger = LoggerFactory.getLogger(OrganizationController.class);
     private final OrganizationService organizationService;
     private final OrganizationAdminService organizationAdminService;
     private final SeasonService seasonService;
@@ -50,6 +53,9 @@ public class OrganizationController {
             Principal principal) {
         OrganizationCreationData organizationCreationData =
                 Objects.requireNonNull(organizationCreationDataRequestEntity.getBody());
+        Objects.requireNonNull(organizationCreationData);
+        logger.info("User %s, POST on /organizations, body: %s"
+                .formatted(principal.getName(), organizationCreationData));
         authorizationService.verifyUserIsClubAdminOfAnyClub(principal.getName(), organizationCreationData.clubIds());
         return ResponseEntity
                 .status(HttpStatus.CREATED)

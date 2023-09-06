@@ -5,6 +5,8 @@ import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.data.MatchStateChangeData;
 import de.tonypsilon.bmm.backend.match.service.MatchStateService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ public class MatchController {
     // Match creation only happens from within the SeasonStartService.
     // This controller is only needed to change the MatchState of a match.
 
+    private final Logger logger = LoggerFactory.getLogger(MatchController.class);
     private final MatchStateService matchStateService;
 
     public MatchController(final MatchStateService matchStateService) {
@@ -38,6 +41,7 @@ public class MatchController {
                                                       Principal principal) {
         MatchStateChangeData changeData = Objects.requireNonNull(patchedMatchRequestEntity).getBody();
         Objects.requireNonNull(changeData);
+        logger.info("User %s, PATCH on /matches/%s, body: %s".formatted(principal.getName(), matchId, changeData));
         if(!matchId.equals(Objects.requireNonNull(changeData.matchId()))) {
             throw new BadDataException("Die Match ID im Request passt nicht zum Requestbody!");
         }

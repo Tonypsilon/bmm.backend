@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import javax.annotation.security.RolesAllowed;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -20,7 +22,8 @@ import de.tonypsilon.bmm.backend.team.service.TeamService;
 
 @RestController
 public class TeamDivisionLinkController {
-	
+
+	private final Logger logger = LoggerFactory.getLogger(TeamDivisionLinkController.class);
 	private final TeamDivisionLinkService teamDivisionLinkService;
 	private final AuthorizationService authorizationService;
 	private final TeamService teamService;
@@ -44,6 +47,8 @@ public class TeamDivisionLinkController {
 		TeamDivisionLinkData teamDivisionLinkData =
 				Objects.requireNonNull(teamDivisionLinkDataRequestEntity).getBody();
 		Objects.requireNonNull(teamDivisionLinkData);
+		logger.info("User %s, POST on /teamdivisionlinks, body: %s"
+				.formatted(principal.getName(), teamDivisionLinkData));
 		authorizationService.verifyUserIsSeasonAdminOfSeason(principal.getName(),
 				teamService.getSeasonIdByTeamId(Objects.requireNonNull(teamDivisionLinkData.teamId())));
 		return ResponseEntity
