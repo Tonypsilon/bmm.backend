@@ -89,7 +89,8 @@ public class LoginController {
                         organizationAdminService.getOrganizationsOfUser(user.getName()).stream()
                                 .filter(organizationData -> Set.of(SeasonStage.REGISTRATION, SeasonStage.PREPARATION, SeasonStage.RUNNING)
                                         .contains(seasonService.getStageOfSeason(organizationData.seasonId())))
-                                .map(organizationData -> new IdAndLabel(organizationData.id(), organizationData.name()))
+                                .map(organizationData -> new IdAndLabel(organizationData.id(), organizationData.name() + " - "
+                                        + seasonService.getSeasonById(organizationData.seasonId()).name()))
                                 .toList()
                                 : List.of(),
 

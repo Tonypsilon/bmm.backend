@@ -71,7 +71,9 @@ public class OrganizationController {
                         .filter(organizationData -> seasonService.getStageOfSeason(organizationData.seasonId())
                                 == SeasonStage.REGISTRATION)
                         .map(organizationData ->
-                                new IdAndLabel(organizationData.id(), organizationData.name()))
+                                new IdAndLabel(organizationData.id(),
+                                        organizationData.name() + " - "
+                                                + seasonService.getSeasonById(organizationData.seasonId()).name()))
                         .toList()
         );
     }
