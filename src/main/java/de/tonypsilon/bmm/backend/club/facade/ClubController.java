@@ -30,7 +30,7 @@ public class ClubController {
         this.clubService = clubService;
     }
 
-    @RolesAllowed(Roles.ADMIN)
+    @RolesAllowed({Roles.ADMIN, Roles.CLUB_ADMIN})
     @GetMapping(value = "/clubs", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<ClubData>> getAllClubs() {
         return ResponseEntity
