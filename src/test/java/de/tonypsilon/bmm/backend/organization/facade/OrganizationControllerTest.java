@@ -6,6 +6,7 @@ import de.tonypsilon.bmm.backend.datatypes.IdAndLabel;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationAdminService;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
+import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
@@ -58,6 +59,7 @@ class OrganizationControllerTest {
                 .thenReturn(Set.of(organizationRegistrationStage, organizationWrongSeasonStage));
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.PREPARATION);
         when(seasonService.getStageOfSeason(3L)).thenReturn(SeasonStage.REGISTRATION);
+        when(seasonService.getSeasonById(3L)).thenReturn(new SeasonData(3L, "the season", SeasonStage.REGISTRATION));
         var actualResponse = mockMvc
                 .perform(get("/organizations/registration"))
                 .andExpect(status().isOk())
@@ -66,7 +68,7 @@ class OrganizationControllerTest {
                 new TypeReference<List<IdAndLabel>>() { });
         assertThat(actual)
                 .hasSize(1)
-                .containsExactly(new IdAndLabel(2L, "registration"));
+                .containsExactly(new IdAndLabel(2L, "registration - the season"));
     }
 
 }

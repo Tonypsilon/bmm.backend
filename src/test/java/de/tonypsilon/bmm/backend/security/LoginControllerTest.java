@@ -131,6 +131,7 @@ class LoginControllerTest {
         OrganizationData organization1 = new OrganizationData(2L, 3L, "theOrganization", Set.of(1L));
         when(organizationAdminService.getOrganizationsOfUser(username)).thenReturn(Set.of(organization1));
         when(seasonService.getStageOfSeason(3L)).thenReturn(SeasonStage.PREPARATION);
+        when(seasonService.getSeasonById(3L)).thenReturn(new SeasonData(3L, "the season", SeasonStage.PREPARATION));
 
         MockHttpServletResponse actualResponse = mockMvc
                 .perform(get("/user"))
@@ -144,7 +145,8 @@ class LoginControllerTest {
         assertThat(actual.isAdmin()).isFalse();
         assertThat(actual.seasons()).isEmpty();
         assertThat(actual.clubs()).containsExactly(new IdAndLabel(club1.id(), club1.name()));
-        assertThat(actual.organizations()).containsExactly(new IdAndLabel(organization1.id(), organization1.name()));
+        assertThat(actual.organizations()).containsExactly(
+                new IdAndLabel(organization1.id(), organization1.name() + " - the season"));
         assertThat(actual.teams()).isEmpty();
     }
 
