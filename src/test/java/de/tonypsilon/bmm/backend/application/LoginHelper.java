@@ -2,7 +2,6 @@ package de.tonypsilon.bmm.backend.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tonypsilon.bmm.backend.club.data.ClubData;
-import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.springframework.http.HttpHeaders;
@@ -46,15 +45,13 @@ public class LoginHelper {
 
         Map<String, String> loginCookies = createCookieMap(
                 loginResponse.headers().getValues("Set-Cookie"));
-        assertThat(loginCookies).containsKey("JSESSIONID")
-                .containsKey("XSRF-TOKEN");
+        assertThat(loginCookies).containsKey("JSESSIONID");//.containsKey("XSRF-TOKEN");
+        assertThat(loginCookies).doesNotContainKey("XSRF-TOKEN");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Cookie", "JSESSIONID=" + loginCookies.get("JSESSIONID"));
-        headers.add("Cookie", "XSRF-TOKEN=" + loginCookies.get("XSRF-TOKEN"));
-        headers.add("X-XSRF-TOKEN", loginCookies.get("XSRF-TOKEN"));
         return headers;
     }
 

@@ -1,5 +1,6 @@
 package de.tonypsilon.bmm.backend.validation.service;
 
+import com.google.common.base.CharMatcher;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.lang.Nullable;
@@ -101,6 +102,12 @@ public class ValidationService {
         }
         if(string.matches("a-zA-Z0-9äöüÄÖÜ_éÉèÈáÁàÀ\\.-")) {
             throw new BadDataException("Die Zeichenkette enthält ungültige Zeichen!");
+        }
+    }
+
+    public void validateAscii(String string, String messageStarter) {
+        if (!CharMatcher.ascii().matchesAllOf(string)) {
+            throw new BadDataException(messageStarter + " enthält ungültige Zeichen!");
         }
     }
 }

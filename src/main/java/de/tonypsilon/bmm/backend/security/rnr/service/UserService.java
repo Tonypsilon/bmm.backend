@@ -1,5 +1,6 @@
 package de.tonypsilon.bmm.backend.security.rnr.service;
 
+import com.google.common.base.CharMatcher;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
@@ -33,6 +34,7 @@ public class UserService {
     @NonNull
     public UserData createUser(UserData createUserData) {
         validationService.validateName(createUserData.username());
+        validationService.validateAscii(createUserData.username(), "Der Benutzername");
         if (userRepository.existsById(createUserData.username())) {
             throw new AlreadyExistsException("Es gibt bereits einen Benutzer mit dem Benutzernamen %s!"
                     .formatted(createUserData.username()));
@@ -139,5 +141,6 @@ public class UserService {
         if (password.length() <6 ) {
             throw new BadDataException("Das Passwort muss mindestens sechs Zeichen lang sein!");
         }
+        validationService.validateAscii(password, "Das Passwort");
     }
 }

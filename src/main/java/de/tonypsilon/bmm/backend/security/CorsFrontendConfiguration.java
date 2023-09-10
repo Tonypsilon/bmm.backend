@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ConfigurationProperties(prefix = "de.tonypsilon.bmm.cors.frontend")
 public class CorsFrontendConfiguration {
 
-    private String url;
+    private String[] urls;
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -21,18 +21,18 @@ public class CorsFrontendConfiguration {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(url)
+                        .allowedOriginPatterns(urls)
                         .allowCredentials(true)
                         .allowedMethods("GET","POST", "PUT", "OPTIONS","PATCH","DELETE");
             }
         };
     }
 
-    public String getUrl() {
-        return url;
+    public String[] getUrls() {
+        return urls;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUrls(String[] urls) {
+        this.urls = urls;
     }
 }

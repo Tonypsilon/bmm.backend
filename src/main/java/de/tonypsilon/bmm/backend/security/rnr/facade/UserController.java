@@ -49,6 +49,7 @@ public class UserController {
             RequestEntity<ChangePasswordData> changePasswordDataRequestEntity,
             @NonNull @PathVariable String username,
             Principal principal) {
+        logger.info("User %s, PUT on /users/%s, change password".formatted(username, username));
         ChangePasswordData changePasswordData = changePasswordDataRequestEntity.getBody();
         if (changePasswordData == null || changePasswordData.username() == null) {
             throw new BadDataException("Unvollständige Daten gegeben!");
