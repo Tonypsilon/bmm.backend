@@ -89,11 +89,16 @@ public class OrganizationSetupService {
                         .isValidParticipationEligibilityForOrganization(organization))) {
             throw new BadDataException("Mindestens ein Spieler hat nicht die notwendige Spielberechtigung!");
         }
+        int lastTeamNumber = teamsSetupData.size();
         if(!teamsSetupData.stream()
+                .filter(teamSetupData -> teamSetupData.number() < lastTeamNumber)
                 .map(TeamSetupData::participants)
                 .map(List::size)
                 .allMatch(size -> size <= 16)) {
-            throw new BadDataException("Kein Team darf mehr als 16 Spieler haben!");
+            throw new BadDataException("Nur die letzte Mannschaft darf mehr als 16 Spieler haben!");
+        }
+        if(teamsSetupData.get(lastTeamNumber-1).participants().size() > 32) {
+            throw new BadDataException("Die letzte Mannschaft darf nicht mehr als 32 Spieler haben!");
         }
         if(!teamsSetupData.stream()
                 .map(TeamSetupData::venueId)

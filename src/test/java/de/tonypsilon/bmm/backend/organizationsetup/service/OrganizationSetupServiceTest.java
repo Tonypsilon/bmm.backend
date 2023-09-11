@@ -165,7 +165,7 @@ class OrganizationSetupServiceTest {
         assertThatExceptionOfType(BadDataException.class)
                 .isThrownBy(() -> organizationSetupService.setUpTeamsOfOrganization(organizationId,
                         List.of(teamSetupData1, teamSetupData2)))
-                .withMessage("Kein Team darf mehr als 16 Spieler haben!");
+                .withMessage("Nur die letzte Mannschaft darf mehr als 16 Spieler haben!");
     }
 
     @Test
