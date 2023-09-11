@@ -97,7 +97,7 @@ public class OrganizationSetupService {
                 .allMatch(size -> size <= 16)) {
             throw new BadDataException("Nur die letzte Mannschaft darf mehr als 16 Spieler haben!");
         }
-        if(teamsSetupData.get(lastTeamNumber-1).participants().size() > 32) {
+        if(lastTeamNumber > 0 && teamsSetupData.get(lastTeamNumber-1).participants().size() > 32) {
             throw new BadDataException("Die letzte Mannschaft darf nicht mehr als 32 Spieler haben!");
         }
         if(!teamsSetupData.stream()
