@@ -48,6 +48,9 @@ public class SeasonStageService {
     @Transactional
     public SeasonData changeSeasonStage(SeasonStageChangeData seasonStageChangeData) {
         SeasonData seasonData = seasonService.getSeasonByName(seasonStageChangeData.seasonName());
+        if(seasonData.stage() == seasonStageChangeData.stage()) {
+            throw new BmmException("Saison %s ist schon in Phase %s".formatted(seasonData.name(), seasonData.stage()));
+        }
         if(seasonData.stage() == SeasonStage.REGISTRATION && seasonStageChangeData.stage() == SeasonStage.PREPARATION) {
             verifyChangeSeasonStageFromRegistrationToPreparation(seasonData);
             return seasonService.updateSeasonStage(seasonStageChangeData);
@@ -57,8 +60,7 @@ public class SeasonStageService {
             prepareSeasonStart(seasonData);
             return seasonService.updateSeasonStage(seasonStageChangeData);
         }
-        throw new BmmException("Fehler bei Saisonübergang von %s zu %s"
-                .formatted(seasonData.stage(), seasonStageChangeData.stage()));
+        return seasonService.updateSeasonStage(seasonStageChangeData);
     }
 
     private void verifyChangeSeasonStageFromRegistrationToPreparation(SeasonData seasonData) {
