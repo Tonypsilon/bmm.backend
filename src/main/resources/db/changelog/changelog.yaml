@@ -914,3 +914,13 @@ databaseChangeLog:
               - column:
                   name: phone
                   type: varchar(32)
+  - changeSet:
+      id: 37
+      author: Tonypsilon
+      changes:
+        - addColumn:
+            tableName: division
+            columns:
+              - column:
+                  name: number_of_teams
+                  type: int

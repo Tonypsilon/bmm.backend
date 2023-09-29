@@ -22,6 +22,9 @@ public class Division {
     @Column(nullable = false, name = "season_id")
     private Long seasonId;
 
+    @Column(nullable = false, name = "number_of_teams")
+    private Integer numberOfTeams;
+
     @NonNull
     public Long getId() {
         return id;
@@ -65,5 +68,14 @@ public class Division {
 
     public void setSeasonId(@NonNull Long seasonId) {
         this.seasonId = seasonId;
+    }
+
+    @NonNull
+    public Integer getNumberOfTeams() {
+        return numberOfTeams;
+    }
+
+    public void setNumberOfTeams(@NonNull Integer numberOfTeams) {
+        this.numberOfTeams = numberOfTeams;
     }
 }

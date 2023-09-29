@@ -159,9 +159,9 @@ class BmmApplicationTest {
 
         // step 12: Create two divisions for the season.
         DivisionData firstDivision = seasonHelper.createDivision(
-                new DivisionCreationData("First Division", 1, 8, theSeasonInPreparation.id()), seasonAdminHeaders);
+                new DivisionCreationData("First Division", 1, 8, theSeasonInPreparation.id(), 10), seasonAdminHeaders);
         DivisionData secondDivision = seasonHelper.createDivision(
-                new DivisionCreationData("Second Division", 2, 8, theSeasonInPreparation.id()),seasonAdminHeaders);
+                new DivisionCreationData("Second Division", 2, 8, theSeasonInPreparation.id(), 10),seasonAdminHeaders);
 
 
         // step 13: Assign all teams of the organizations to the divisions.

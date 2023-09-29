@@ -28,9 +28,6 @@ public class SeasonStartService {
     private final DivisionService divisionService;
     private final TeamDivisionLinkService teamDivisionLinkService;
 
-    /* This is hardcoded for now, but might become more flexible in the future. */
-    private static final int NUMBER_OF_ROUNDS = 9;
-
     public SeasonStartService(final MatchdayService matchdayService,
                               final MatchService matchService,
                               final PlayingDateService playingDateService,
@@ -45,22 +42,22 @@ public class SeasonStartService {
 
     /**
      * Validation must be done prior (all teams assigned etc.)
-     * For now, only divisions of 10 teams are supported.
+     * For now, only divisions of 10 or 8 teams are supported.
      *
-     * @param seasonData
+     * @param seasonData: the season
      */
     void createMatchesForSeason(@NonNull SeasonData seasonData) {
         divisionService.getAllDivisionsOfSeason(seasonData.id()).forEach(this::createMatchesForDivision);
     }
 
     private void createMatchesForDivision(@NonNull DivisionData divisionData) {
-        PairingTable pairingTable = PairingTable.STANDARD;
+        PairingTable pairingTable = PairingTable.STANDARD(divisionData.numberOfTeams());
         Map<Integer, TeamDivisionLinkData> teamsOfDivisionByNumber =
                 teamDivisionLinkService.getByDivisionId(divisionData.id())
                 .stream()
                 .collect(Collectors.toMap(TeamDivisionLinkData::number,
                         Function.identity()));
-        for (int i = 1; i <= NUMBER_OF_ROUNDS; i++) {
+        for (int i = 1; i < divisionData.numberOfTeams(); i++) {
             MatchdayData matchdayData = matchdayService.createMatchday(
                     new CreateMatchdayData(divisionData.id(),
                             playingDateService.getBySeasonIdAndNumber(divisionData.seasonId(), i).date(),

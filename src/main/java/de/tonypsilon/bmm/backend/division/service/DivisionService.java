@@ -74,11 +74,15 @@ public class DivisionService {
         if(divisionCreationData.level() == null || divisionCreationData.level() < 1) {
             throw new BadDataException("Das Level der Staffel muss eine ganze Zahl > 0 sein!");
         }
+        if(!Set.of(8, 10).contains(divisionCreationData.numberOfTeams())) {
+            throw new BadDataException("Eine Staffel muss 8 oder 10 Mannschaften haben!");
+        }
         Division division = new Division();
         division.setName(divisionCreationData.name());
         division.setSeasonId(divisionCreationData.seasonId());
         division.setLevel(divisionCreationData.level());
         division.setNumberOfBoards(divisionCreationData.numberOfBoards());
+        division.setNumberOfTeams(divisionCreationData.numberOfTeams());
         divisionRepository.save(division);
         return divisionToDivisionData(
                 divisionRepository.getBySeasonIdAndName(divisionCreationData.seasonId(), divisionCreationData.name()));
@@ -114,7 +118,8 @@ public class DivisionService {
                 division.getName(),
                 division.getLevel(),
                 division.getNumberOfBoards(),
-                division.getSeasonId());
+                division.getSeasonId(),
+                division.getNumberOfTeams());
     }
 
 }

@@ -4,5 +4,6 @@ public record DivisionData(Long id,
                            String name,
                            Integer level,
                            Integer numberOfBoards,
-                           Long seasonId) {
+                           Long seasonId,
+                           Integer numberOfTeams ) {
 }

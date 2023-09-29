@@ -110,7 +110,7 @@ public class SeasonStageService {
                 .toList();
         if (!teamIdsWithoutDivision.isEmpty()) {
             throw new BmmException("Es gibt mindestens eine Mannschaft ohne Staffel: "
-                    + teamIdsWithoutDivision.toString());
+                    + teamIdsWithoutDivision);
         }
     }
 

@@ -30,33 +30,37 @@ class DivisionServiceTest {
     @BeforeEach
     void setUp() {
         this.divisionService = new DivisionService(divisionRepository, seasonService);
-        this.landesligaData = new DivisionData(1L, "Landesliga", 1, 8, 1L);
-        this.stadtligaAData = new DivisionData(2L, "Stadtliga A", 2, 8, 1L);
-        this.stadtLigaBData = new DivisionData(3L, "Stadtliga B", 2, 8, 1L);
+        this.landesligaData = new DivisionData(1L, "Landesliga", 1, 8, 1L, 10);
+        this.stadtligaAData = new DivisionData(2L, "Stadtliga A", 2, 8, 1L, 10);
+        this.stadtLigaBData = new DivisionData(3L, "Stadtliga B", 2, 8, 1L, 10);
         this.landesliga = new Division();
         this.landesliga.setId(1L);
         this.landesliga.setName("Landesliga");
         this.landesliga.setLevel(1);
         this.landesliga.setNumberOfBoards(8);
         this.landesliga.setSeasonId(1L);
+        this.landesliga.setNumberOfTeams(10);
         this.stadtligaA = new Division();
         this.stadtligaA.setId(2L);
         this.stadtligaA.setName("Stadtliga A");
         this.stadtligaA.setLevel(2);
         this.stadtligaA.setNumberOfBoards(8);
         this.stadtligaA.setSeasonId(1L);
+        this.stadtligaA.setNumberOfTeams(10);
         this.stadtLigaB = new Division();
         this.stadtLigaB.setId(3L);
         this.stadtLigaB.setName("Stadtliga B");
         this.stadtLigaB.setLevel(2);
         this.stadtLigaB.setNumberOfBoards(8);
         this.stadtLigaB.setSeasonId(1L);
+        this.stadtLigaB.setNumberOfTeams(10);
         this.divisionOfOtherSeason = new Division();
         this.divisionOfOtherSeason.setId(4L);
         this.divisionOfOtherSeason.setName("Landesliga");
         this.divisionOfOtherSeason.setLevel(1);
         this.divisionOfOtherSeason.setNumberOfBoards(8);
         this.divisionOfOtherSeason.setSeasonId(2L);
+        this.divisionOfOtherSeason.setNumberOfTeams(10);
     }
 
     @Test
@@ -97,7 +101,7 @@ class DivisionServiceTest {
         when(divisionRepository.getBySeasonIdAndName(1L, "Landesliga")).thenReturn(landesliga);
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.PREPARATION);
-        DivisionCreationData divisionCreationData = new DivisionCreationData("Landesliga", 1, 8, 1L);
+        DivisionCreationData divisionCreationData = new DivisionCreationData("Landesliga", 1, 8, 1L, 10);
         DivisionData actual = divisionService.createDivision(divisionCreationData);
         assertThat(actual).isEqualTo(landesligaData);
         verify(divisionRepository, times(1)).save(
@@ -111,17 +115,17 @@ class DivisionServiceTest {
     void testCreateDivisionNullData() {
         NameBlankException nameBlankException = assertThrows(NameBlankException.class,
                 () -> divisionService.createDivision(
-                        new DivisionCreationData("",1,8,1L)));
+                        new DivisionCreationData("",1,8,1L, 10)));
         assertThat(nameBlankException.getMessage())
                 .isEqualTo("Der Name der Staffel darf nicht leer sein!");
         NameBlankException nameNullException = assertThrows(NameBlankException.class,
                 () -> divisionService.createDivision(
-                        new DivisionCreationData(null,1,8,1L)));
+                        new DivisionCreationData(null,1,8,1L, 10)));
         assertThat(nameNullException.getMessage())
                 .isEqualTo("Der Name der Staffel darf nicht leer sein!");
         BadDataException seasonNullException = assertThrows(BadDataException.class,
                 () -> divisionService.createDivision(
-                        new DivisionCreationData("Landesliga", 1, 8 ,null)));
+                        new DivisionCreationData("Landesliga", 1, 8 ,null, 10)));
         assertThat(seasonNullException.getMessage())
                 .isEqualTo("Zur Erstellung einer Staffel muss eine Saison gegeben sein!");
     }
@@ -131,7 +135,7 @@ class DivisionServiceTest {
         when(seasonService.seasonExistsById(2L)).thenReturn(Boolean.FALSE);
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> divisionService.createDivision(
-                        new DivisionCreationData("Landesliga", 1, 8, 2L)
+                        new DivisionCreationData("Landesliga", 1, 8, 2L, 10)
                 )
         );
         assertThat(actualException.getMessage())
@@ -144,7 +148,7 @@ class DivisionServiceTest {
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.REGISTRATION);
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> divisionService.createDivision(
-                        new DivisionCreationData("Landesliga", 1, 8, 1L)
+                        new DivisionCreationData("Landesliga", 1, 8, 1L, 10)
                 )
         );
         assertThat(actualException.getMessage())
@@ -158,7 +162,7 @@ class DivisionServiceTest {
         when(divisionRepository.existsBySeasonIdAndName(1L, "Landesliga")).thenReturn(Boolean.TRUE);
         AlreadyExistsException alreadyExistsException = assertThrows(AlreadyExistsException.class,
                 () -> divisionService.createDivision(
-                        new DivisionCreationData("Landesliga", 1, 8, 1L)));
+                        new DivisionCreationData("Landesliga", 1, 8, 1L, 10)));
         assertThat(alreadyExistsException.getMessage())
                 .isEqualTo("Staffel mit Namen Landesliga für Saison mit ID 1 existiert bereits!");
     }
@@ -169,8 +173,8 @@ class DivisionServiceTest {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.PREPARATION);
 
-        DivisionCreationData divisionCreationDataNull = new DivisionCreationData("Landesliga", 1, null, 1L);
-        DivisionCreationData divisionCreationDataInvalid = new DivisionCreationData("Landesliga", 1, 0, 1L);
+        DivisionCreationData divisionCreationDataNull = new DivisionCreationData("Landesliga", 1, null, 1L, 10);
+        DivisionCreationData divisionCreationDataInvalid = new DivisionCreationData("Landesliga", 1, 0, 1L, 10);
 
         BadDataException actualExceptionNull = assertThrows(BadDataException.class,
                 () -> divisionService.createDivision(divisionCreationDataNull));
@@ -189,7 +193,7 @@ class DivisionServiceTest {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.PREPARATION);
 
-        DivisionCreationData divisionCreationData = new DivisionCreationData("Landesliga", null, 8, 1L);
+        DivisionCreationData divisionCreationData = new DivisionCreationData("Landesliga", null, 8, 1L, 10);
 
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> divisionService.createDivision(divisionCreationData));
