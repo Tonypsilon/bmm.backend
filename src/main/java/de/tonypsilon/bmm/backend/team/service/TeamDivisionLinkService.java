@@ -1,5 +1,6 @@
 package de.tonypsilon.bmm.backend.team.service;
 
+import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.division.service.DivisionService;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
@@ -81,6 +82,16 @@ public class TeamDivisionLinkService {
     public Set<TeamDivisionLinkData> getByDivisionId(Long divisionId) {
         return teamDivisionLinkRepository.findByDivisionId(divisionId).stream()
                 .map(this::teamDivisionLinkToTeamDivisionLinkData)
+                .collect(Collectors.toSet());
+    }
+
+    @NonNull
+    public Set<TeamDivisionLinkData> getBySeason(Long seasonId) {
+        return divisionService.getAllDivisionsOfSeason(seasonId)
+                .stream()
+                .map(DivisionData::id)
+                .map(this::getByDivisionId)
+                .flatMap(Set::stream)
                 .collect(Collectors.toSet());
     }
 

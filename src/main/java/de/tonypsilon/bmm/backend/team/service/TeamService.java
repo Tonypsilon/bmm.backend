@@ -154,6 +154,15 @@ public class TeamService {
         return organizationService.getOrganizationById(team.getOrganizationId()).name() + " " + team.getNumber();
     }
 
+    @NonNull
+    public List<TeamData> getTeamsBySeasonId(@NonNull Long seasonId) {
+        return organizationService.getOrganizationIdsOfSeason(seasonId)
+                .stream()
+                .map(this::getTeamsOfOrganization)
+                .flatMap(List::stream)
+                .toList();
+    }
+
     private void verifyTeamNumber(TeamCreationData teamCreationData) {
         int maxTeamNumber = getMaxTeamNumberForTeamsOfOrganization(teamCreationData.organizationId());
         if (!teamCreationData.number().equals(maxTeamNumber+1)) {
