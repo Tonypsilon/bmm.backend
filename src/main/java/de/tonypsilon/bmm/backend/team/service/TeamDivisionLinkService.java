@@ -95,6 +95,13 @@ public class TeamDivisionLinkService {
                 .collect(Collectors.toSet());
     }
 
+    @Transactional
+    public void deleteBySeason(Long seasonId) {
+        divisionService.getAllDivisionsOfSeason(seasonId).stream()
+                .map(DivisionData::id)
+                .forEach(teamDivisionLinkRepository::deleteByDivisionId);
+    }
+
     @NonNull
     private TeamDivisionLink getByKey(Long teamId, Long divisionId) {
         return teamDivisionLinkRepository.findByTeamIdAndDivisionId(teamId, divisionId)

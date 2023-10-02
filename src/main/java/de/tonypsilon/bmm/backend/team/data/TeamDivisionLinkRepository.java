@@ -20,4 +20,6 @@ public interface TeamDivisionLinkRepository
     Optional<TeamDivisionLink> findByTeamId(@NonNull Long teamId);
 
     Set<TeamDivisionLink> findByDivisionId(@NonNull Long divisionId);
+
+    void deleteByDivisionId(@NonNull Long divisionId);
 }

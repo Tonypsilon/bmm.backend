@@ -152,10 +152,10 @@ public class OrganizationSetupService {
     }
 
     private boolean containsDuplicateParticipants(Collection<TeamSetupData> teams) {
-        Set<Long> duplicates = new HashSet<>();
+        Set<Long> uniqueParticipantIds = new HashSet<>();
         return teams.stream().map(TeamSetupData::participants)
                 .flatMap(List::stream)
                 .map(ParticipationEligibilityData::id)
-                .anyMatch(not(duplicates::add));
+                .anyMatch(not(uniqueParticipantIds::add));
     }
 }
