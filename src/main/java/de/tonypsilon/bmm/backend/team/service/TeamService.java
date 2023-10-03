@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -185,7 +186,9 @@ public class TeamService {
                 team.getOrganizationId(),
                 team.getNumber(),
                 team.getVenueId(),
-                team.getName(),
+                Optional.ofNullable(team.getName())
+                        .orElse(organizationService.getOrganizationById(team.getOrganizationId()).name()
+                                + " " + team.getNumber()),
                 team.getCaptainUsername());
     }
 
