@@ -924,3 +924,13 @@ databaseChangeLog:
               - column:
                   name: number_of_teams
                   type: int
+  - changeSet:
+      id: 38
+      author: Tonypsilon
+      changes:
+        - dropColumn:
+            tableName: match_
+            columnName: home_team_points
+        - dropColumn:
+            tableName: match_
+            columnName: away_team_points

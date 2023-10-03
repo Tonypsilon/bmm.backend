@@ -36,7 +36,7 @@ class MatchServiceTest {
     		mock(TeamDivisionLinkService.class);
     private final ValidationService validationService = new ValidationService();
     private final MatchData matchData1 = new MatchData(1L, 1L, 1L, 2L, Optional.of("1.1.2001"),
-            2, 0, Optional.empty(), Optional.empty(), Optional.of(1L), Optional.empty(), MatchState.OPEN);
+            Optional.empty(), Optional.empty(), Optional.of(1L), Optional.empty(), MatchState.OPEN);
     private final MatchdayData matchdayData = new MatchdayData(1L, 2L, "1.1.2000", 3);
     private Match match1;
 
@@ -55,8 +55,6 @@ class MatchServiceTest {
         match1.setHomeTeamId(1L);
         match1.setAwayTeamId(2L);
         match1.setDate("1.1.2001");
-        match1.setHomeTeamPoints(2);
-        match1.setAwayTeamPoints(0);
         match1.setOverruledHomeBoardHalfPoints(null);
         match1.setOverruledAwayBoardHalfPoints(null);
         match1.setRefereeId(1L);

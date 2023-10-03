@@ -26,12 +26,6 @@ public class Match {
     @Column
     private String date;
 
-    @Column(name = "home_team_points", nullable = false)
-    private Integer homeTeamPoints;
-
-    @Column(name = "away_team_points", nullable = false)
-    private Integer awayTeamPoints;
-
     @Column(name = "venue_id")
     private Long venueId;
 
@@ -99,24 +93,6 @@ public class Match {
 
     public void setDate(@Nullable String date) {
         this.date = date;
-    }
-
-    @NonNull
-    public Integer getHomeTeamPoints() {
-        return homeTeamPoints;
-    }
-
-    public void setHomeTeamPoints(@NonNull Integer homeTeamPoints) {
-        this.homeTeamPoints = homeTeamPoints;
-    }
-
-    @NonNull
-    public Integer getAwayTeamPoints() {
-        return awayTeamPoints;
-    }
-
-    public void setAwayTeamPoints(@NonNull Integer awayTeamPoints) {
-        this.awayTeamPoints = awayTeamPoints;
     }
 
     @NonNull

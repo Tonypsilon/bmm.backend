@@ -88,8 +88,6 @@ public class MatchService {
         match.setAwayTeamId(matchCreationData.awayTeamId());
         Optional.ofNullable(matchCreationData.date()).ifPresent(match::setDate);
         Optional.ofNullable(matchCreationData.refereeId()).ifPresent(match::setRefereeId);
-        match.setHomeTeamPoints(0);
-        match.setAwayTeamPoints(0);
         match.setState(MatchState.OPEN);
 
         matchRepository.save(match);
@@ -124,8 +122,6 @@ public class MatchService {
                 match.getHomeTeamId(),
                 match.getAwayTeamId(),
                 match.getDate(),
-                match.getHomeTeamPoints(),
-                match.getAwayTeamPoints(),
                 match.getOverruledHomeBoardHalfPoints(),
                 match.getOverruledAwayBoardHalfPoints(),
                 match.getRefereeId(),

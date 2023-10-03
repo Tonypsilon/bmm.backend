@@ -36,10 +36,10 @@ class GameServiceTest {
     private final Long awayTeamId = 4L;
     private final GameCreationData creationData = new GameCreationData(matchId, 1,
             homeParticipantId, awayParticipantId,
-            Optional.of(Result.WIN),Optional.empty(),
-            Optional.of(Result.LOSS),Optional.empty());
+            Result.WIN, null,
+            Result.LOSS,null);
     private final MatchData matchData = new MatchData(matchId, 5L, homeTeamId, awayTeamId, Optional.empty(),
-            5, 3, Optional.empty(), Optional.empty(), Optional.empty(), null, MatchState.OPEN);
+             Optional.empty(), Optional.empty(), Optional.empty(), null, MatchState.OPEN);
     private Game game;
 
     @BeforeEach
@@ -89,8 +89,8 @@ class GameServiceTest {
     void testCreateGameInvalidBoardNumber(int boardNumber) {
         GameCreationData creationData = new GameCreationData(matchId, boardNumber,
                 homeParticipantId, awayParticipantId,
-                Optional.of(Result.WIN),Optional.empty(),
-                Optional.of(Result.LOSS),Optional.empty());
+                Result.WIN, null,
+                Result.LOSS, null);
         when(matchService.getMatchDataById(2L)).thenReturn(matchData);
         when(participantService.getParticipantById(homeParticipantId))
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
@@ -121,8 +121,8 @@ class GameServiceTest {
     void testCreateGameNullBoardNumber() {
         GameCreationData creationData = new GameCreationData(matchId, null,
                 homeParticipantId, awayParticipantId,
-                Optional.of(Result.WIN),Optional.empty(),
-                Optional.of(Result.LOSS),Optional.empty());
+                Result.WIN, null,
+                Result.LOSS, null);
         when(matchService.getMatchDataById(2L)).thenReturn(matchData);
         when(participantService.getParticipantById(homeParticipantId))
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
