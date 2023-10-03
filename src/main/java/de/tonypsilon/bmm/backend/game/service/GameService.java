@@ -8,11 +8,13 @@ import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
+import liquibase.pro.packaged.G;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -60,7 +62,15 @@ public class GameService {
                     "Es gibt für den Mannschaftskampf mit der ID %d bereits ein Spiel für Brett Nummer %d!"
                             .formatted(gameCreationData.matchId(), gameCreationData.boardNumber()));
         }
-
+        Game game = new Game();
+        game.setMatchId(gameCreationData.matchId());
+        game.setBoardNumber(gameCreationData.boardNumber());
+        game.setHomeParticipantId(gameCreationData.homeParticipantId());
+        game.setAwayParticipantId(gameCreationData.awayParticipantId());
+        Optional.ofNullable(gameCreationData.playedResultHome()).ifPresent(game::setPlayedResultHome);
+        Optional.ofNullable(gameCreationData.overruledResultHome()).ifPresent(game::setOverruledResultHome);
+        Optional.ofNullable(gameCreationData.playedResultAway()).ifPresent(game::setPlayedResultAway);
+        Optional.ofNullable(gameCreationData.overruledResultAway()).ifPresent(game::setOverruledResultAway);
         return gameToGameData(gameRepository.getByMatchIdAndBoardNumber(gameCreationData.matchId(), gameCreationData.boardNumber()));
     }
 

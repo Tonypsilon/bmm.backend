@@ -76,18 +76,18 @@ public class MatchService {
                         matchCreationData.matchdayId(), matchCreationData.awayTeamId()))) {
             throw new AlreadyExistsException("Die Gastmannschaft hat an diesem Spieltag schon einen Wettkampf!");
         }
-        matchCreationData.date().ifPresent(validationService::validateDateString);
+        Optional.ofNullable(matchCreationData.date()).ifPresent(validationService::validateDateString);
         Long seasonId = divisionService.getSeasonIdByDivisionId(matchdayData.divisionId());
         if (SeasonStage.PREPARATION != matchdayService.getSeasonStageOfMatchday(matchCreationData.matchdayId())) {
             throw new SeasonStageException("Die Saison ist nicht in der Vorbereitungsphase!");
         }
-        matchCreationData.refereeId().ifPresent(refereeId -> verifyRefereeId(refereeId, seasonId));
+        Optional.ofNullable(matchCreationData.refereeId()).ifPresent(refereeId -> verifyRefereeId(refereeId, seasonId));
         Match match = new Match();
         match.setMatchdayId(matchCreationData.matchdayId());
         match.setHomeTeamId(matchCreationData.homeTeamId());
         match.setAwayTeamId(matchCreationData.awayTeamId());
-        matchCreationData.date().ifPresent(match::setDate);
-        matchCreationData.refereeId().ifPresent(match::setRefereeId);
+        Optional.ofNullable(matchCreationData.date()).ifPresent(match::setDate);
+        Optional.ofNullable(matchCreationData.refereeId()).ifPresent(match::setRefereeId);
         match.setHomeTeamPoints(0);
         match.setAwayTeamPoints(0);
         match.setState(MatchState.OPEN);

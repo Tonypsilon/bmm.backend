@@ -67,8 +67,8 @@ public class SeasonStartService {
                 matchService.createMatch(new MatchCreationData(matchdayData.id(),
                         teamsOfDivisionByNumber.get(pairing.home()).teamId(),
                         teamsOfDivisionByNumber.get(pairing.away()).teamId(),
-                        Optional.empty(),
-                        Optional.empty()));
+                        null,
+                        null));
             }
         }
     }
