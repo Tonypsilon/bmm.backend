@@ -67,6 +67,8 @@ public class VenueController {
          Objects.requireNonNull(venueDataForClubRequestEntity);
          authorizationService.verifyUserIsClubAdminOfAnyClub(principal.getName(),
                  Set.of(Objects.requireNonNull(clubId)));
+         logger.info("User %s, PUT on /venues/club/%d, body: %s"
+                 .formatted(principal.getName(), clubId, venueDataForClubRequestEntity.getBody()));
          List<VenueData> venueDataForClub = Objects.requireNonNull(venueDataForClubRequestEntity.getBody()).stream()
                 .filter(venueData -> venueData.clubId().equals(clubId))
                 .toList();
