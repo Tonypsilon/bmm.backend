@@ -7,6 +7,7 @@ import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.referee.data.RefereeData;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
+import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
@@ -32,6 +33,7 @@ class MatchServiceTest {
     private final TeamService teamService = mock(TeamService.class);
     private final RefereeService refereeService = mock(RefereeService.class);
     private final DivisionService divisionService = mock(DivisionService.class);
+    private final SeasonService seasonService = mock(SeasonService.class);
     private final TeamDivisionLinkService teamDivisionLinkService =
     		mock(TeamDivisionLinkService.class);
     private final ValidationService validationService = new ValidationService();
@@ -48,7 +50,8 @@ class MatchServiceTest {
                 refereeService,
                 divisionService,
                 teamDivisionLinkService,
-                validationService);
+                validationService,
+                seasonService);
         match1 = new Match();
         match1.setId(1L);
         match1.setMatchdayId(1L);

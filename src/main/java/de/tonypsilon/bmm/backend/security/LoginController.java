@@ -1,6 +1,7 @@
 package de.tonypsilon.bmm.backend.security;
 
 import de.tonypsilon.bmm.backend.datatypes.IdAndLabel;
+import de.tonypsilon.bmm.backend.match.service.MatchService;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationAdminService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
@@ -8,6 +9,7 @@ import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.ClubAdminService;
 import de.tonypsilon.bmm.backend.security.rnr.service.SeasonAdminService;
 import de.tonypsilon.bmm.backend.security.rnr.service.TeamAdminService;
+import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,19 +32,22 @@ public class LoginController {
     private final TeamService teamService;
     private final OrganizationAdminService organizationAdminService;
     private final SeasonService seasonService;
+    private final MatchService matchService;
 
     public LoginController(final SeasonAdminService seasonAdminService,
                            final ClubAdminService clubAdminService,
                            final TeamAdminService teamAdminService,
                            final TeamService teamService,
                            final OrganizationAdminService organizationAdminService,
-                           final SeasonService seasonService) {
+                           final SeasonService seasonService,
+                           final MatchService matchService) {
         this.seasonAdminService = seasonAdminService;
         this.clubAdminService = clubAdminService;
         this.teamAdminService = teamAdminService;
         this.teamService = teamService;
         this.organizationAdminService = organizationAdminService;
         this.seasonService = seasonService;
+        this.matchService = matchService;
     }
 
     /**
@@ -72,21 +77,21 @@ public class LoginController {
 
                         // seasons, if user is season admin
                         authorities.contains(Roles.SEASON_ADMIN) ?
-                        seasonAdminService.getSeasonsOfSeasonAdmin(user.getName()).stream()
+                                seasonAdminService.getSeasonsOfSeasonAdmin(user.getName()).stream()
                                 .map(seasonData -> new IdAndLabel(seasonData.id(), seasonData.name()))
                                 .toList()
                                 : List.of(),
 
                         // clubs, if user is club admin
                         authorities.contains(Roles.CLUB_ADMIN) ?
-                        clubAdminService.getClubsOfClubAdmin(user.getName()).stream()
+                                clubAdminService.getClubsOfClubAdmin(user.getName()).stream()
                                 .map(clubData -> new IdAndLabel(clubData.id(), clubData.name()))
                                 .toList()
                                 : List.of(),
 
                         // organizations, if user is club admin
                         authorities.contains(Roles.CLUB_ADMIN) ?
-                        organizationAdminService.getOrganizationsOfUser(user.getName()).stream()
+                                organizationAdminService.getOrganizationsOfUser(user.getName()).stream()
                                 .filter(organizationData -> Set.of(SeasonStage.REGISTRATION, SeasonStage.PREPARATION, SeasonStage.RUNNING)
                                         .contains(seasonService.getStageOfSeason(organizationData.seasonId())))
                                 .map(organizationData -> new IdAndLabel(organizationData.id(), organizationData.name() + " - "
@@ -96,11 +101,20 @@ public class LoginController {
 
                         // teams, if user is team admin
                         authorities.contains(Roles.TEAM_ADMIN) ?
-                        teamAdminService.getTeamsOfTeamAdmin(user.getName()).stream()
+                                teamAdminService.getTeamsOfTeamAdmin(user.getName()).stream()
                                 .filter(teamData -> Set.of(SeasonStage.REGISTRATION, SeasonStage.PREPARATION, SeasonStage.RUNNING)
                                         .contains(seasonService.getStageOfSeason(teamService.getSeasonIdByTeamId(teamData.id()))))
                                 .map(teamData -> new IdAndLabel(teamData.id(), teamService.getNameOfTeam(teamData.id())))
                                 .toList()
+                                : List.of(),
+
+                        // matches, if user is team admin
+                        authorities.contains(Roles.TEAM_ADMIN) ?
+                                teamAdminService.getTeamsOfTeamAdmin(user.getName()).stream()
+                                        .map(TeamData::id)
+                                        .map(matchService::getMatchInfosOfOpenMatchesForTeam)
+                                        .flatMap(List::stream)
+                                        .toList()
                                 : List.of()
                 )
         );

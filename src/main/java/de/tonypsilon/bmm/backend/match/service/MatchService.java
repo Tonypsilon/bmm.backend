@@ -1,5 +1,6 @@
 package de.tonypsilon.bmm.backend.match.service;
 
+import de.tonypsilon.bmm.backend.datatypes.IdAndLabel;
 import de.tonypsilon.bmm.backend.division.service.DivisionService;
 import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.match.data.*;
@@ -7,6 +8,7 @@ import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.referee.data.RefereeData;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
+import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
@@ -30,6 +32,7 @@ public class MatchService {
     private final DivisionService divisionService;
     private final TeamDivisionLinkService teamDivisionLinkService;
     private final ValidationService validationService;
+    private final SeasonService seasonService;
 
     public MatchService(final MatchRepository matchRepository,
                         final MatchdayService matchdayService,
@@ -37,7 +40,8 @@ public class MatchService {
                         final RefereeService refereeService,
                         final DivisionService divisionService,
                         final TeamDivisionLinkService teamDivisionLinkService,
-                        final ValidationService validationService) {
+                        final ValidationService validationService,
+                        final SeasonService seasonService) {
         this.matchRepository = matchRepository;
         this.matchdayService = matchdayService;
         this.teamService = teamService;
@@ -45,6 +49,7 @@ public class MatchService {
         this.divisionService = divisionService;
         this.teamDivisionLinkService = teamDivisionLinkService;
         this.validationService = validationService;
+        this.seasonService = seasonService;
     }
 
     @Transactional
@@ -147,5 +152,23 @@ public class MatchService {
                         SeasonStage.RUNNING == matchdayService.getSeasonStageOfMatchday(match.getMatchdayId()))
                 .map(this::matchToMatchData)
                 .collect(Collectors.toSet());
+    }
+
+    @NonNull
+    public List<IdAndLabel> getMatchInfosOfOpenMatchesForTeam(@NonNull Long teamId) {
+        return getAllOpenMatchesOfRunningSeasons().stream()
+                .filter(matchData -> matchData.homeTeamId().equals(teamId) || matchData.awayTeamId().equals(teamId))
+                .sorted(Comparator.comparingInt(matchData ->
+                        matchdayService.getMatchdayDataById(matchData.matchdayId()).round()))
+                .map(matchData -> new IdAndLabel(matchData.id(), getLabelOfMatch(matchData)))
+                .toList();
+    }
+
+    @NonNull
+    private String getLabelOfMatch(@NonNull MatchData matchData) {
+        MatchdayData matchdayData = matchdayService.getMatchdayDataById(matchData.matchdayId());
+        return seasonService.getSeasonById(
+                divisionService.getSeasonIdByDivisionId(matchdayData.divisionId()))
+                .name();
     }
 }

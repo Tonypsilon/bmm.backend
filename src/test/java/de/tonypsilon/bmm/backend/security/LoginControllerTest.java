@@ -3,6 +3,7 @@ package de.tonypsilon.bmm.backend.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tonypsilon.bmm.backend.club.data.ClubData;
 import de.tonypsilon.bmm.backend.datatypes.IdAndLabel;
+import de.tonypsilon.bmm.backend.match.service.MatchService;
 import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationAdminService;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
@@ -53,6 +54,9 @@ class LoginControllerTest {
 
     @MockBean
     private SeasonService seasonService;
+
+    @MockBean
+    private MatchService matchService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

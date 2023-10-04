@@ -9,5 +9,6 @@ public record AuthenticationResponse(String username,
                                      List<IdAndLabel> seasons,
                                      List<IdAndLabel> clubs,
                                      List<IdAndLabel> organizations,
-                                     List<IdAndLabel> teams) {
+                                     List<IdAndLabel> teams,
+                                     List<IdAndLabel> matches) {
 }
