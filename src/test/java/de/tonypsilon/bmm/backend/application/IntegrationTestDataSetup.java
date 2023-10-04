@@ -30,4 +30,22 @@ public class IntegrationTestDataSetup {
 
     }
 
+    @Test
+    @Disabled
+    @Sql(scripts = {"classpath:clear-all-tables.sql",
+            "classpath:integrationtest-preparation-with-dates-and-divisions.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void preparationPhaseWithDatesAndDivisions() {
+
+    }
+
+    @Test
+    @Disabled
+    @Sql(scripts = {"classpath:clear-all-tables.sql",
+            "classpath:integrationtest-end-preparation-phase.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void endPreparationPhase() {
+
+    }
+
 }
