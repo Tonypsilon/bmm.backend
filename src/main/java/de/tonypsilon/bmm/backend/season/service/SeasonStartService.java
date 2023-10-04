@@ -64,11 +64,14 @@ public class SeasonStartService {
                             i));
             List<Pairing> pairingsOfRound = pairingTable.getPairingsOfRound(i);
             for (Pairing pairing : pairingsOfRound) {
-                matchService.createMatch(new MatchCreationData(matchdayData.id(),
-                        teamsOfDivisionByNumber.get(pairing.home()).teamId(),
-                        teamsOfDivisionByNumber.get(pairing.away()).teamId(),
-                        null,
-                        null));
+                if (teamsOfDivisionByNumber.get(pairing.home()) != null
+                        && teamsOfDivisionByNumber.get(pairing.away()) != null) {
+                    matchService.createMatch(new MatchCreationData(matchdayData.id(),
+                            teamsOfDivisionByNumber.get(pairing.home()).teamId(),
+                            teamsOfDivisionByNumber.get(pairing.away()).teamId(),
+                            null,
+                            null));
+                }
             }
         }
     }
