@@ -15,7 +15,7 @@ public class IntegrationTestDataSetup {
     @Test
     @Disabled
     @Sql(scripts = {"classpath:clear-all-tables.sql",
-            "classpath:integrationtest-begin-preparation-phase-data.sql"},
+            "classpath:integrationtest-begin-registration-phase-data.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void beginOfRegistrationPhase() {
 
@@ -24,7 +24,7 @@ public class IntegrationTestDataSetup {
     @Test
     @Disabled
     @Sql(scripts = {"classpath:clear-all-tables.sql",
-            "classpath:integrationtest-end-preparation-phase-data.sql"},
+            "classpath:integrationtest-end-registration-phase-data.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void endOfRegistrationPhase() {
 
