@@ -3,14 +3,19 @@ package de.tonypsilon.bmm.backend.match.facade;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.data.MatchStateChangeData;
+import de.tonypsilon.bmm.backend.match.data.RichMatchData;
+import de.tonypsilon.bmm.backend.match.service.MatchService;
 import de.tonypsilon.bmm.backend.match.service.MatchStateService;
+import de.tonypsilon.bmm.backend.match.service.RichMatchInformationAssemblyService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
+import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,18 +23,27 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
 import java.util.Objects;
+import java.util.Set;
 
 @RestController
 public class MatchController {
 
     // Match creation only happens from within the SeasonStartService.
-    // This controller is only needed to change the MatchState of a match.
 
     private final Logger logger = LoggerFactory.getLogger(MatchController.class);
     private final MatchStateService matchStateService;
+    private final AuthorizationService authorizationService;
+    private final MatchService matchService;
+    private final RichMatchInformationAssemblyService richMatchInformationAssemblyService;
 
-    public MatchController(final MatchStateService matchStateService) {
+    public MatchController(final MatchStateService matchStateService,
+                           final AuthorizationService authorizationService,
+                           final MatchService matchService,
+                           final RichMatchInformationAssemblyService richMatchInformationAssemblyService) {
         this.matchStateService = matchStateService;
+        this.authorizationService = authorizationService;
+        this.matchService = matchService;
+        this.richMatchInformationAssemblyService = richMatchInformationAssemblyService;
     }
 
     @RolesAllowed({Roles.SEASON_ADMIN, Roles.CLUB_ADMIN, Roles.TEAM_ADMIN})
@@ -47,6 +61,18 @@ public class MatchController {
         }
         return ResponseEntity
                 .ok(matchStateService.changeMatchState(matchId, changeData.state(), principal.getName()));
+    }
+
+    @RolesAllowed(Roles.TEAM_ADMIN)
+    @GetMapping(value = "/matches/{matchId}/info")
+    public ResponseEntity<RichMatchData> getRichMatchInformation(Principal principal,
+                                                                 @PathVariable Long matchId) {
+        Objects.requireNonNull(matchId);
+        MatchData matchData = matchService.getMatchDataById(matchId);
+        authorizationService.verifyUserIsTeamAdminOfAnyTeam(principal.getName(),
+                Set.of(matchData.homeTeamId(), matchData.awayTeamId()));
+        return ResponseEntity
+                .ok(richMatchInformationAssemblyService.assembleRichMatchData(matchId));
     }
 
 }

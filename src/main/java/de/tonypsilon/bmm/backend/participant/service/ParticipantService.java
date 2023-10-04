@@ -145,6 +145,13 @@ public class ParticipantService {
     }
 
     @NonNull
+    @Transactional
+    public String getCodeOfParticipant(Long participantId) {
+        ParticipantData participant = getParticipantById(participantId);
+        return "" + teamService.getTeamDataById(participant.teamId()).number() + participant.number();
+    }
+
+    @NonNull
     public List<ParticipantData> getParticipantsOfTeamOrderedByNumberAsc(Long teamId) {
         return participantRepository.getByTeamIdOrderByNumberAsc(teamId).stream()
                 .map(this::participantToParticipantData)

@@ -135,6 +135,11 @@ public class MatchdayService {
         return divisionService.getNumberOfBoardsByDivisionId(getById(matchdayId).getDivisionId());
     }
 
+    @NonNull
+    public Long getSeasonIdForMatchday(@NonNull Long matchdayId) {
+        return divisionService.getSeasonIdByDivisionId(getById(matchdayId).getDivisionId());
+    }
+
     private void verifyRoundNumberCreation(Long divisionId, Integer round) {
         List<Integer> currentRounds = getRoundsForDivision(divisionId);
         // TODO check if rounds are valid sequence.

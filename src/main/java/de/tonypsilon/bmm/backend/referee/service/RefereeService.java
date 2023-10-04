@@ -106,6 +106,19 @@ public class RefereeService {
     }
 
     @NonNull
+    public RefereeData getById(@NonNull Long refereeId) {
+        return this.findById(refereeId).orElseThrow(() ->
+                new NotFoundException("Es gibt keinen Schiedsrichter mit der ID %d".formatted(refereeId)));
+    }
+
+    @NonNull
+    public List<RefereeData> findBySeasonId(@NonNull Long seasonId) {
+        return refereeRepository.findBySeasonIdOrderBySurnameAsc(seasonId).stream()
+                .map(this::refereeToRefereeData)
+                .toList();
+    }
+
+    @NonNull
     private RefereeData refereeToRefereeData(@NonNull Referee referee) {
         return new RefereeData(referee.getId(),
                 referee.getSeasonId(),

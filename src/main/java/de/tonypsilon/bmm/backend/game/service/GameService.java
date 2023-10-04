@@ -18,6 +18,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -112,6 +113,14 @@ public class GameService {
         return gameRepository.findById(gameId)
                 .orElseThrow(() -> new NotFoundException("Es gibt keine Begegnung mit der ID %d!"
                         .formatted(gameId)));
+    }
+
+    @Transactional
+    @NonNull
+    public List<GameData> getByMatchId(@NonNull Long matchId) {
+        return gameRepository.findByMatchIdOrderByBoardNumberAsc(matchId).stream()
+                .map(this::gameToGameData)
+                .toList();
     }
 
     private void verifyPlayerMatchesTeam(ParticipantData participantData, Long teamId) {

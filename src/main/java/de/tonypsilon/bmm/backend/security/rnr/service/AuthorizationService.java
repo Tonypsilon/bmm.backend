@@ -124,6 +124,13 @@ public class AuthorizationService {
                         .collect(Collectors.toSet()));
     }
 
-
+    @Transactional
+    public void verifyUserIsTeamAdminOfAnyTeam(@NonNull String username, @NonNull Set<Long> teamIds) {
+        if(teamAdminService.getTeamsOfTeamAdmin(username).stream()
+                .map(TeamData::id)
+                .noneMatch(teamIds::contains)) {
+            throw new AccessDeniedException("%s hat nicht ausreichend Mannschaftsadministrationsrechte!");
+        }
+    }
 
 }
