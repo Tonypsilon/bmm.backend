@@ -167,8 +167,12 @@ public class MatchService {
     @NonNull
     private String getLabelOfMatch(@NonNull MatchData matchData) {
         MatchdayData matchdayData = matchdayService.getMatchdayDataById(matchData.matchdayId());
-        return seasonService.getSeasonById(
+        String seasonName =  seasonService.getSeasonById(
                 divisionService.getSeasonIdByDivisionId(matchdayData.divisionId()))
                 .name();
+        return seasonName + " - R" + matchdayData.round() + " - "
+                + teamService.getNameOfTeam(matchData.homeTeamId())
+                + " : "
+                + teamService.getNameOfTeam(matchData.awayTeamId());
     }
 }
