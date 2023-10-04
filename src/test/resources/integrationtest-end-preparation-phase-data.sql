@@ -826,3 +826,9 @@ INSERT INTO bmmtest.participant (id, team_id, participation_eligibility_id, numb
 INSERT INTO bmmtest.participant (id, team_id, participation_eligibility_id, number) VALUES (4326, 534, 326, 8);
 INSERT INTO bmmtest.participant (id, team_id, participation_eligibility_id, number) VALUES (4327, 534, 325, 9);
 INSERT INTO bmmtest.participant (id, team_id, participation_eligibility_id, number) VALUES (4328, 534, 327, 10);
+
+insert into referee(id, season_id, forename, surname, email_address)
+values
+    (1, 1, 'Liselotte', 'Müller', 'liselottemueller@test.de'),
+    (2, 1, 'Peter', 'Schmidt', 'peterschmidt@test.de'),
+    (3, 1, 'Harald', 'Luther', 'haraldluther@test.de');
