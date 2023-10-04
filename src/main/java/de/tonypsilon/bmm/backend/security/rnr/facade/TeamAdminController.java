@@ -78,7 +78,7 @@ public class TeamAdminController {
     }
 
     @RolesAllowed(Roles.CLUB_ADMIN)
-    @GetMapping(value = "/organization/{organizationId}/teams", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/organizations/{organizationId}/teams", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<IdAndLabel>> getAvailableTeams(Principal principal,
                                                               @PathVariable Long organizationId) {
         authorizationService.verifyUserIsClubAdminOfOrganization(
