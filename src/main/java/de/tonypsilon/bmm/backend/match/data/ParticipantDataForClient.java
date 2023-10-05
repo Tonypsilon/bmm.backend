@@ -1,6 +1,7 @@
 package de.tonypsilon.bmm.backend.match.data;
 
-public record ParticipantDataForClient(String code,
+public record ParticipantDataForClient(Long id,
+                                       String code,
                                        String forename,
                                        String surname,
                                        Integer dwz) {

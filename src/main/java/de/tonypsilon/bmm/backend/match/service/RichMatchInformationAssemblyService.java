@@ -100,6 +100,7 @@ public class RichMatchInformationAssemblyService {
                 participationEligibilityService.getParticipationEligibilityById(
                         participantData.participationEligibilityId());
         return new ParticipantDataForClient(
+                participantData.id(),
                 participantService.getCodeOfParticipant(participantData.id()),
                 participationEligibilityData.forename(),
                 participationEligibilityData.surname(),
