@@ -3,6 +3,7 @@ package de.tonypsilon.bmm.backend.team.data;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 
 public interface TeamRepository extends JpaRepository<Team, Long> {
@@ -12,4 +13,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     Set<Team> findByOrganizationId(Long organizationId);
 
     Set<Team> findByOrganizationIdIn(Set<Long> organizationIds);
+
+    Optional<Team> findByOrganizationIdAndNumber(Long organizationId, Integer number);
 }

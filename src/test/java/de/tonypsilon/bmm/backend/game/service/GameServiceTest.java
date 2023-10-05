@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,6 +35,11 @@ class GameServiceTest {
     private final Long awayParticipantId = 2L;
     private final Long homeTeamId = 3L;
     private final Long awayTeamId = 4L;
+
+    private final ParticipantData homeParticipant = new ParticipantData(
+            homeParticipantId, homeTeamId, 1L, 1);
+    private final ParticipantData awayParticipant = new ParticipantData(
+            awayParticipantId, awayTeamId, 1L, 1);
     private final GameCreationData creationData = new GameCreationData(matchId, 1,
             homeParticipantId, awayParticipantId,
             Result.WIN, null,
@@ -65,6 +71,7 @@ class GameServiceTest {
         when(matchService.getMatchDataById(2L)).thenReturn(matchData);
         when(participantService.getParticipantById(homeParticipantId))
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId +1, homeParticipantId, 3));
+        when(participantService.getParticipantsEligibleForTeam(homeTeamId)).thenReturn(List.of());
         when(matchdayService.getSeasonStageOfMatchday(5L)).thenReturn(SeasonStage.RUNNING);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> gameService.createGame(creationData));
@@ -78,6 +85,8 @@ class GameServiceTest {
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
                 .thenReturn(new ParticipantData(awayParticipantId, awayTeamId +1, awayParticipantId, 3));
+        when(participantService.getParticipantsEligibleForTeam(homeTeamId)).thenReturn(List.of(homeParticipant));
+        when(participantService.getParticipantsEligibleForTeam(awayTeamId)).thenReturn(List.of());
         when(matchdayService.getSeasonStageOfMatchday(5L)).thenReturn(SeasonStage.RUNNING);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> gameService.createGame(creationData));
@@ -96,6 +105,8 @@ class GameServiceTest {
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
                 .thenReturn(new ParticipantData(awayParticipantId, awayTeamId, awayParticipantId, 3));
+        when(participantService.getParticipantsEligibleForTeam(homeTeamId)).thenReturn(List.of(homeParticipant));
+        when(participantService.getParticipantsEligibleForTeam(awayTeamId)).thenReturn(List.of(awayParticipant));
         when(matchdayService.getSeasonStageOfMatchday(5L)).thenReturn(SeasonStage.RUNNING);
         when(matchdayService.getNumberOfBoardsForMatchday(5L)).thenReturn(8);
         BadDataException actualException = assertThrows(BadDataException.class,
@@ -128,6 +139,8 @@ class GameServiceTest {
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
                 .thenReturn(new ParticipantData(awayParticipantId, awayTeamId, awayParticipantId, 3));
+        when(participantService.getParticipantsEligibleForTeam(homeTeamId)).thenReturn(List.of(homeParticipant));
+        when(participantService.getParticipantsEligibleForTeam(awayTeamId)).thenReturn(List.of(awayParticipant));
         when(matchdayService.getSeasonStageOfMatchday(5L)).thenReturn(SeasonStage.RUNNING);
         when(matchdayService.getNumberOfBoardsForMatchday(5L)).thenReturn(8);
         BadDataException actualException = assertThrows(BadDataException.class,
@@ -142,6 +155,8 @@ class GameServiceTest {
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
                 .thenReturn(new ParticipantData(awayParticipantId, awayTeamId, awayParticipantId, 3));
+        when(participantService.getParticipantsEligibleForTeam(homeTeamId)).thenReturn(List.of(homeParticipant));
+        when(participantService.getParticipantsEligibleForTeam(awayTeamId)).thenReturn(List.of(awayParticipant));
         when(matchdayService.getSeasonStageOfMatchday(5L)).thenReturn(SeasonStage.RUNNING);
         when(matchdayService.getNumberOfBoardsForMatchday(5L)).thenReturn(8);
         when(gameRepository.existsByMatchIdAndBoardNumber(matchId, 1)).thenReturn(Boolean.TRUE);
@@ -158,6 +173,8 @@ class GameServiceTest {
                 .thenReturn(new ParticipantData(homeParticipantId, homeTeamId, homeParticipantId, 3));
         when(participantService.getParticipantById(awayParticipantId))
                 .thenReturn(new ParticipantData(awayParticipantId, awayTeamId, awayParticipantId, 3));
+        when(participantService.getParticipantsEligibleForTeam(homeTeamId)).thenReturn(List.of(homeParticipant));
+        when(participantService.getParticipantsEligibleForTeam(awayTeamId)).thenReturn(List.of(awayParticipant));
         when(matchdayService.getSeasonStageOfMatchday(5L)).thenReturn(SeasonStage.RUNNING);
         when(matchdayService.getNumberOfBoardsForMatchday(5L)).thenReturn(8);
         when(gameRepository.existsByMatchIdAndBoardNumber(matchId, 1)).thenReturn(Boolean.FALSE);

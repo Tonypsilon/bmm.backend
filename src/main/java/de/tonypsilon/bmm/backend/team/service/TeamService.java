@@ -164,6 +164,12 @@ public class TeamService {
                 .toList();
     }
 
+    public Optional<TeamData> findFollowingTeam(@NonNull Long teamId) {
+        TeamData team = getTeamDataById(teamId);
+        return teamRepository.findByOrganizationIdAndNumber(team.organizationId(), team.number() + 1)
+                .map(this::teamToTeamData);
+    }
+
     private void verifyTeamNumber(TeamCreationData teamCreationData) {
         int maxTeamNumber = getMaxTeamNumberForTeamsOfOrganization(teamCreationData.organizationId());
         if (!teamCreationData.number().equals(maxTeamNumber+1)) {

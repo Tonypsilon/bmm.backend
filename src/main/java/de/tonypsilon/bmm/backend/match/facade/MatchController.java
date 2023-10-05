@@ -3,7 +3,9 @@ package de.tonypsilon.bmm.backend.match.facade;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.data.MatchStateChangeData;
+import de.tonypsilon.bmm.backend.match.data.PutResultsData;
 import de.tonypsilon.bmm.backend.match.data.RichMatchData;
+import de.tonypsilon.bmm.backend.match.service.MatchResultService;
 import de.tonypsilon.bmm.backend.match.service.MatchService;
 import de.tonypsilon.bmm.backend.match.service.MatchStateService;
 import de.tonypsilon.bmm.backend.match.service.RichMatchInformationAssemblyService;
@@ -15,10 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
@@ -35,15 +34,18 @@ public class MatchController {
     private final AuthorizationService authorizationService;
     private final MatchService matchService;
     private final RichMatchInformationAssemblyService richMatchInformationAssemblyService;
+    private final MatchResultService matchResultService;
 
     public MatchController(final MatchStateService matchStateService,
                            final AuthorizationService authorizationService,
                            final MatchService matchService,
-                           final RichMatchInformationAssemblyService richMatchInformationAssemblyService) {
+                           final RichMatchInformationAssemblyService richMatchInformationAssemblyService,
+                           final MatchResultService matchResultService) {
         this.matchStateService = matchStateService;
         this.authorizationService = authorizationService;
         this.matchService = matchService;
         this.richMatchInformationAssemblyService = richMatchInformationAssemblyService;
+        this.matchResultService = matchResultService;
     }
 
     @RolesAllowed({Roles.SEASON_ADMIN, Roles.CLUB_ADMIN, Roles.TEAM_ADMIN})
@@ -75,4 +77,23 @@ public class MatchController {
                 .ok(richMatchInformationAssemblyService.assembleRichMatchData(matchId));
     }
 
+    @RolesAllowed(Roles.TEAM_ADMIN)
+    @PutMapping(value = "/matches/{matchId}/results/played")
+    public ResponseEntity<RichMatchData> putPlayedResultsForMatch(
+            Principal principal,
+            @PathVariable Long matchId,
+            RequestEntity<PutResultsData> putResultsDataRequestEntity) {
+        Objects.requireNonNull(matchId);
+        PutResultsData putResultsData = Objects.requireNonNull(putResultsDataRequestEntity).getBody();
+        Objects.requireNonNull(putResultsData);
+        Objects.requireNonNull(putResultsData.games());
+        Objects.requireNonNull(putResultsData.closeMatch());
+        MatchData matchData = matchService.getMatchDataById(matchId);
+        authorizationService.verifyUserIsTeamAdminOfAnyTeam(principal.getName(),
+                Set.of(matchData.homeTeamId(), matchData.awayTeamId()));
+        logger.info("User %s, PUT on /matches/%d/results/played, body: %s"
+                .formatted(principal.getName(), matchId, putResultsData));
+        return ResponseEntity
+                .ok(matchResultService.putPlayedResultsForMatch(putResultsData, matchId));
+    }
 }

@@ -105,6 +105,11 @@ public class GameService {
     }
 
     @Transactional
+    public void deleteAllGamesFromMatch(@NonNull Long matchId) {
+        gameRepository.deleteByMatchId(matchId);
+    }
+
+    @Transactional
     public GameData getGameDataById(Long gameId) {
         return gameToGameData(getById(gameId));
     }
@@ -124,7 +129,8 @@ public class GameService {
     }
 
     private void verifyPlayerMatchesTeam(ParticipantData participantData, Long teamId) {
-        if(!participantData.teamId().equals(teamId)) {
+        if(!participantService.getParticipantsEligibleForTeam(teamId).stream().map(ParticipantData::id)
+                .toList().contains(participantData.id())) {
             throw new BadDataException("Der Spieler mit ID %d ist nicht vom Team mit ID %d!"
                     .formatted(participantData.id(), teamId));
         }

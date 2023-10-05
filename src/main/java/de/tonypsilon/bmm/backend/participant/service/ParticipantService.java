@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 @Service
 public class ParticipantService {
@@ -148,8 +148,11 @@ public class ParticipantService {
     @Transactional
     public String getCodeOfParticipant(Long participantId) {
         ParticipantData participant = getParticipantById(participantId);
-        String leadingZero = participant.number()<10 ? "0" : "";
-        return "" + teamService.getTeamDataById(participant.teamId()).number() + leadingZero + participant.number();
+        TeamData teamData = teamService.getTeamDataById(participant.teamId());
+        String leadingZeroTeams = teamData.number() <10 ? "0" : "";
+        String leadingZeroParticipants = participant.number()<10 ? "0" : "";
+        return leadingZeroTeams + teamData.number()
+                + leadingZeroParticipants + participant.number();
     }
 
     @NonNull
@@ -157,6 +160,17 @@ public class ParticipantService {
         return participantRepository.getByTeamIdOrderByNumberAsc(teamId).stream()
                 .map(this::participantToParticipantData)
                 .toList();
+    }
+
+    @NonNull
+    public List<ParticipantData> getParticipantsEligibleForTeam(Long teamId) {
+        List<ParticipantData> eligibleParticipants = getParticipantsOfTeamOrderedByNumberAsc(teamId);
+        Optional<TeamData> followingTeam = teamService.findFollowingTeam(teamId);
+        followingTeam.ifPresent(teamData -> eligibleParticipants.addAll(
+                getParticipantsEligibleForTeam(teamData.id()).stream()
+                        .filter(participantData -> participantData.number() <= 16)
+                        .toList()));
+        return eligibleParticipants;
     }
 
     private void validateParticipantsNumbersOfTeam(Long teamId) {
