@@ -3,6 +3,7 @@ package de.tonypsilon.bmm.backend.match.service;
 import com.google.common.collect.Comparators;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.game.data.GameCreationData;
+import de.tonypsilon.bmm.backend.game.data.GameData;
 import de.tonypsilon.bmm.backend.game.service.GameService;
 import de.tonypsilon.bmm.backend.match.data.*;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
@@ -88,6 +89,13 @@ public class MatchResultService {
         }
         matchService.assignReferee(matchId, refereeData);
         if(Boolean.TRUE.equals(putResultsData.closeMatch())) {
+            if (putResultsData.games().stream()
+                    .map(GameDataForClient::result)
+                    .map(ResultDataForClient::label)
+                    .anyMatch("?:?"::equals)) {
+                throw new BadDataException(
+                        "Es müssen alle Ergebnisse gegeben sein, damit der Wettkampf geschlossen werden kann!");
+            }
             matchService.changeMatchState(matchId, MatchState.CLOSED);
         }
         return richMatchInformationAssemblyService.assembleRichMatchData(matchId);

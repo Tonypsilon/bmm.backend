@@ -25,16 +25,20 @@ public class Game {
     private Long awayParticipantId;
 
     @Column(name = "played_result_home")
-    private String playedResultHome;
+    @Enumerated(EnumType.STRING)
+    private Result playedResultHome;
 
     @Column(name = "overruled_result_home")
-    private String overruledResultHome;
+    @Enumerated(EnumType.STRING)
+    private Result overruledResultHome;
 
     @Column(name = "played_result_away")
-    private String playedResultAway;
+    @Enumerated(EnumType.STRING)
+    private Result playedResultAway;
 
     @Column(name = "overruled_result_away")
-    private String overruledResultAway;
+    @Enumerated(EnumType.STRING)
+    private Result overruledResultAway;
 
     public Long getId() {
         return id;
@@ -77,48 +81,34 @@ public class Game {
     }
 
     public Optional<Result> getPlayedResultHome() {
-        if (playedResultHome == null) {
-            return Optional.empty();
-        }
-        return Optional.of(Result.valueOf(playedResultHome));
+        return Optional.ofNullable(playedResultHome);
     }
 
     public void setPlayedResultHome(Result playedResultHome) {
-        this.playedResultHome = Optional.ofNullable(playedResultHome)
-                .map(Result::toString)
-                .orElse(null);
+        this.playedResultHome = playedResultHome;
     }
 
     public Optional<Result> getOverruledResultHome() {
-        return Optional.ofNullable(overruledResultHome)
-                .map(Result::valueOf);
+        return Optional.ofNullable(overruledResultHome);
     }
 
     public void setOverruledResultHome(Result overruledResultHome) {
-        this.overruledResultHome = Optional.ofNullable(overruledResultHome)
-                .map(Result::toString)
-                .orElse(null);
+        this.overruledResultHome = (overruledResultHome);
     }
 
     public Optional<Result> getPlayedResultAway() {
-        return Optional.ofNullable(playedResultAway)
-                .map(Result::valueOf);
+        return Optional.ofNullable(playedResultAway);
     }
 
     public void setPlayedResultAway(Result playedResultAway) {
-        this.playedResultAway = Optional.ofNullable(playedResultAway)
-                .map(Result::toString)
-                .orElse(null);
+        this.playedResultAway = playedResultAway;
     }
 
     public Optional<Result> getOverruledResultAway() {
-        return Optional.ofNullable(overruledResultAway)
-                .map(Result::valueOf);
+        return Optional.ofNullable(overruledResultAway);
     }
 
     public void setOverruledResultAway(Result overruledResultAway) {
-        this.overruledResultAway = Optional.ofNullable(overruledResultAway)
-                .map(Result::toString)
-                .orElse(null);
+        this.overruledResultAway = overruledResultAway;
     }
 }

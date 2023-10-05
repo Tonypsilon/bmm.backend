@@ -934,3 +934,23 @@ databaseChangeLog:
         - dropColumn:
             tableName: match_
             columnName: away_team_points
+  - changeSet:
+      id: 39
+      author: Tonypsilon
+      changes:
+        - modifyDataType:
+            tableName: game
+            columnName: played_result_home
+            newDataType: varchar(32)
+        - modifyDataType:
+            tableName: game
+            columnName: overruled_result_home
+            newDataType: varchar(32)
+        - modifyDataType:
+            tableName: game
+            columnName: played_result_away
+            newDataType: varchar(32)
+        - modifyDataType:
+            tableName: game
+            columnName: overruled_result_away
+            newDataType: varchar(32)

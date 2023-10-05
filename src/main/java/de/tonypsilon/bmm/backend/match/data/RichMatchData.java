@@ -11,5 +11,5 @@ public record RichMatchData(List<ParticipantDataForClient> availableHomePlayers,
                             Integer numberOfBoards,
                             List<IdAndLabel> availableReferees,
                             IdAndLabel selectedReferee,
-                            List<GameDataForClient> results) {
+                            List<GameDataForClient> games) {
 }
