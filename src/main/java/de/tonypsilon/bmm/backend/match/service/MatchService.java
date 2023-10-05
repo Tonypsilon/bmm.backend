@@ -113,11 +113,22 @@ public class MatchService {
     }
 
     @NonNull
-    MatchData changeMatchState(@NonNull Long id, @NonNull MatchState matchState) {
-        Match match = getById(Objects.requireNonNull(id));
+    MatchData changeMatchState(@NonNull Long matchId, @NonNull MatchState matchState) {
+        Match match = getById(Objects.requireNonNull(matchId));
         match.setState(Objects.requireNonNull(matchState));
         matchRepository.save(match);
-        return getMatchDataById(id);
+        return getMatchDataById(matchId);
+    }
+
+    @NonNull
+    MatchData assignReferee(@NonNull Long matchId, @NonNull RefereeData refereeData) {
+        Match match = getById(matchId);
+        if(!matchdayService.getSeasonIdForMatchday(match.getMatchdayId()).equals(refereeData.seasonId())) {
+            throw new BadDataException("Der Schiedsrichter gehört nicht zur passenden Saison!");
+        }
+        match.setRefereeId(Objects.requireNonNull(refereeData.id()));
+        matchRepository.save(match);
+        return getMatchDataById(matchId);
     }
 
     @NonNull

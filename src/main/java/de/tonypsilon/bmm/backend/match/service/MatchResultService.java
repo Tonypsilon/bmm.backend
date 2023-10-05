@@ -7,6 +7,9 @@ import de.tonypsilon.bmm.backend.game.service.GameService;
 import de.tonypsilon.bmm.backend.match.data.*;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
+import de.tonypsilon.bmm.backend.referee.data.Referee;
+import de.tonypsilon.bmm.backend.referee.data.RefereeData;
+import de.tonypsilon.bmm.backend.referee.service.RefereeService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,17 +26,20 @@ public class MatchResultService {
     private final RichMatchInformationAssemblyService richMatchInformationAssemblyService;
     private final ParticipantService participantService;
     private final GameService gameService;
+    private final RefereeService refereeService;
 
     public MatchResultService(final MatchService matchService,
                               final MatchdayService matchdayService,
                               final RichMatchInformationAssemblyService richMatchInformationAssemblyService,
                               final ParticipantService participantService,
-                              final GameService gameService) {
+                              final GameService gameService,
+                              final RefereeService refereeService) {
         this.matchService = matchService;
         this.matchdayService = matchdayService;
         this.richMatchInformationAssemblyService = richMatchInformationAssemblyService;
         this.participantService = participantService;
         this.gameService = gameService;
+        this.refereeService = refereeService;
     }
 
     @Transactional
@@ -51,6 +57,10 @@ public class MatchResultService {
                 .equals(putResultsData.games().size())) {
             throw new BadDataException(
                     "Die Anzahl der gegebenen Teilnehmenden stimmt nicht mit der geforderten Brettanzahl überein!");
+        }
+        RefereeData refereeData = refereeService.getById(putResultsData.refereeId());
+        if(!matchdayService.getSeasonIdForMatchday(matchData.matchdayId()).equals(refereeData.seasonId())) {
+            throw new BadDataException("Der Schiedsrichter gehört nicht zur passenden Saison!");
         }
         var homeParticipantIds = putResultsData.games().stream()
                 .map(GameDataForClient::homeParticipant)
@@ -70,12 +80,13 @@ public class MatchResultService {
                     i+1,
                     homeParticipantIds.get(i),
                     awayParticipantIds.get(i),
-                    ResultLabel.toHomeResult(ResultLabel.valueOf(putResultsData.games().get(i).result().label())),
+                    ResultLabel.toHomeResult(ResultLabel.ofLabel(putResultsData.games().get(i).result().label())),
                     null,
-                    ResultLabel.toAwayResult(ResultLabel.valueOf(putResultsData.games().get(i).result().label())),
+                    ResultLabel.toAwayResult(ResultLabel.ofLabel(putResultsData.games().get(i).result().label())),
                     null
             ));
         }
+        matchService.assignReferee(matchId, refereeData);
         if(Boolean.TRUE.equals(putResultsData.closeMatch())) {
             matchService.changeMatchState(matchId, MatchState.CLOSED);
         }

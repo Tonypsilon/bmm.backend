@@ -2,6 +2,9 @@ package de.tonypsilon.bmm.backend.match.data;
 
 import de.tonypsilon.bmm.backend.game.service.Result;
 
+import java.util.Map;
+import java.util.Optional;
+
 public enum ResultLabel {
     UNKNOWN("?:?"),
     HOME_WIN("1:0"),
@@ -19,6 +22,20 @@ public enum ResultLabel {
 
     public String getLabel() {
         return this.label;
+    }
+
+    private static final Map<String, ResultLabel> ofLabel = Map.of(
+            "?:?", UNKNOWN,
+            "1:0", HOME_WIN,
+            "0:1", AWAY_WIN,
+            "½:½", DRAW,
+            "+:-", HOME_WIN_FORFEIT,
+            "-:+", AWAY_WIN_FORFEIT,
+            "-:-", BOTH_LOSE_FORFEIT
+    );
+
+    public static ResultLabel ofLabel(String label) {
+        return Optional.ofNullable(ofLabel.get(label)).orElse(UNKNOWN);
     }
 
     public static Result toHomeResult(ResultLabel resultLabel) {

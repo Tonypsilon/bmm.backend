@@ -58,7 +58,7 @@ public class GameService {
         Integer numberOfBoardsOfDivision = matchdayService.getNumberOfBoardsForMatchday(matchData.matchdayId());
         if(gameCreationData.boardNumber() == null
                 || gameCreationData.boardNumber() < 1
-                || gameCreationData.boardNumber() >= numberOfBoardsOfDivision) {
+                || gameCreationData.boardNumber() > numberOfBoardsOfDivision) {
             throw new BadDataException("Die Brettnummer ist ungültig!");
         }
 
@@ -76,6 +76,7 @@ public class GameService {
         Optional.ofNullable(gameCreationData.overruledResultHome()).ifPresent(game::setOverruledResultHome);
         Optional.ofNullable(gameCreationData.playedResultAway()).ifPresent(game::setPlayedResultAway);
         Optional.ofNullable(gameCreationData.overruledResultAway()).ifPresent(game::setOverruledResultAway);
+        gameRepository.save(game);
         return gameToGameData(gameRepository.getByMatchIdAndBoardNumber(gameCreationData.matchId(), gameCreationData.boardNumber()));
     }
 
