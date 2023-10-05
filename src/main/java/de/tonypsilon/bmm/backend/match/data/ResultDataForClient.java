@@ -1,6 +1,6 @@
 package de.tonypsilon.bmm.backend.match.data;
 
-public record ResultDataForClient(ParticipantDataForClient homeParticipant,
-                                  ParticipantDataForClient awayParticipant,
-                                  String result) {
+public record ResultDataForClient(String label,
+                                  Integer doubleHomePoints,
+                                  Integer doubleAwayPoints) {
 }

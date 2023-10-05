@@ -4,10 +4,7 @@ import de.tonypsilon.bmm.backend.datatypes.IdAndLabel;
 import de.tonypsilon.bmm.backend.game.data.GameData;
 import de.tonypsilon.bmm.backend.game.service.GameService;
 import de.tonypsilon.bmm.backend.game.service.Result;
-import de.tonypsilon.bmm.backend.match.data.MatchData;
-import de.tonypsilon.bmm.backend.match.data.ParticipantDataForClient;
-import de.tonypsilon.bmm.backend.match.data.ResultDataForClient;
-import de.tonypsilon.bmm.backend.match.data.RichMatchData;
+import de.tonypsilon.bmm.backend.match.data.*;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
@@ -80,7 +77,7 @@ public class RichMatchInformationAssemblyService {
                         refereeData.id(),
                         refereeData.surname() + ", " + refereeData.forename()))
                 .orElse(null);
-        List<ResultDataForClient> results = existingGames.stream()
+        List<GameDataForClient> results = existingGames.stream()
                 .map(this::gameDataToResultDataForClient)
                 .toList();
         return new RichMatchData(
@@ -107,13 +104,15 @@ public class RichMatchInformationAssemblyService {
                 participationEligibilityData.dwz());
     }
 
-    private ResultDataForClient gameDataToResultDataForClient(GameData gameData) {
-        return new ResultDataForClient(
+    private GameDataForClient gameDataToResultDataForClient(GameData gameData) {
+        return new GameDataForClient(
                 participantDataToParticipantDataForClient(
                         participantService.getParticipantById(gameData.homeParticipantId())),
                 participantDataToParticipantDataForClient(
                         participantService.getParticipantById(gameData.awayParticipantId())),
-                resultFromGameData(gameData));
+                new ResultDataForClient(resultFromGameData(gameData),
+                gameData.playedResultHome().map(Result::getDoubledValue).orElse(null),
+                gameData.playedResultAway().map(Result::getDoubledValue).orElse(null)));
     }
 
     private String resultFromGameData(GameData gameData) {

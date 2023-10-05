@@ -148,7 +148,8 @@ public class ParticipantService {
     @Transactional
     public String getCodeOfParticipant(Long participantId) {
         ParticipantData participant = getParticipantById(participantId);
-        return "" + teamService.getTeamDataById(participant.teamId()).number() + participant.number();
+        String leadingZero = participant.number()<10 ? "0" : "";
+        return "" + teamService.getTeamDataById(participant.teamId()).number() + leadingZero + participant.number();
     }
 
     @NonNull
