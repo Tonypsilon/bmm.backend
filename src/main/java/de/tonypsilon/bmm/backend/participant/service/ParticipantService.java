@@ -15,9 +15,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 public class ParticipantService {
@@ -165,12 +164,13 @@ public class ParticipantService {
     @NonNull
     public List<ParticipantData> getParticipantsEligibleForTeam(Long teamId) {
         List<ParticipantData> eligibleParticipants = getParticipantsOfTeamOrderedByNumberAsc(teamId);
-        Optional<TeamData> followingTeam = teamService.findFollowingTeam(teamId);
-        followingTeam.ifPresent(teamData -> eligibleParticipants.addAll(
-                getParticipantsEligibleForTeam(teamData.id()).stream()
+        Optional<List<ParticipantData>> followingTeamParticipants = teamService.findFollowingTeam(teamId)
+                .map(teamData -> getParticipantsOfTeamOrderedByNumberAsc(teamData.id()).stream()
                         .filter(participantData -> participantData.number() <= 16)
-                        .toList()));
-        return eligibleParticipants;
+                        .toList());
+        return Stream.of(eligibleParticipants, followingTeamParticipants.orElse(Collections.emptyList()))
+                .flatMap(List::stream)
+                .toList();
     }
 
     private void validateParticipantsNumbersOfTeam(Long teamId) {
