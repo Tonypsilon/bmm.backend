@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -40,11 +41,11 @@ public class DivisionController {
     }
 
     @GetMapping(value = "/divisions/{seasonName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SortedSetMultimap<Integer, DivisionData>> getAllDivisionsOfNonArchivedSeasonByLevel(
+    public ResponseEntity<List<DivisionData>> getAllDivisionsOfNonArchivedSeasonByLevel(
             @PathVariable String seasonName) {
         Long seasonId = seasonService.getSeasonByName(seasonName).id();
         return ResponseEntity.ok(
-                divisionService.getAllDivisionsOfSeasonByLevel(seasonId)
+                divisionService.getAllDivisionsOfSeason(seasonId)
         );
     }
 

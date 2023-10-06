@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,10 +43,11 @@ public class DivisionService {
     }
 
     @NonNull
-    public Set<DivisionData> getAllDivisionsOfSeason(@NonNull Long seasonId) {
+    public List<DivisionData> getAllDivisionsOfSeason(@NonNull Long seasonId) {
         return divisionRepository.findBySeasonId(seasonId).stream()
                 .map(this::divisionToDivisionData)
-                .collect(Collectors.toSet());
+                .sorted(Comparator.comparingInt(DivisionData::level).thenComparing(DivisionData::name))
+                .toList();
     }
 
     @Transactional
