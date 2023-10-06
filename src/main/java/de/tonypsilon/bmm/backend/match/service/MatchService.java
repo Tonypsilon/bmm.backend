@@ -121,6 +121,15 @@ public class MatchService {
     }
 
     @NonNull
+    public List<MatchData> findByMatchdayId(@NonNull Long matchdayId) {
+        return matchRepository.findByMatchdayId(matchdayId).stream()
+                .sorted(Comparator.comparingLong(Match::getId)) // Should be according to pairing table at some point,
+                // for now it is just to have a stable order.
+                .map(this::matchToMatchData)
+                .toList();
+    }
+
+    @NonNull
     MatchData assignReferee(@NonNull Long matchId, @NonNull RefereeData refereeData) {
         Match match = getById(matchId);
         if(!matchdayService.getSeasonIdForMatchday(match.getMatchdayId()).equals(refereeData.seasonId())) {

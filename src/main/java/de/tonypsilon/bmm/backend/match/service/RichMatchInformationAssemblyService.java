@@ -104,7 +104,8 @@ public class RichMatchInformationAssemblyService {
                 participationEligibilityData.dwz());
     }
 
-    private GameDataForClient gameDataToResultDataForClient(GameData gameData) {
+    @NonNull
+    public GameDataForClient gameDataToResultDataForClient(@NonNull GameData gameData) {
         return new GameDataForClient(
                 participantDataToParticipantDataForClient(
                         participantService.getParticipantById(gameData.homeParticipantId())),
