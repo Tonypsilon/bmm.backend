@@ -3,6 +3,8 @@ package de.tonypsilon.bmm.backend.division.facade;
 import com.google.common.collect.SortedSetMultimap;
 import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
 import de.tonypsilon.bmm.backend.division.data.DivisionData;
+import de.tonypsilon.bmm.backend.division.data.DivisionResultsData;
+import de.tonypsilon.bmm.backend.division.service.DivisionResultsAssemblyService;
 import de.tonypsilon.bmm.backend.division.service.DivisionService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
@@ -31,13 +33,16 @@ public class DivisionController {
     private final DivisionService divisionService;
     private final SeasonService seasonService;
     private final AuthorizationService authorizationService;
+    private final DivisionResultsAssemblyService divisionResultsAssemblyService;
 
     public DivisionController(final DivisionService divisionService,
                               final SeasonService seasonService,
-                              final AuthorizationService authorizationService) {
+                              final AuthorizationService authorizationService,
+                              final DivisionResultsAssemblyService divisionResultsAssemblyService) {
         this.divisionService = divisionService;
         this.seasonService = seasonService;
         this.authorizationService = authorizationService;
+        this.divisionResultsAssemblyService = divisionResultsAssemblyService;
     }
 
     @GetMapping(value = "/divisions/{seasonName}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -62,6 +67,12 @@ public class DivisionController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(divisionService.createDivision(divisionCreationData));
+    }
+
+    @GetMapping(value = "/divisions/{divisionId}/results", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DivisionResultsData> getResultsForDivision(@PathVariable Long divisionId) {
+        return ResponseEntity
+                .ok(divisionResultsAssemblyService.assembleDivisionResults(Objects.requireNonNull(divisionId)));
     }
 
 }
