@@ -46,11 +46,11 @@ public class RichMatchInformationAssemblyService {
     public RichMatchData assembleRichMatchData(@NonNull Long matchId) {
         MatchData matchData = matchService.getMatchDataById(matchId);
         List<ParticipantDataForClient> availableHomePlayers =
-                participantService.getParticipantsOfTeamOrderedByNumberAsc(matchData.homeTeamId()).stream()
+                participantService.getParticipantsEligibleForTeam(matchData.homeTeamId()).stream()
                         .map(this::participantDataToParticipantDataForClient)
                         .toList();
         List<ParticipantDataForClient> availableAwayPlayers =
-                participantService.getParticipantsOfTeamOrderedByNumberAsc(matchData.awayTeamId()).stream()
+                participantService.getParticipantsEligibleForTeam(matchData.awayTeamId()).stream()
                         .map(this::participantDataToParticipantDataForClient)
                         .toList();
         List<GameData> existingGames = gameService.getByMatchId(matchId);
