@@ -53,6 +53,7 @@ class OrganizationServiceTest {
         newOrganization.setId(11L);
         newOrganization.setSeasonId(1L);
         newOrganization.setName("org name");
+        newOrganization.setFirstTeamNumber(1);
         newOrganization.setOrganizationMembers(Set.of(newOrganizationMember));
         newOrganizationMember.setOrganization(newOrganization);
     }
@@ -68,13 +69,13 @@ class OrganizationServiceTest {
                 .thenReturn(Set.of(existingOrganizationMember));
 
         OrganizationCreationData organizationCreationData =
-                new OrganizationCreationData(1L, "org name", Set.of(2L));
+                new OrganizationCreationData(1L, "org name", 1, Set.of(2L));
 
         when(organizationRepository.getBySeasonIdAndName(1L, "org name"))
                 .thenReturn(newOrganization);
 
         OrganizationData actual = organizationService.createOrganization(organizationCreationData);
-        assertThat(actual).isEqualTo(new OrganizationData(11L, 1L, "org name", Set.of(2L)));
+        assertThat(actual).isEqualTo(new OrganizationData(11L, 1L, "org name", 1, Set.of(2L)));
 
         verify(organizationRepository, times(1)).save(argThat(
                 organization -> organization.getName().equals("org name")
@@ -88,7 +89,7 @@ class OrganizationServiceTest {
     @Test
     void testCreateOrganizationBadName() {
         OrganizationCreationData organizationCreationData =
-                new OrganizationCreationData(1L, "", null);
+                new OrganizationCreationData(1L, "", 1, null);
         BadDataException actualException = assertThrows(BadDataException.class,
                 () -> organizationService.createOrganization(organizationCreationData));
         assertThat(actualException.getMessage())
@@ -99,7 +100,7 @@ class OrganizationServiceTest {
     void testCreateOrganizationSeasonDoesNotExist() {
         when(seasonService.seasonExistsById(2L)).thenReturn(Boolean.FALSE);
         OrganizationCreationData organizationCreationData =
-                new OrganizationCreationData(2L, "org name", null);
+                new OrganizationCreationData(2L, "org name", 1, null);
         NotFoundException actualException = assertThrows(NotFoundException.class,
                 () -> organizationService.createOrganization(organizationCreationData));
         assertThat(actualException.getMessage())
@@ -112,7 +113,7 @@ class OrganizationServiceTest {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(1L)).thenReturn(stage);
         OrganizationCreationData organizationCreationData =
-                new OrganizationCreationData(1L, "org name", null);
+                new OrganizationCreationData(1L, "org name", 1, null);
         SeasonStageException actualException = assertThrows(SeasonStageException.class,
                 () -> organizationService.createOrganization(organizationCreationData));
         assertThat(actualException.getMessage())
@@ -125,14 +126,14 @@ class OrganizationServiceTest {
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.REGISTRATION);
 
         OrganizationCreationData organizationCreationDataClubsNull =
-                new OrganizationCreationData(1L, "org name", null);
+                new OrganizationCreationData(1L, "org name", 1, null);
         BadDataException actualExceptionClubsNull = assertThrows(BadDataException.class,
                 () -> organizationService.createOrganization(organizationCreationDataClubsNull));
         assertThat(actualExceptionClubsNull.getMessage())
                 .isEqualTo("Zur Erstellung einer Organisation muss mindestens ein Verein gegeben sein!");
 
         OrganizationCreationData organizationCreationDataClubsEmpty =
-                new OrganizationCreationData(1L, "org name", Collections.emptySet());
+                new OrganizationCreationData(1L, "org name", 1, Collections.emptySet());
         BadDataException actualExceptionClubsEmpty = assertThrows(BadDataException.class,
                 () -> organizationService.createOrganization(organizationCreationDataClubsEmpty));
         assertThat(actualExceptionClubsEmpty.getMessage())
@@ -149,7 +150,7 @@ class OrganizationServiceTest {
                 .thenReturn(Set.of(existingOrganizationMember));
 
         OrganizationCreationData organizationCreationData =
-                new OrganizationCreationData(1L, "org name", Set.of(3L));
+                new OrganizationCreationData(1L, "org name", 1, Set.of(3L));
 
         AlreadyExistsException actualException = assertThrows(AlreadyExistsException.class,
                 () -> organizationService.createOrganization(organizationCreationData));

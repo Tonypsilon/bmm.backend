@@ -52,9 +52,9 @@ class OrganizationControllerTest {
     @WithMockUser(username = username, authorities = {Roles.CLUB_ADMIN})
     void testGetOrganizationsInRegistrationStageForUser() throws Exception {
         OrganizationData organizationWrongSeasonStage =
-                new OrganizationData(1L, 2L, "wrong", Set.of(4L));
+                new OrganizationData(1L, 2L, "wrong", 1, Set.of(4L));
         OrganizationData organizationRegistrationStage =
-                new OrganizationData(2L, 3L, "registration", Set.of(4L));
+                new OrganizationData(2L, 3L, "registration", 1, Set.of(4L));
         when(organizationAdminService.getOrganizationsOfUser(username))
                 .thenReturn(Set.of(organizationRegistrationStage, organizationWrongSeasonStage));
         when(seasonService.getStageOfSeason(2L)).thenReturn(SeasonStage.PREPARATION);

@@ -42,7 +42,7 @@ class OrganizationSetupServiceTest {
 
     private final Long organizationId = 1L;
     private final OrganizationData organizationData =
-            new OrganizationData(1L, 2L, "org", Set.of(3L));
+            new OrganizationData(1L, 2L, "org", 1, Set.of(3L));
 
     private final ParticipationEligibilityData p1 =
             new ParticipationEligibilityData(1L, 2L, 3L, "fore", "sur", 3, null);

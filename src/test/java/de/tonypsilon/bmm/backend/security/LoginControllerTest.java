@@ -132,7 +132,7 @@ class LoginControllerTest {
         ClubData club1 = new ClubData(1L, "club1", 2, Boolean.TRUE);
         when(clubAdminService.getClubsOfClubAdmin(username)).thenReturn(List.of(club1));
 
-        OrganizationData organization1 = new OrganizationData(2L, 3L, "theOrganization", Set.of(1L));
+        OrganizationData organization1 = new OrganizationData(2L, 3L, "theOrganization", 1, Set.of(1L));
         when(organizationAdminService.getOrganizationsOfUser(username)).thenReturn(Set.of(organization1));
         when(seasonService.getStageOfSeason(3L)).thenReturn(SeasonStage.PREPARATION);
         when(seasonService.getSeasonById(3L)).thenReturn(new SeasonData(3L, "the season", SeasonStage.PREPARATION));

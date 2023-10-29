@@ -125,14 +125,14 @@ public class ClubHelper {
         ClubData clubDataSecondClub = clubs.get(1);
         OrganizationCreationData jointOrganizationCreationData =
                 new OrganizationCreationData(seasonId,
-                        "SG %s %s".formatted(clubDataFirstClub.name(), clubDataSecondClub.name()),
+                        "SG %s %s".formatted(clubDataFirstClub.name(), clubDataSecondClub.name()), 1,
                         Set.of(clubDataFirstClub.id(), clubDataSecondClub.id()));
         organizations.add(createOrganization(jointOrganizationCreationData,
                 loginHelper.login(clubDataFirstClub)));
         for (int i = 2; i < clubs.size(); i++) {
             ClubData clubData = clubs.get(i);
             organizations.add(createOrganization(
-                    new OrganizationCreationData(seasonId, clubData.name(), Set.of(clubData.id())),
+                    new OrganizationCreationData(seasonId, clubData.name(), 1, Set.of(clubData.id())),
                     loginHelper.login(clubData)));
         }
         return organizations;

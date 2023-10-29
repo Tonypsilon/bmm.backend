@@ -49,10 +49,14 @@ public class OrganizationService {
             throw new BadDataException("Zur Erstellung einer Organisation muss mindestens ein Verein gegeben sein!");
         }
         validateClubIds(organizationCreationData.clubIds(), organizationCreationData.seasonId());
+        if(organizationCreationData.firstTeamNumber() == null || organizationCreationData.firstTeamNumber() < 1) {
+            throw new BadDataException("Die erste Mannschaftsnummer muss eine ganze Zahl größer 0 sein!");
+        }
 
         Organization organization = new Organization();
         organization.setSeasonId(organizationCreationData.seasonId());
         organization.setName(organizationCreationData.name());
+        organization.setFirstTeamNumber(organizationCreationData.firstTeamNumber());
 
         organization.setOrganizationMembers(new HashSet<>());
         organizationCreationData.clubIds()
@@ -125,6 +129,7 @@ public class OrganizationService {
         return new OrganizationData(organization.getId(),
                 organization.getSeasonId(),
                 organization.getName(),
+                organization.getFirstTeamNumber(),
                 organization.getOrganizationMembers()
                         .stream().map(OrganizationMember::getClubId).collect(Collectors.toSet()));
     }

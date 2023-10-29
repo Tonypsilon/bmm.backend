@@ -77,7 +77,7 @@ public class OrganizationSetupService {
             throw new SeasonStageException("Saison ist nicht in der Registrierungsphase!");
         }
         for (int i = 0; i < teamsSetupData.size(); i++) {
-            if(!teamsSetupData.get(i).number().equals(i+1)) {
+            if(!teamsSetupData.get(i).number().equals(i+organization.firstTeamNumber())) {
                 throw new BadDataException("Die Teamnummern passen nicht zusammen oder sind nicht sortiert!");
             }
         }

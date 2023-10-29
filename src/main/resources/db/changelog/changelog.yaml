@@ -954,3 +954,13 @@ databaseChangeLog:
             tableName: game
             columnName: overruled_result_away
             newDataType: varchar(32)
+  - changeSet:
+      id: 40
+      author: Tonypsilon
+      changes:
+        - addColumn:
+            tableName: organization
+            columns:
+              - column:
+                  name: first_team_number
+                  type: int

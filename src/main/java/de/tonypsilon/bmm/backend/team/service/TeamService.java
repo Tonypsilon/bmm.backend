@@ -184,7 +184,7 @@ public class TeamService {
                 .stream()
                 .map(Team::getNumber)
                 .max(Integer::compareTo)
-                .orElse(0);
+                .orElseGet(() -> organizationService.getOrganizationById(organizationId).firstTeamNumber()-1);
     }
 
     private TeamData teamToTeamData(Team team) {

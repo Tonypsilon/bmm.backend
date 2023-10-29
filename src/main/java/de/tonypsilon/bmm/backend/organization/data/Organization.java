@@ -18,6 +18,9 @@ public class Organization {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "first_team_number", nullable = false)
+    private Integer firstTeamNumber;
+
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
     private Set<OrganizationMember> organizationMembers;
 
@@ -46,6 +49,15 @@ public class Organization {
 
     public void setName(@NonNull String name) {
         this.name = name;
+    }
+
+    @NonNull
+    public Integer getFirstTeamNumber() {
+        return firstTeamNumber;
+    }
+
+    public void setFirstTeamNumber(@NonNull Integer firstTeamNumber) {
+        this.firstTeamNumber = firstTeamNumber;
     }
 
     @NonNull

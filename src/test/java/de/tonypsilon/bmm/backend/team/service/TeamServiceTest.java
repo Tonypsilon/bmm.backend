@@ -66,7 +66,8 @@ class TeamServiceTest {
         when(organizationService.getSeasonIdOfOrganization(1L)).thenReturn(1L);
         when(teamRepository.findByOrganizationId(1L)).thenReturn(Set.of(team1));
         when(teamRepository.getByOrganizationIdAndNumber(1L, 2)).thenReturn(team2);
-        when(organizationService.getOrganizationById(1L)).thenReturn(new OrganizationData(1L, 1L, "org", Set.of(2L)));
+        when(organizationService.getOrganizationById(1L))
+                .thenReturn(new OrganizationData(1L, 1L, "org", 1, Set.of(2L)));
         when(venueService.getClubIdByVenueId(1L)).thenReturn(2L);
         when(userService.getUserDataByUsername("captain2"))
                 .thenReturn(new UserData("captain2",
@@ -110,7 +111,8 @@ class TeamServiceTest {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.REGISTRATION);
         when(teamRepository.findByOrganizationId(1L)).thenReturn(Set.of(team1));
-        when(organizationService.getOrganizationById(1L)).thenReturn(new OrganizationData(1L, 1L, "org", Set.of(5L)));
+        when(organizationService.getOrganizationById(1L))
+                .thenReturn(new OrganizationData(1L, 1L, "org", 1, Set.of(5L)));
 
         TeamCreationData creationData = new TeamCreationData(
                 1L, 3, 1L, null, "captain");
@@ -127,7 +129,8 @@ class TeamServiceTest {
         when(seasonService.seasonExistsById(1L)).thenReturn(Boolean.TRUE);
         when(seasonService.getStageOfSeason(1L)).thenReturn(SeasonStage.REGISTRATION);
         when(teamRepository.findByOrganizationId(1L)).thenReturn(Set.of(team1));
-        when(organizationService.getOrganizationById(1L)).thenReturn(new OrganizationData(1L, 1L, "org", Set.of(2L)));
+        when(organizationService.getOrganizationById(1L))
+                .thenReturn(new OrganizationData(1L, 1L, "org", 1, Set.of(2L)));
         when(venueService.getClubIdByVenueId(1L)).thenReturn(2L);
 
         BadDataException actualException = assertThrows(BadDataException.class,
