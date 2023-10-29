@@ -5,5 +5,6 @@ import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationElig
 import java.util.List;
 
 public record OrganizationSetupData(List<ParticipationEligibilityData> availablePlayers,
-                                            List<TeamSetupData> teams) {
+                                    List<TeamSetupData> teams,
+                                    Integer firstTeamNumber) {
 }

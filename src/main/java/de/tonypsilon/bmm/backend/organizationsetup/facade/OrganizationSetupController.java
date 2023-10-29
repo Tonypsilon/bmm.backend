@@ -1,5 +1,6 @@
 package de.tonypsilon.bmm.backend.organizationsetup.facade;
 
+import de.tonypsilon.bmm.backend.organization.data.OrganizationData;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.organizationsetup.data.OrganizationSetupData;
 import de.tonypsilon.bmm.backend.organizationsetup.data.TeamSetupData;
@@ -24,7 +25,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 @RestController
 public class OrganizationSetupController {
@@ -51,16 +51,14 @@ public class OrganizationSetupController {
                                                                       @PathVariable Long organizationId) {
         authorizationService.verifyUserIsClubAdminOfOrganization(principal.getName(),
                 Objects.requireNonNull(organizationId));
-        List<ParticipationEligibilityData> availablePlayers = Stream.of(organizationId)
-                .map(organizationService::getOrganizationById)
-                .map(organizationData -> organizationData.clubIds().stream()
+        OrganizationData organizationData = organizationService.getOrganizationById(organizationId);
+        List<ParticipationEligibilityData> availablePlayers =
+                organizationData.clubIds().stream()
                         .map(clubId -> participationEligibilityService
                                 .getAllParticipationEligibilitiesForSeasonAndClub(
                                         organizationData.seasonId(), clubId))
                         .flatMap(Collection::stream)
-                        .toList())
-                .flatMap(List::stream)
-                .toList();
+                        .toList();
         List<TeamSetupData> teams = organizationSetupService.getOrganizationSetup(organizationId);
         List<ParticipationEligibilityData> participantsInTeams = teams.stream()
                 .map(TeamSetupData::participants)
@@ -71,7 +69,8 @@ public class OrganizationSetupController {
                         availablePlayers.stream()
                                 .filter(Predicate.not(participantsInTeams::contains))
                                 .toList(),
-                        teams)
+                        teams,
+                        organizationData.firstTeamNumber())
                 );
     }
 
