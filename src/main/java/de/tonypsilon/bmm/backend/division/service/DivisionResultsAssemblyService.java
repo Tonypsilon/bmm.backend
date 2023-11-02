@@ -151,6 +151,6 @@ public class DivisionResultsAssemblyService {
             case 15 -> "7,5";
             case 16 -> "8";
             default -> "0";
-        }
+        };
     }
 }
