@@ -8,5 +8,7 @@ public record MatchResultClientData(String date,
                                     String homeTeamLabel,
                                     String awayTeamLabel,
                                     String state,
-                                    List<GameDataForClient> games) {
+                                    List<GameDataForClient> games,
+                                    String homeTeamResultLabel,
+                                    String awayTeamResultLabel) {
 }

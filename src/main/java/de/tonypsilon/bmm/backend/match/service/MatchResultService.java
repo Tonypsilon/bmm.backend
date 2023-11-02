@@ -5,6 +5,7 @@ import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.game.data.GameCreationData;
 import de.tonypsilon.bmm.backend.game.data.GameData;
 import de.tonypsilon.bmm.backend.game.service.GameService;
+import de.tonypsilon.bmm.backend.game.service.Result;
 import de.tonypsilon.bmm.backend.match.data.*;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
@@ -107,5 +108,20 @@ public class MatchResultService {
                 Comparator.naturalOrder())) {
             throw new BadDataException("Die Teilnehmer sind nicht in der richtigen Reihenfolge!");
         }
+    }
+
+    @NonNull
+    public MatchResultData getSummedResultOfMatch(@NonNull Long matchId) {
+        var homeTeamHalfBoardPoints = 0;
+        var awayTeamHalfBoardPoints = 0;
+        for (GameData game : gameService.getByMatchId(matchId)) {
+            homeTeamHalfBoardPoints += game.overruledResultHome().map(Result::getDoubledValue)
+                    .orElse(game.playedResultHome().map(Result::getDoubledValue)
+                            .orElse(0));
+            awayTeamHalfBoardPoints += game.overruledResultAway().map(Result::getDoubledValue)
+                    .orElse(game.playedResultAway().map(Result::getDoubledValue)
+                            .orElse(0));
+        }
+        return new MatchResultData(homeTeamHalfBoardPoints, awayTeamHalfBoardPoints);
     }
 }

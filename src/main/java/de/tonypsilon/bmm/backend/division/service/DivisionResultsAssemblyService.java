@@ -6,12 +6,13 @@ import de.tonypsilon.bmm.backend.game.service.GameService;
 import de.tonypsilon.bmm.backend.match.data.GameDataForClient;
 import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.data.MatchResultClientData;
+import de.tonypsilon.bmm.backend.match.data.MatchResultData;
+import de.tonypsilon.bmm.backend.match.service.MatchResultService;
 import de.tonypsilon.bmm.backend.match.service.MatchService;
 import de.tonypsilon.bmm.backend.match.service.RichMatchInformationAssemblyService;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayClientData;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
-import de.tonypsilon.bmm.backend.referee.data.RefereeData;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
 import de.tonypsilon.bmm.backend.season.service.PlayingDateService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
@@ -38,6 +39,7 @@ public class DivisionResultsAssemblyService {
     private final MatchService matchService;
     private final RefereeService refereeService;
     private final RichMatchInformationAssemblyService richMatchInformationAssemblyService;
+    private final MatchResultService matchResultService;
     private final PlayingDateService playingDateService;
     private final GameService gameService;
 
@@ -50,6 +52,7 @@ public class DivisionResultsAssemblyService {
             final MatchService matchService,
             final RefereeService refereeService,
             final RichMatchInformationAssemblyService richMatchInformationAssemblyService,
+            final MatchResultService matchResultService,
             final PlayingDateService playingDateService,
             final GameService gameService) {
         this.seasonService = seasonService;
@@ -60,6 +63,7 @@ public class DivisionResultsAssemblyService {
         this.matchService = matchService;
         this.refereeService = refereeService;
         this.richMatchInformationAssemblyService = richMatchInformationAssemblyService;
+        this.matchResultService = matchResultService;
         this.playingDateService = playingDateService;
         this.gameService = gameService;
     }
@@ -102,6 +106,7 @@ public class DivisionResultsAssemblyService {
     private MatchResultClientData matchDataToMatchResultClientData(@NonNull MatchData matchData) {
         TeamData homeTeam = teamService.getTeamDataById(matchData.homeTeamId());
         TeamData awayTeam = teamService.getTeamDataById(matchData.awayTeamId());
+        MatchResultData summedResultOfMatch = matchResultService.getSummedResultOfMatch(matchData.id());
         return new MatchResultClientData(
                 matchData.date().orElse(null),
                 venueService.getVenueDataById(homeTeam.venueId()).address(),
@@ -114,7 +119,9 @@ public class DivisionResultsAssemblyService {
                 homeTeam.name(),
                 awayTeam.name(),
                 matchData.matchState().name(),
-                getGamesForMatch(matchData.id())
+                getGamesForMatch(matchData.id()),
+                getLabelForBoardHalfPoints(summedResultOfMatch.homeTeamHalfBoardPoints()),
+                getLabelForBoardHalfPoints(summedResultOfMatch.awayTeamHalfBoardPoints())
         );
     }
 
@@ -123,5 +130,27 @@ public class DivisionResultsAssemblyService {
         return gameService.getByMatchId(matchId).stream()
                 .map(richMatchInformationAssemblyService::gameDataToResultDataForClient)
                 .toList();
+    }
+
+    private String getLabelForBoardHalfPoints(int boardHalfPoints) {
+        return switch (boardHalfPoints) {
+            case 1 -> "0,5";
+            case 2 -> "1";
+            case 3 -> "1,5";
+            case 4 -> "2";
+            case 5 -> "2,5";
+            case 6 -> "3";
+            case 7 -> "3,5";
+            case 8 -> "4";
+            case 9 -> "4,5";
+            case 10 -> "5";
+            case 11 -> "5,5";
+            case 12 -> "6";
+            case 13 -> "6,5";
+            case 14 -> "7";
+            case 15 -> "7,5";
+            case 16 -> "8";
+            default -> "0";
+        }
     }
 }
