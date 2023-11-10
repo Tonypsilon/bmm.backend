@@ -119,7 +119,7 @@ public class RichMatchInformationAssemblyService {
     private String resultFromGameData(GameData gameData) {
         String home = gameData.playedResultHome().map(this::resultToString).orElse("?");
         String away = gameData.playedResultAway().map(this::resultToString).orElse("?");
-        return home + ":" + away;
+        return home + " : " + away;
     }
 
     private String resultToString(Result result) {
