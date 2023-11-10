@@ -19,6 +19,7 @@ import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
+import de.tonypsilon.bmm.backend.venue.data.VenueData;
 import de.tonypsilon.bmm.backend.venue.service.VenueService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -109,7 +110,8 @@ public class DivisionResultsAssemblyService {
         MatchResultData summedResultOfMatch = matchResultService.getSummedResultOfMatch(matchData.id());
         return new MatchResultClientData(
                 matchData.date().orElse(null),
-                venueService.getVenueDataById(homeTeam.venueId()).address(),
+                matchData.venueId().map(venueService::getVenueDataById).map(VenueData::address)
+                        .orElseGet( () -> venueService.getVenueDataById(homeTeam.venueId()).address()),
                 matchData.refereeId().stream()
                         .map(refereeService::findById)
                         .flatMap(Optional::stream)
