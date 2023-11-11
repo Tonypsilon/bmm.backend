@@ -14,6 +14,6 @@ public class BmmException extends RuntimeException {
 
 	public BmmException(String message) {
         super(message);
-        logger.warn(message);
+        logger.warn(message, this);
     }
 }
