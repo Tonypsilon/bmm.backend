@@ -93,7 +93,8 @@ public class MatchResultService {
             if (putResultsData.games().stream()
                     .map(GameDataForClient::result)
                     .map(ResultDataForClient::label)
-                    .anyMatch("?:?"::equals)) {
+                    .map(ResultLabel::ofLabel)
+                    .anyMatch(ResultLabel.UNKNOWN::equals)) {
                 throw new BadDataException(
                         "Es müssen alle Ergebnisse gegeben sein, damit der Wettkampf geschlossen werden kann!");
             }

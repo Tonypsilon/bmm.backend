@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.Optional;
 
 public enum ResultLabel {
-    UNKNOWN("?:?"),
-    HOME_WIN("1:0"),
-    AWAY_WIN("0:1"),
-    DRAW("½:½"),
-    HOME_WIN_FORFEIT("+:-"),
-    AWAY_WIN_FORFEIT("-:+"),
-    BOTH_LOSE_FORFEIT("-:-");
+    UNKNOWN("? : ?"),
+    HOME_WIN("1 : 0"),
+    AWAY_WIN("0 : 1"),
+    DRAW("½ : ½"),
+    HOME_WIN_FORFEIT("+ : -"),
+    AWAY_WIN_FORFEIT("- : +"),
+    BOTH_LOSE_FORFEIT("- : -");
 
     private final String label;
 
@@ -25,13 +25,13 @@ public enum ResultLabel {
     }
 
     private static final Map<String, ResultLabel> ofLabel = Map.of(
-            "?:?", UNKNOWN,
-            "1:0", HOME_WIN,
-            "0:1", AWAY_WIN,
-            "½:½", DRAW,
-            "+:-", HOME_WIN_FORFEIT,
-            "-:+", AWAY_WIN_FORFEIT,
-            "-:-", BOTH_LOSE_FORFEIT
+            "? : ?", UNKNOWN,
+            "1 : 0", HOME_WIN,
+            "0 : 1", AWAY_WIN,
+            "½ : ½", DRAW,
+            "+ : -", HOME_WIN_FORFEIT,
+            "- : +", AWAY_WIN_FORFEIT,
+            "- : -", BOTH_LOSE_FORFEIT
     );
 
     public static ResultLabel ofLabel(String label) {
