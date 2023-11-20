@@ -175,6 +175,16 @@ public class MatchService {
     }
 
     @NonNull
+    public Set<MatchData> findByDivision(@NonNull Long divisionId) {
+        return matchdayService.getMatchdaysOfDivisionOrderedByRound(divisionId)
+                .stream()
+                .map(MatchdayData::id)
+                .map(this::findByMatchdayId)
+                .flatMap(List::stream)
+                .collect(Collectors.toSet());
+    }
+
+    @NonNull
     public List<IdAndLabel> getMatchInfosOfOpenMatchesForTeam(@NonNull Long teamId) {
         return getAllOpenMatchesOfRunningSeasons().stream()
                 .filter(matchData -> matchData.homeTeamId().equals(teamId) || matchData.awayTeamId().equals(teamId))

@@ -95,6 +95,9 @@ public class DivisionService {
         return divisionRepository.existsById(divisionId);
     }
 
+    public void verifyDivisionExists(@NonNull Long divisionId) {
+        getById(divisionId);
+    }
 
     @NonNull
     public Long getSeasonIdByDivisionId(@NonNull Long divisionId) {

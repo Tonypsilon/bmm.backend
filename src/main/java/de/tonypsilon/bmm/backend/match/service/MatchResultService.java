@@ -125,4 +125,27 @@ public class MatchResultService {
         }
         return new MatchResultData(homeTeamHalfBoardPoints, awayTeamHalfBoardPoints);
     }
+
+    @NonNull
+    public String getLabelForBoardHalfPoints(int boardHalfPoints) {
+        return switch (boardHalfPoints) {
+            case 1 -> "0,5";
+            case 2 -> "1";
+            case 3 -> "1,5";
+            case 4 -> "2";
+            case 5 -> "2,5";
+            case 6 -> "3";
+            case 7 -> "3,5";
+            case 8 -> "4";
+            case 9 -> "4,5";
+            case 10 -> "5";
+            case 11 -> "5,5";
+            case 12 -> "6";
+            case 13 -> "6,5";
+            case 14 -> "7";
+            case 15 -> "7,5";
+            case 16 -> "8";
+            default -> "0";
+        };
+    }
 }
