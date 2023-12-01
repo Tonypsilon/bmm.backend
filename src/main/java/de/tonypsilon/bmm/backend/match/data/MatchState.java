@@ -2,17 +2,5 @@ package de.tonypsilon.bmm.backend.match.data;
 
 public enum MatchState {
 
-    OPEN, CLOSED, IN_CLARIFICATION;
-
-    public MatchState close() {
-        return CLOSED;
-    }
-
-    public MatchState reopen() {
-        return OPEN;
-    }
-
-    public MatchState clarificationNeeded() {
-        return IN_CLARIFICATION;
-    }
+    OPEN, CLOSED, IN_CLARIFICATION, WIN_HOME_BY_FORFEIT, WIN_AWAY_BY_FORFEIT, BOTH_LOSE_BY_FORFEIT;
 }
