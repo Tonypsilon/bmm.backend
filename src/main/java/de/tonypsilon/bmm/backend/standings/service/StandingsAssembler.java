@@ -12,7 +12,6 @@ import de.tonypsilon.bmm.backend.standings.data.StandingsData;
 import de.tonypsilon.bmm.backend.standings.data.StandingsResultFromMatch;
 import de.tonypsilon.bmm.backend.standings.data.StandingsRowData;
 import de.tonypsilon.bmm.backend.standings.data.TeamStandings;
-import de.tonypsilon.bmm.backend.team.data.Team;
 import de.tonypsilon.bmm.backend.team.data.TeamDivisionLinkData;
 import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
@@ -45,20 +44,21 @@ public class StandingsAssembler {
         this.gameService = gameService;
     }
 
+    @NonNull
     public StandingsData assembleStandings(@NonNull Long divisionId) {
-        divisionService.verifyDivisionExists(divisionId);
-        List<TeamStandings> teamsStandings = teamDivisionLinkService.getByDivisionId(divisionId).stream()
+        divisionService.verifyDivisionExists(Objects.requireNonNull(divisionId));
+        final List<TeamStandings> teamsStandings = teamDivisionLinkService.getByDivisionId(divisionId).stream()
                 .map(TeamDivisionLinkData::teamId)
                 .map(teamService::getTeamDataById)
                 .map(TeamStandings::new)
                 .toList();
         final Collection<MatchData> results = matchService.findByDivision(divisionId);
         determineStandings(teamsStandings, results);
-        List<TeamStandings> sortedTeamsStandings = teamsStandings.stream()
+        final List<TeamStandings> sortedTeamsStandings = teamsStandings.stream()
                 .sorted(Comparator.comparingInt(TeamStandings::getTeamPoints)
                         .thenComparingInt(TeamStandings::getDoubledBoardPoints))
                 .toList();
-        List<StandingsRowData> standingsRowData = getStandingsRowData(sortedTeamsStandings, results);
+        final List<StandingsRowData> standingsRowData = getStandingsRowData(sortedTeamsStandings, results);
         return new StandingsData(standingsRowData);
     }
 
