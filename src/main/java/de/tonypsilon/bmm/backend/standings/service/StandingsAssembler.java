@@ -1,6 +1,7 @@
 package de.tonypsilon.bmm.backend.standings.service;
 
 import de.tonypsilon.bmm.backend.datatypes.IdAndLabel;
+import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.division.service.DivisionService;
 import de.tonypsilon.bmm.backend.game.data.GameData;
 import de.tonypsilon.bmm.backend.game.service.GameService;
@@ -15,6 +16,7 @@ import de.tonypsilon.bmm.backend.standings.data.TeamStandings;
 import de.tonypsilon.bmm.backend.team.data.TeamDivisionLinkData;
 import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
+import liquibase.pro.packaged.I;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -46,31 +48,35 @@ public class StandingsAssembler {
 
     @NonNull
     public StandingsData assembleStandings(@NonNull Long divisionId) {
-        divisionService.verifyDivisionExists(Objects.requireNonNull(divisionId));
+        DivisionData division = divisionService.getDivisionDataById(divisionId);
         final List<TeamStandings> teamsStandings = teamDivisionLinkService.getByDivisionId(divisionId).stream()
                 .map(TeamDivisionLinkData::teamId)
                 .map(teamService::getTeamDataById)
                 .map(TeamStandings::new)
                 .toList();
         final Collection<MatchData> results = matchService.findByDivision(divisionId);
-        determineStandings(teamsStandings, results);
+        determineStandings(teamsStandings, results, division.numberOfBoards() + 1);
         final List<TeamStandings> sortedTeamsStandings = teamsStandings.stream()
                 .sorted(Comparator.comparingInt(TeamStandings::getTeamPoints)
-                        .thenComparingInt(TeamStandings::getDoubledBoardPoints))
+                        .thenComparingInt(TeamStandings::getDoubledBoardPoints)
+                        .reversed()
+                        .thenComparing(teamStandings -> teamStandings.getTeam().name()))
                 .toList();
         final List<StandingsRowData> standingsRowData = getStandingsRowData(sortedTeamsStandings, results);
         return new StandingsData(standingsRowData);
     }
 
-    private void determineStandings(List<TeamStandings> teamsStandings, Collection<MatchData> results) {
+    private void determineStandings(List<TeamStandings> teamsStandings,
+                                    Collection<MatchData> results,
+                                    int doubleForfeitWinBoardPoints) {
         for (MatchData matchData : results) {
             switch (matchData.matchState()) {
                 case WIN_HOME_BY_FORFEIT -> teamsStandings.stream()
                         .filter(teamStandings -> teamStandings.getTeam().id().equals(matchData.homeTeamId()))
-                        .forEach(teamStandings -> teamStandings.addResult(2, 9));
+                        .forEach(teamStandings -> teamStandings.addResult(2, doubleForfeitWinBoardPoints));
                 case WIN_AWAY_BY_FORFEIT -> teamsStandings.stream()
                         .filter(teamStandings -> teamStandings.getTeam().id().equals(matchData.awayTeamId()))
-                        .forEach(teamStandings -> teamStandings.addResult(2, 9));
+                        .forEach(teamStandings -> teamStandings.addResult(2, doubleForfeitWinBoardPoints));
                 case OPEN, IN_CLARIFICATION, CLOSED -> {
                     StandingsResultFromMatch standingsResultFromMatch = standingsResultFromMatch(matchData);
                     teamsStandings.stream()
@@ -115,7 +121,7 @@ public class StandingsAssembler {
                         .sum());
     }
 
-    private Integer doubledAwayBoardPoints(MatchData matchData) {
+    private int doubledAwayBoardPoints(MatchData matchData) {
         Collection<GameData> gamesFromMatch = gameService.getByMatchId(matchData.id());
         return matchData.overruledAwayBoardHalfPoints().orElseGet(() ->
                 gamesFromMatch.stream()
@@ -125,7 +131,10 @@ public class StandingsAssembler {
                         .sum());
     }
 
-    private Integer homeTeamPointsFromBoardPoints(Integer doubledHomeBoardPoints, Integer doubledAwayBoardPoints) {
+    private Integer homeTeamPointsFromBoardPoints(int doubledHomeBoardPoints, int doubledAwayBoardPoints) {
+        if (doubledHomeBoardPoints == 0 && doubledAwayBoardPoints == 0) {
+            return 0;
+        }
         if (doubledHomeBoardPoints > doubledAwayBoardPoints) {
             return 2;
         }
@@ -136,6 +145,9 @@ public class StandingsAssembler {
     }
 
     private Integer awayTeamPointsFromBoardPoints(Integer doubledHomeBoardPoints, Integer doubledAwayBoardPoints) {
+        if (doubledHomeBoardPoints == 0 && doubledAwayBoardPoints == 0) {
+            return 0;
+        }
         return 2 - homeTeamPointsFromBoardPoints(doubledHomeBoardPoints, doubledAwayBoardPoints);
     }
 
@@ -169,7 +181,12 @@ public class StandingsAssembler {
                             && matchData.awayTeamId().equals(teamStandings.getTeam().id())) {
                         Integer doubledHomeBoardPoints = doubledHomeBoardPoints(matchData);
                         Integer doubledAwayBoardPoints = doubledAwayBoardPoints(matchData);
-                        if(doubledHomeBoardPoints.equals(0) && doubledAwayBoardPoints.equals(0)) {
+                        if (matchData.matchState() == MatchState.WIN_HOME_BY_FORFEIT) {
+                            resultsForTeam.add(new IdAndLabel(matchData.id(), "+"));
+                        } else if (Set.of(MatchState.WIN_AWAY_BY_FORFEIT, MatchState.BOTH_LOSE_BY_FORFEIT)
+                                .contains(matchData.matchState())) {
+                            resultsForTeam.add(new IdAndLabel(matchData.id(), "-"));
+                        } else if (doubledHomeBoardPoints.equals(0) && doubledAwayBoardPoints.equals(0)) {
                             resultsForTeam.add(new IdAndLabel(matchData.id(), " "));
                         } else {
                             resultsForTeam.add(new IdAndLabel(
@@ -180,7 +197,12 @@ public class StandingsAssembler {
                             && matchData.homeTeamId().equals(teamStandings.getTeam().id())) {
                         Integer doubledHomeBoardPoints = doubledHomeBoardPoints(matchData);
                         Integer doubledAwayBoardPoints = doubledAwayBoardPoints(matchData);
-                        if(doubledHomeBoardPoints.equals(0) && doubledAwayBoardPoints.equals(0)) {
+                        if (matchData.matchState() == MatchState.WIN_AWAY_BY_FORFEIT) {
+                            resultsForTeam.add(new IdAndLabel(matchData.id(), "+"));
+                        } else if (Set.of(MatchState.WIN_HOME_BY_FORFEIT, MatchState.BOTH_LOSE_BY_FORFEIT)
+                                .contains(matchData.matchState())) {
+                            resultsForTeam.add(new IdAndLabel(matchData.id(), "-"));
+                        } else if (doubledHomeBoardPoints.equals(0) && doubledAwayBoardPoints.equals(0)) {
                             resultsForTeam.add(new IdAndLabel(matchData.id(), " "));
                         } else {
                             resultsForTeam.add(new IdAndLabel(

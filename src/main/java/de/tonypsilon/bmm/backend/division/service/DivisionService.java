@@ -109,6 +109,11 @@ public class DivisionService {
         return getById(divisionId).getNumberOfBoards();
     }
 
+    @NonNull
+    public DivisionData getDivisionDataById(@NonNull Long divisionId) {
+        return divisionToDivisionData(getById(divisionId));
+    }
+
     @NonNull private Division getById(@NonNull Long divisionId) {
         return divisionRepository.findById(divisionId)
                 .orElseThrow(
