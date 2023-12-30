@@ -3,10 +3,7 @@ package de.tonypsilon.bmm.backend.division.service;
 import de.tonypsilon.bmm.backend.division.data.DivisionResultsData;
 import de.tonypsilon.bmm.backend.exception.SeasonStageException;
 import de.tonypsilon.bmm.backend.game.service.GameService;
-import de.tonypsilon.bmm.backend.match.data.GameDataForClient;
-import de.tonypsilon.bmm.backend.match.data.MatchData;
-import de.tonypsilon.bmm.backend.match.data.MatchResultClientData;
-import de.tonypsilon.bmm.backend.match.data.MatchResultData;
+import de.tonypsilon.bmm.backend.match.data.*;
 import de.tonypsilon.bmm.backend.match.service.MatchResultService;
 import de.tonypsilon.bmm.backend.match.service.MatchService;
 import de.tonypsilon.bmm.backend.match.service.RichMatchInformationAssemblyService;
@@ -122,9 +119,27 @@ public class DivisionResultsAssemblyService {
                 awayTeam.name(),
                 matchData.matchState().name(),
                 getGamesForMatch(matchData.id()),
-                matchResultService.getLabelForBoardHalfPoints(summedResultOfMatch.homeTeamHalfBoardPoints()),
-                matchResultService.getLabelForBoardHalfPoints(summedResultOfMatch.awayTeamHalfBoardPoints())
+                getTeamResultLabelHome(matchData.matchState(), summedResultOfMatch.homeTeamHalfBoardPoints()),
+                getTeamResultLabelAway(matchData.matchState(), summedResultOfMatch.awayTeamHalfBoardPoints())
         );
+    }
+
+    @NonNull
+    private String getTeamResultLabelHome(MatchState matchState, Integer homeTeamHalfBoardPoints) {
+        return switch (matchState) {
+            case WIN_HOME_BY_FORFEIT -> "+";
+            case WIN_AWAY_BY_FORFEIT, BOTH_LOSE_BY_FORFEIT -> "-";
+            default -> matchResultService.getLabelForBoardHalfPoints(homeTeamHalfBoardPoints);
+        };
+    }
+
+    @NonNull
+    private String getTeamResultLabelAway(MatchState matchState, Integer awayTeamHalfBoardPoints) {
+        return switch (matchState) {
+            case WIN_AWAY_BY_FORFEIT -> "+";
+            case WIN_HOME_BY_FORFEIT, BOTH_LOSE_BY_FORFEIT -> "-";
+            default -> matchResultService.getLabelForBoardHalfPoints(awayTeamHalfBoardPoints);
+        };
     }
 
     @NonNull
