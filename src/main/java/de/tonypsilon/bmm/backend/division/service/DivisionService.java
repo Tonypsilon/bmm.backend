@@ -7,6 +7,7 @@ import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
 import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.division.data.DivisionRepository;
 import de.tonypsilon.bmm.backend.exception.*;
+import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import org.springframework.lang.NonNull;
@@ -107,6 +108,18 @@ public class DivisionService {
     @NonNull
     public Integer getNumberOfBoardsByDivisionId(@NonNull Long divisionId) {
         return getById(divisionId).getNumberOfBoards();
+    }
+
+    @NonNull
+    public DivisionData getDivisionDataBySeasonNameAndDivisionName(
+            @NonNull String seasonName, @NonNull String divisionName) {
+        SeasonData seasonData = seasonService.getSeasonByName(seasonName);
+        return divisionToDivisionData(
+                divisionRepository.findBySeasonIdAndName(seasonData.id(), divisionName).orElseThrow(
+                        () -> new NotFoundException(
+                                "Es gibt keine Staffel mit dem Namen %s in der Saison mit Namen %s!"
+                                        .formatted(divisionName, seasonName))
+                ));
     }
 
     @NonNull

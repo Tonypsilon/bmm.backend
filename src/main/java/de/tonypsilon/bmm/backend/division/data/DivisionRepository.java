@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DivisionRepository extends JpaRepository<Division, Long> {
@@ -16,4 +17,6 @@ public interface DivisionRepository extends JpaRepository<Division, Long> {
     Boolean existsBySeasonIdAndName(Long seasonId, String name);
 
     Division getBySeasonIdAndName(Long seasonId, String name);
+
+    Optional<Division> findBySeasonIdAndName(Long seasonId, String name);
 }

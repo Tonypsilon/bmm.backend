@@ -28,4 +28,11 @@ public class StandingsController {
                 .body(standingsAssembler.assembleStandings(Objects.requireNonNull(divisionId)));
     }
 
+    @GetMapping(path = "/seasons/{seasonName}/divisions/{divisionName}/textual-standings", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String getTextualStandingsForDivision(@PathVariable final String seasonName, @PathVariable final String divisionName) {
+        return standingsAssembler.assembleTextualStandings(
+                Objects.requireNonNull(seasonName),
+                Objects.requireNonNull(divisionName));
+    }
+
 }

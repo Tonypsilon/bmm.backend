@@ -9,14 +9,10 @@ import de.tonypsilon.bmm.backend.game.service.Result;
 import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.data.MatchState;
 import de.tonypsilon.bmm.backend.match.service.MatchService;
-import de.tonypsilon.bmm.backend.standings.data.StandingsData;
-import de.tonypsilon.bmm.backend.standings.data.StandingsResultFromMatch;
-import de.tonypsilon.bmm.backend.standings.data.StandingsRowData;
-import de.tonypsilon.bmm.backend.standings.data.TeamStandings;
+import de.tonypsilon.bmm.backend.standings.data.*;
 import de.tonypsilon.bmm.backend.team.data.TeamDivisionLinkData;
 import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
-import liquibase.pro.packaged.I;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -213,5 +209,54 @@ public class StandingsAssembler {
             }
         }
         return resultsForTeam;
+    }
+
+    @NonNull
+    public String assembleTextualStandings(@NonNull String seasonName, @NonNull String divisionName) {
+        DivisionData divisionData = divisionService.getDivisionDataBySeasonNameAndDivisionName(seasonName, divisionName);
+        StandingsData standingsData = assembleStandings(divisionData.id());
+        int maxTeamNameLength = standingsData.rows().stream()
+                .map(StandingsRowData::team)
+                .map(IdAndLabel::label)
+                .mapToInt(String::length)
+                .max()
+                .orElse(0);
+        return buildTextualHeaderLine(standingsData, maxTeamNameLength) + "\n"
+                + buildTextualStandingsRows(standingsData, maxTeamNameLength);
+    }
+
+    private String buildTextualHeaderLine(StandingsData standingsData, int maxTeamNameLength) {
+        StringBuilder builder = new StringBuilder("Nr").append('\t')
+                .append("Mannschaft ");
+
+        builder.append(" ".repeat(Math.max(0, maxTeamNameLength - 10)));
+        builder.append('\t');
+        for(var i = 1; i<= standingsData.rows().size(); i++) {
+            builder.append(i).append('\t');
+        }
+        builder.append("MP").append('\t');
+        builder.append("BP").append('\t');
+        return builder.toString();
+    }
+
+    private String buildTextualStandingsRows(StandingsData standingsData, int maxTeamNameLength) {
+        StringBuilder builder = new StringBuilder();
+        var i = 1;
+        for (var row : standingsData.rows()) {
+            builder.append(i++).append('\t').append(buildTextualStandingsRow(row, maxTeamNameLength)).append('\n');
+        }
+        return builder.toString();
+    }
+
+    private String buildTextualStandingsRow(StandingsRowData standingsRowData, int maxTeamNameLength) {
+        StringBuilder builder = new StringBuilder(standingsRowData.team().label());
+        builder.append(" ".repeat(Math.max(0, maxTeamNameLength - standingsRowData.team().label().length())));
+        builder.append('\t');
+        for (var result : standingsRowData.results()) {
+            builder.append(result.label()).append('\t');
+        }
+        builder.append(standingsRowData.teamPoints()).append('\t');
+        builder.append(standingsRowData.boardPoints()).append('\t');
+        return builder.toString();
     }
 }
