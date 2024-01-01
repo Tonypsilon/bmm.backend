@@ -117,18 +117,9 @@ public class RichMatchInformationAssemblyService {
     }
 
     private String resultFromGameData(GameData gameData) {
-        String home = gameData.playedResultHome().map(this::resultToString).orElse("?");
-        String away = gameData.playedResultAway().map(this::resultToString).orElse("?");
+        String home = gameData.playedResultHome().map(Result::getLabel).orElse("?");
+        String away = gameData.playedResultAway().map(Result::getLabel).orElse("?");
         return home + " : " + away;
     }
 
-    private String resultToString(Result result) {
-        return switch (result) {
-            case WIN -> "1";
-            case DRAW -> "½";
-            case LOSS -> "0";
-            case WIN_FORFEIT -> "+";
-            case LOSS_FORFEIT -> "-";
-        };
-    }
 }

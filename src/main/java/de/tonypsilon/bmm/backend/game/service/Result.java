@@ -16,4 +16,14 @@ public enum Result {
     public Integer getDoubledValue() {
         return doubledValue;
     }
+
+    public String getLabel() {
+        return switch (this) {
+            case WIN -> "1";
+            case DRAW -> "½";
+            case LOSS -> "0";
+            case WIN_FORFEIT -> "+";
+            case LOSS_FORFEIT -> "-";
+        };
+    }
 }
