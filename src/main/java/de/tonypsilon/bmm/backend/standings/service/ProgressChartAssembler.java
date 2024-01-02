@@ -3,12 +3,19 @@ package de.tonypsilon.bmm.backend.standings.service;
 import de.tonypsilon.bmm.backend.datatypes.IdAndLabel;
 import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.division.service.DivisionService;
+import de.tonypsilon.bmm.backend.game.data.GameData;
+import de.tonypsilon.bmm.backend.game.service.GameService;
+import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.data.ParticipantDataForClient;
+import de.tonypsilon.bmm.backend.match.service.MatchService;
+import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
+import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
 import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationEligibilityService;
 import de.tonypsilon.bmm.backend.standings.data.ParticipantProgressChartData;
+import de.tonypsilon.bmm.backend.standings.data.ProgressChartAssemblingContext;
 import de.tonypsilon.bmm.backend.standings.data.ProgressChartData;
 import de.tonypsilon.bmm.backend.standings.data.TeamProgressChartData;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
@@ -18,8 +25,12 @@ import de.tonypsilon.bmm.backend.team.service.TeamService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class ProgressChartAssembler {
@@ -29,17 +40,26 @@ public class ProgressChartAssembler {
     private final TeamService teamService;
     private final ParticipantService participantService;
     private final ParticipationEligibilityService participationEligibilityService;
+    private final MatchdayService matchdayService;
+    private final MatchService matchService;
+    private final GameService gameService;
 
     public ProgressChartAssembler(final DivisionService divisionService,
                                   final TeamDivisionLinkService teamDivisionLinkService,
                                   final TeamService teamService,
                                   final ParticipantService participantService,
-                                  final ParticipationEligibilityService participationEligibilityService) {
+                                  final ParticipationEligibilityService participationEligibilityService,
+                                  final MatchdayService matchdayService,
+                                  final MatchService matchService,
+                                  final GameService gameService) {
         this.divisionService = divisionService;
         this.teamDivisionLinkService = teamDivisionLinkService;
         this.teamService = teamService;
         this.participantService = participantService;
         this.participationEligibilityService = participationEligibilityService;
+        this.matchdayService = matchdayService;
+        this.matchService = matchService;
+        this.gameService = gameService;
     }
 
     @NonNull
@@ -50,23 +70,33 @@ public class ProgressChartAssembler {
                 .map(TeamDivisionLinkData::teamId)
                 .map(teamService::getTeamDataById)
                 .toList();
-
+        Map<Integer, Collection<GameData>> gamesByRound = matchdayService
+                .getMatchdaysOfDivisionOrderedByRound(divisionId).stream()
+                .collect(Collectors.toMap(
+                        MatchdayData::round,
+                        matchdayData -> matchService.findByMatchdayId(matchdayData.id()).stream()
+                                .map(MatchData::id)
+                                .map(gameService::getByMatchId)
+                                .flatMap(List::stream)
+                                .toList()));
+        ProgressChartAssemblingContext context =
+                new ProgressChartAssemblingContext(divisionData.numberOfTeams()-1, gamesByRound);
         return new ProgressChartData(
-                divisionData.numberOfTeams()-1,
+                context.getNumberOfRounds(),
                 teams.stream()
-                        .map(teamData -> assembleProgressChartDataForTeam(teamData, divisionId))
+                        .map(teamData -> assembleProgressChartDataForTeam(teamData, context))
                         .toList()
         );
     }
 
     private TeamProgressChartData assembleProgressChartDataForTeam(@NonNull TeamData teamData,
-                                                                   @NonNull Long divisionId) {
+                                                                   @NonNull ProgressChartAssemblingContext context) {
         List<ParticipantData> participantsOfTeam =
                 participantService.getParticipantsOfTeamOrderedByNumberAsc(teamData.id());
         return new TeamProgressChartData(
                 new IdAndLabel(teamData.id(), teamData.name()),
                 participantsOfTeam.stream()
-                        .map(participantData -> this.assembleParticipantProgressChartData(participantData, divisionId))
+                        .map(participantData -> this.assembleParticipantProgressChartData(participantData, context))
                         .toList()
         );
     }
@@ -74,7 +104,7 @@ public class ProgressChartAssembler {
     @NonNull
     private ParticipantProgressChartData assembleParticipantProgressChartData(
             @NonNull ParticipantData participantData,
-            @NonNull Long divisionId) {
+            @NonNull ProgressChartAssemblingContext context) {
         ParticipationEligibilityData participationEligibilityData =
                 participationEligibilityService.getParticipationEligibilityById(
                         participantData.participationEligibilityId());
@@ -84,7 +114,9 @@ public class ProgressChartAssembler {
                         participationEligibilityData.forename(),
                         participationEligibilityData.surname(),
                         participationEligibilityData.dwz()),
-                null
+                IntStream.range(1, context.getNumberOfRounds()+1)
+                        .mapToObj(round -> context.getGame(participantData.id(), round))
+                        .toList()
         );
     }
 }

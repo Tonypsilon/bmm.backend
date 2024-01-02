@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ProgressChartAssemblingContext {
-    private final Long divisionId;
+    private final Integer numberOfRounds;
     private final Map<Integer, Collection<GameData>> gamesByRound;
 
-    public ProgressChartAssemblingContext(@NonNull Long divisionId,
+    public ProgressChartAssemblingContext(@NonNull Integer numberOfRounds,
                                           @NonNull Map<Integer, Collection<GameData>> gamesByRound) {
-        this.divisionId = divisionId;
+        this.numberOfRounds = numberOfRounds;
         this.gamesByRound = gamesByRound;
     }
 
@@ -48,5 +48,10 @@ public class ProgressChartAssemblingContext {
                         .or(() -> gameData.playedResultAway().map(Result::getLabel))
                         .orElse(" ")
         );
+    }
+
+    @NonNull
+    public Integer getNumberOfRounds() {
+        return this.numberOfRounds;
     }
 }
