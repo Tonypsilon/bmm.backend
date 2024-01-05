@@ -92,7 +92,7 @@ public class ProgressChartAssembler {
     private TeamProgressChartData assembleProgressChartDataForTeam(@NonNull TeamData teamData,
                                                                    @NonNull ProgressChartAssemblingContext context) {
         List<ParticipantData> participantsOfTeam =
-                participantService.getParticipantsOfTeamOrderedByNumberAsc(teamData.id());
+                participantService.getParticipantsEligibleForTeam(teamData.id());
         return new TeamProgressChartData(
                 new IdAndLabel(teamData.id(), teamData.name()),
                 participantsOfTeam.stream()
