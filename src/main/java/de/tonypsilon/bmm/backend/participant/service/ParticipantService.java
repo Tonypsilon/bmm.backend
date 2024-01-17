@@ -167,6 +167,7 @@ public class ParticipantService {
         Optional<List<ParticipantData>> followingTeamParticipants = teamService.findFollowingTeam(teamId)
                 .map(teamData -> getParticipantsOfTeamOrderedByNumberAsc(teamData.id()).stream()
                         .filter(participantData -> participantData.number() <= 16)
+                        .map(participantData -> new ParticipantData(participantData.id(), teamId, participantData.participationEligibilityId(), participantData.number()))
                         .toList());
         return Stream.of(eligibleParticipants, followingTeamParticipants.orElse(Collections.emptyList()))
                 .flatMap(List::stream)

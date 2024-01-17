@@ -14,10 +14,7 @@ import de.tonypsilon.bmm.backend.participant.data.ParticipantData;
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
 import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationEligibilityService;
-import de.tonypsilon.bmm.backend.standings.data.ParticipantProgressChartData;
-import de.tonypsilon.bmm.backend.standings.data.ProgressChartAssemblingContext;
-import de.tonypsilon.bmm.backend.standings.data.ProgressChartData;
-import de.tonypsilon.bmm.backend.standings.data.TeamProgressChartData;
+import de.tonypsilon.bmm.backend.standings.data.*;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.data.TeamDivisionLinkData;
 import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
@@ -70,14 +67,16 @@ public class ProgressChartAssembler {
                 .map(TeamDivisionLinkData::teamId)
                 .map(teamService::getTeamDataById)
                 .toList();
-        Map<Integer, Collection<GameData>> gamesByRound = matchdayService
+        Map<Integer, Collection<ProgressChartGameContext>> gamesByRound = matchdayService
                 .getMatchdaysOfDivisionOrderedByRound(divisionId).stream()
                 .collect(Collectors.toMap(
                         MatchdayData::round,
                         matchdayData -> matchService.findByMatchdayId(matchdayData.id()).stream()
-                                .map(MatchData::id)
-                                .map(gameService::getByMatchId)
-                                .flatMap(List::stream)
+                                .flatMap(matchData -> gameService.getByMatchId(matchdayData.id())
+                                        .stream()
+                                        .map(gameData ->
+                                                new ProgressChartGameContext(gameData,
+                                                        matchData.homeTeamId(), matchData.awayTeamId())))
                                 .toList()));
         ProgressChartAssemblingContext context =
                 new ProgressChartAssemblingContext(divisionData.numberOfTeams()-1, gamesByRound);
@@ -115,7 +114,7 @@ public class ProgressChartAssembler {
                         participationEligibilityData.surname(),
                         participationEligibilityData.dwz()),
                 IntStream.range(1, context.getNumberOfRounds()+1)
-                        .mapToObj(round -> context.getGame(participantData.id(), round))
+                        .mapToObj(round -> context.getGame(participantData.id(), participantData.teamId(), round))
                         .toList()
         );
     }

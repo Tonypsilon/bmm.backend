@@ -11,20 +11,21 @@ import java.util.Objects;
 
 public class ProgressChartAssemblingContext {
     private final Integer numberOfRounds;
-    private final Map<Integer, Collection<GameData>> gamesByRound;
+    private final Map<Integer, Collection<ProgressChartGameContext>> gamesByRound;
 
     public ProgressChartAssemblingContext(@NonNull Integer numberOfRounds,
-                                          @NonNull Map<Integer, Collection<GameData>> gamesByRound) {
+                                          @NonNull Map<Integer, Collection<ProgressChartGameContext>> gamesByRound) {
         this.numberOfRounds = numberOfRounds;
         this.gamesByRound = gamesByRound;
     }
 
-    public IdAndLabel getGame(@NonNull Long participantId, int round) {
+    public IdAndLabel getGame(@NonNull Long participantId, @NonNull Long teamId, int round) {
         return gamesByRound.get(round).stream()
-                .filter(gameData -> gameData.homeParticipantId().equals(participantId)
-                        || gameData.awayParticipantId().equals(participantId))
+                .filter(gameContext ->
+                        gameContext.gameData().homeParticipantId().equals(participantId) && gameContext.homeTeamId().equals(teamId)
+                        || gameContext.gameData().awayParticipantId().equals(participantId) && gameContext.awayTeamId().equals(teamId))
                 .findAny()
-                .map(gameData -> this.gameToIdAndLabel(gameData, participantId))
+                .map(gameContext -> this.gameToIdAndLabel(gameContext.gameData(), participantId))
                 .orElse(new IdAndLabel(-1L, " "));
     }
 
