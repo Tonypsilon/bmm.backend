@@ -67,7 +67,7 @@ public class ProgressChartAssembler {
                 .collect(Collectors.toMap(
                         MatchdayData::round,
                         matchdayData -> matchService.findByMatchdayId(matchdayData.id()).stream()
-                                .flatMap(matchData -> gameService.getByMatchId(matchdayData.id())
+                                .flatMap(matchData -> gameService.getByMatchId(matchData.id())
                                         .stream()
                                         .map(gameData ->
                                                 new ProgressChartGameContext(gameData,
