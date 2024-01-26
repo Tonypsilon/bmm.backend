@@ -964,3 +964,21 @@ databaseChangeLog:
               - column:
                   name: first_team_number
                   type: int
+  - changeSet:
+      id: 41
+      author: Tonypsilon
+      changes:
+        - createTable:
+            tableName: current_season
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: season_id
+                  type: int
+                  constraints:
+                    nullable: false

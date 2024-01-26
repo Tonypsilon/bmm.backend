@@ -1,8 +1,7 @@
 package de.tonypsilon.bmm.backend.season.service;
 
-import de.tonypsilon.bmm.backend.season.data.CurrentSeason;
-import de.tonypsilon.bmm.backend.season.data.CurrentSeasonRepository;
-import de.tonypsilon.bmm.backend.season.data.SeasonData;
+import de.tonypsilon.bmm.backend.exception.BmmException;
+import de.tonypsilon.bmm.backend.season.data.*;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +31,10 @@ public class CurrentSeasonService {
 
     @NonNull
     public SeasonData getCurrentSeason() {
-        return seasonService.getSeasonById(currentSeasonRepository.findAll().get(0).getSeasonId());
+        return currentSeasonRepository.findAll().stream().findAny()
+                .map(CurrentSeason::getSeasonId)
+                .map(seasonService::getSeasonById)
+                .orElseThrow(() -> new BmmException("No current season set!"));
     }
 
 }

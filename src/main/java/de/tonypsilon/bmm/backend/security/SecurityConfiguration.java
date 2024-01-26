@@ -23,7 +23,7 @@ public class SecurityConfiguration {
                 .csrf().disable()
                 .httpBasic()
                 .and().authorizeRequests()
-                .antMatchers("/", "/seasons/**", "/divisions/**").permitAll()
+                .antMatchers("/", "/seasons/**", "/divisions/**", "/currentseason/**").permitAll()
                 .and().authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
