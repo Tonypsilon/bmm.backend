@@ -1,7 +1,8 @@
 package de.tonypsilon.bmm.backend.participant.data;
 
-import javax.persistence.*;
 import org.springframework.lang.NonNull;
+
+import javax.persistence.*;
 
 @Entity
 public class Participant {

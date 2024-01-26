@@ -5,7 +5,6 @@ import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;
 import de.tonypsilon.bmm.backend.security.SecurityConfiguration;
 import de.tonypsilon.bmm.backend.security.rnr.Role;
-import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.data.*;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
 import org.junit.jupiter.api.BeforeEach;

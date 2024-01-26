@@ -1,6 +1,5 @@
 package de.tonypsilon.bmm.backend.security.rnr.service;
 
-import com.google.common.base.CharMatcher;
 import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
 import de.tonypsilon.bmm.backend.exception.BadDataException;
 import de.tonypsilon.bmm.backend.exception.NotFoundException;

@@ -60,9 +60,9 @@ public class OrganizationService {
 
         organization.setOrganizationMembers(new HashSet<>());
         organizationCreationData.clubIds()
-                .forEach(clubId -> {
-                    organization.getOrganizationMembers().add(createOrganizationMember(clubId, organization));
-                });
+                .forEach(clubId ->
+                    organization.getOrganizationMembers().add(createOrganizationMember(clubId, organization))
+                );
 
         organizationRepository.save(organization);
         return toOrganizationData(

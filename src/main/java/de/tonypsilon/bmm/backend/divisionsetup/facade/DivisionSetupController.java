@@ -5,7 +5,6 @@ import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.division.service.DivisionService;
 import de.tonypsilon.bmm.backend.divisionsetup.data.DivisionSetupFoundationData;
 import de.tonypsilon.bmm.backend.divisionsetup.service.DivisionSetupService;
-import de.tonypsilon.bmm.backend.organizationsetup.facade.OrganizationSetupController;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
 import de.tonypsilon.bmm.backend.team.data.TeamDivisionLinkData;
@@ -16,10 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
@@ -29,7 +25,7 @@ import java.util.Objects;
 @RestController
 public class DivisionSetupController {
 
-    private final Logger logger = LoggerFactory.getLogger(OrganizationSetupController.class);
+    private final Logger logger = LoggerFactory.getLogger(DivisionSetupController.class);
     private final AuthorizationService authorizationService;
     private final DivisionSetupService divisionSetupService;
     private final DivisionService divisionService;

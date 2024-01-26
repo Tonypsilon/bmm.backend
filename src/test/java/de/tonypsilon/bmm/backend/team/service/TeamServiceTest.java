@@ -8,23 +8,18 @@ import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.rnr.Role;
-import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
 import de.tonypsilon.bmm.backend.security.rnr.service.UserService;
-import de.tonypsilon.bmm.backend.team.data.Team;
-import de.tonypsilon.bmm.backend.team.data.TeamCreationData;
-import de.tonypsilon.bmm.backend.team.data.TeamData;
-import de.tonypsilon.bmm.backend.team.data.TeamRepository;
+import de.tonypsilon.bmm.backend.team.data.*;
 import de.tonypsilon.bmm.backend.venue.service.VenueService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class TeamServiceTest {

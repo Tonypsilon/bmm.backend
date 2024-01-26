@@ -15,7 +15,8 @@ import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 

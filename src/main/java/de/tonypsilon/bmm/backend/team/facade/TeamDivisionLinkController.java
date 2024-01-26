@@ -1,24 +1,19 @@
 package de.tonypsilon.bmm.backend.team.facade;
 
-import java.security.Principal;
-import java.util.Objects;
-
-import javax.annotation.security.RolesAllowed;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
 import de.tonypsilon.bmm.backend.team.data.TeamDivisionLinkData;
 import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.security.RolesAllowed;
+import java.security.Principal;
+import java.util.Objects;
 
 @RestController
 public class TeamDivisionLinkController {

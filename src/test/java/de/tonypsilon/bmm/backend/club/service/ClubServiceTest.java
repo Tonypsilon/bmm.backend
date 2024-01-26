@@ -1,11 +1,7 @@
 package de.tonypsilon.bmm.backend.club.service;
 
-import de.tonypsilon.bmm.backend.club.data.Club;
-import de.tonypsilon.bmm.backend.club.data.ClubCreationData;
-import de.tonypsilon.bmm.backend.club.data.ClubData;
-import de.tonypsilon.bmm.backend.club.data.ClubRepository;
+import de.tonypsilon.bmm.backend.club.data.*;
 import de.tonypsilon.bmm.backend.exception.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 class ClubServiceTest {

@@ -1,14 +1,8 @@
 package de.tonypsilon.bmm.backend.match.facade;
 
 import de.tonypsilon.bmm.backend.exception.BadDataException;
-import de.tonypsilon.bmm.backend.match.data.MatchData;
-import de.tonypsilon.bmm.backend.match.data.MatchStateChangeData;
-import de.tonypsilon.bmm.backend.match.data.PutResultsData;
-import de.tonypsilon.bmm.backend.match.data.RichMatchData;
-import de.tonypsilon.bmm.backend.match.service.MatchResultService;
-import de.tonypsilon.bmm.backend.match.service.MatchService;
-import de.tonypsilon.bmm.backend.match.service.MatchStateService;
-import de.tonypsilon.bmm.backend.match.service.RichMatchInformationAssemblyService;
+import de.tonypsilon.bmm.backend.match.data.*;
+import de.tonypsilon.bmm.backend.match.service.*;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
 import org.slf4j.Logger;

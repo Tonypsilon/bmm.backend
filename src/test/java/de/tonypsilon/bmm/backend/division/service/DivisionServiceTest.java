@@ -1,10 +1,7 @@
 package de.tonypsilon.bmm.backend.division.service;
 
 import com.google.common.collect.SortedSetMultimap;
-import de.tonypsilon.bmm.backend.division.data.Division;
-import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
-import de.tonypsilon.bmm.backend.division.data.DivisionData;
-import de.tonypsilon.bmm.backend.division.data.DivisionRepository;
+import de.tonypsilon.bmm.backend.division.data.*;
 import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
@@ -16,7 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class DivisionServiceTest {

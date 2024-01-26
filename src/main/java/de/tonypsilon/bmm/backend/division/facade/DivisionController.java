@@ -1,6 +1,5 @@
 package de.tonypsilon.bmm.backend.division.facade;
 
-import com.google.common.collect.SortedSetMultimap;
 import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
 import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.division.data.DivisionResultsData;
@@ -8,20 +7,13 @@ import de.tonypsilon.bmm.backend.division.service.DivisionResultsAssemblyService
 import de.tonypsilon.bmm.backend.division.service.DivisionService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.security.rnr.Roles;
-import javax.annotation.security.RolesAllowed;
-
 import de.tonypsilon.bmm.backend.security.rnr.service.AuthorizationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;

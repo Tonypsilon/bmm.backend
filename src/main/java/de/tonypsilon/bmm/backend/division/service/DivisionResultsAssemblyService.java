@@ -11,7 +11,6 @@ import de.tonypsilon.bmm.backend.matchday.data.MatchdayClientData;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
-import de.tonypsilon.bmm.backend.season.service.PlayingDateService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
@@ -38,7 +37,6 @@ public class DivisionResultsAssemblyService {
     private final RefereeService refereeService;
     private final RichMatchInformationAssemblyService richMatchInformationAssemblyService;
     private final MatchResultService matchResultService;
-    private final PlayingDateService playingDateService;
     private final GameService gameService;
 
     public DivisionResultsAssemblyService(
@@ -51,7 +49,6 @@ public class DivisionResultsAssemblyService {
             final RefereeService refereeService,
             final RichMatchInformationAssemblyService richMatchInformationAssemblyService,
             final MatchResultService matchResultService,
-            final PlayingDateService playingDateService,
             final GameService gameService) {
         this.seasonService = seasonService;
         this.divisionService = divisionService;
@@ -62,7 +59,6 @@ public class DivisionResultsAssemblyService {
         this.refereeService = refereeService;
         this.richMatchInformationAssemblyService = richMatchInformationAssemblyService;
         this.matchResultService = matchResultService;
-        this.playingDateService = playingDateService;
         this.gameService = gameService;
     }
 

@@ -1,9 +1,6 @@
 package de.tonypsilon.bmm.backend.participant.service;
 
-import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
-import de.tonypsilon.bmm.backend.exception.BmmException;
-import de.tonypsilon.bmm.backend.exception.NotFoundException;
-import de.tonypsilon.bmm.backend.exception.SeasonStageException;
+import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.participant.data.*;
 import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationEligibilityService;
@@ -19,7 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 class ParticipantServiceTest {

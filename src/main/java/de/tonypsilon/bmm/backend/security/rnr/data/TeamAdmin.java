@@ -1,7 +1,8 @@
 package de.tonypsilon.bmm.backend.security.rnr.data;
 
-import javax.persistence.*;
 import org.springframework.lang.NonNull;
+
+import javax.persistence.*;
 
 @Entity
 @IdClass(TeamAdminKey.class)

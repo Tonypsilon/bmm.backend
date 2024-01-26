@@ -1,9 +1,9 @@
 package de.tonypsilon.bmm.backend.match.data;
 
-import javax.persistence.*;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import javax.persistence.*;
 import java.util.Optional;
 
 @Entity

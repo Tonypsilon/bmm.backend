@@ -45,7 +45,6 @@ public class AuthorizationService {
      * @param username the name of the user
      * @param clubIds the ids of the clubs
      */
-    @Transactional
     public void verifyUserIsClubAdminOfAnyClub(@NonNull String username, @NonNull Set<Long> clubIds) {
         if (clubIds.stream()
                 .map(clubAdminService::getAdminsOfClub)
@@ -61,7 +60,6 @@ public class AuthorizationService {
      * @param username the name of the user
      * @param organizationId the id of the organization
      */
-    @Transactional
     public void verifyUserIsClubAdminOfOrganization(@NonNull String username, @NonNull Long organizationId) {
         verifyUserIsClubAdminOfAnyOrganization(username, Set.of(organizationId));
     }
@@ -71,8 +69,7 @@ public class AuthorizationService {
      * @param username the name of the user
      * @param organizationIds the ids of the organization
      */
-    @Transactional
-    public void verifyUserIsClubAdminOfAnyOrganization(
+    private void verifyUserIsClubAdminOfAnyOrganization(
             @NonNull String username, @NonNull Collection<Long> organizationIds) {
         verifyUserIsClubAdminOfAnyClub(username,
                 organizationIds.stream()
@@ -124,7 +121,6 @@ public class AuthorizationService {
                         .collect(Collectors.toSet()));
     }
 
-    @Transactional
     public void verifyUserIsTeamAdminOfAnyTeam(@NonNull String username, @NonNull Set<Long> teamIds) {
         if(teamAdminService.getTeamsOfTeamAdmin(username).stream()
                 .map(TeamData::id)

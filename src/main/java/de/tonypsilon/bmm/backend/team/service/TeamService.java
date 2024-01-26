@@ -7,7 +7,6 @@ import de.tonypsilon.bmm.backend.organization.service.OrganizationService;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.security.rnr.Role;
-import de.tonypsilon.bmm.backend.security.rnr.data.User;
 import de.tonypsilon.bmm.backend.security.rnr.data.UserData;
 import de.tonypsilon.bmm.backend.security.rnr.service.UserService;
 import de.tonypsilon.bmm.backend.team.data.*;

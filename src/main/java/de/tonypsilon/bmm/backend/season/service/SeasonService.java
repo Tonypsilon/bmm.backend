@@ -1,9 +1,6 @@
 package de.tonypsilon.bmm.backend.season.service;
 
-import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
-import de.tonypsilon.bmm.backend.exception.BadDataException;
-import de.tonypsilon.bmm.backend.exception.NameBlankException;
-import de.tonypsilon.bmm.backend.exception.NotFoundException;
+import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.season.data.*;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;

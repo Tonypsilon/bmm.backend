@@ -9,7 +9,6 @@ import de.tonypsilon.bmm.backend.game.service.Result;
 import de.tonypsilon.bmm.backend.match.data.*;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
-import de.tonypsilon.bmm.backend.referee.data.Referee;
 import de.tonypsilon.bmm.backend.referee.data.RefereeData;
 import de.tonypsilon.bmm.backend.referee.service.RefereeService;
 import org.springframework.lang.NonNull;

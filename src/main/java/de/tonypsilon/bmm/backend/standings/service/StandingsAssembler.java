@@ -26,7 +26,7 @@ public class StandingsAssembler {
     private final DivisionService divisionService;
     private final MatchService matchService;
     private final GameService gameService;
-    private final String vsSelf = "X";
+    private static final String vsSelf = "X";
 
     public StandingsAssembler(
             final TeamDivisionLinkService teamDivisionLinkService,
@@ -73,6 +73,9 @@ public class StandingsAssembler {
                 case WIN_AWAY_BY_FORFEIT -> teamsStandings.stream()
                         .filter(teamStandings -> teamStandings.getTeam().id().equals(matchData.awayTeamId()))
                         .forEach(teamStandings -> teamStandings.addResult(2, doubleForfeitWinBoardPoints));
+                case BOTH_LOSE_BY_FORFEIT -> {
+                    // no one gets any points
+                }
                 case OPEN, IN_CLARIFICATION, CLOSED -> {
                     StandingsResultFromMatch standingsResultFromMatch = standingsResultFromMatch(matchData);
                     teamsStandings.stream()

@@ -2,10 +2,7 @@ package de.tonypsilon.bmm.backend.division.service;
 
 import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
-import de.tonypsilon.bmm.backend.division.data.Division;
-import de.tonypsilon.bmm.backend.division.data.DivisionCreationData;
-import de.tonypsilon.bmm.backend.division.data.DivisionData;
-import de.tonypsilon.bmm.backend.division.data.DivisionRepository;
+import de.tonypsilon.bmm.backend.division.data.*;
 import de.tonypsilon.bmm.backend.exception.*;
 import de.tonypsilon.bmm.backend.season.data.SeasonData;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
@@ -14,11 +11,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 public class DivisionService {

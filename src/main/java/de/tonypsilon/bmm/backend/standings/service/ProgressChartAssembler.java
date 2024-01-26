@@ -3,9 +3,7 @@ package de.tonypsilon.bmm.backend.standings.service;
 import de.tonypsilon.bmm.backend.datatypes.IdAndLabel;
 import de.tonypsilon.bmm.backend.division.data.DivisionData;
 import de.tonypsilon.bmm.backend.division.service.DivisionService;
-import de.tonypsilon.bmm.backend.game.data.GameData;
 import de.tonypsilon.bmm.backend.game.service.GameService;
-import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.data.ParticipantDataForClient;
 import de.tonypsilon.bmm.backend.match.service.MatchService;
 import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
@@ -22,10 +20,7 @@ import de.tonypsilon.bmm.backend.team.service.TeamService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 

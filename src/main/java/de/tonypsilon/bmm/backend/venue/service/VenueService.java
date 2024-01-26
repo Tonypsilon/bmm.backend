@@ -36,6 +36,10 @@ public class VenueService {
     @Transactional
     @NonNull
     public VenueData createVenue(@NonNull VenueCreationData creationData) {
+        return createVenueInTransaction(creationData);
+    }
+
+    private VenueData createVenueInTransaction(@NonNull VenueCreationData creationData) {
         if(creationData.clubId() == null) {
             throw new BadDataException("Es muss ein Verein gegeben sein!");
         }
@@ -111,7 +115,7 @@ public class VenueService {
             if(venueRepository.existsByClubIdAndAddress(venue.clubId(), venue.address())) {
                 putVenues.add(updateHints(venue));
             } else {
-                putVenues.add(createVenue(new VenueCreationData(venue.clubId(), venue.address(), venue.hints())));
+                putVenues.add(createVenueInTransaction(new VenueCreationData(venue.clubId(), venue.address(), venue.hints())));
             }
         }
         return putVenues;

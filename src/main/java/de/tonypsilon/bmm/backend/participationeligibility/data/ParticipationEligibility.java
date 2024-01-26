@@ -1,8 +1,8 @@
 package de.tonypsilon.bmm.backend.participationeligibility.data;
 
-import javax.persistence.*;
 import org.springframework.lang.NonNull;
 
+import javax.persistence.*;
 import java.util.Optional;
 
 @Entity

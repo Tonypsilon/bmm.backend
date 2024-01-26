@@ -1,14 +1,8 @@
 package de.tonypsilon.bmm.backend.matchday.service;
 
 import de.tonypsilon.bmm.backend.division.service.DivisionService;
-import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
-import de.tonypsilon.bmm.backend.exception.BadDataException;
-import de.tonypsilon.bmm.backend.exception.NotFoundException;
-import de.tonypsilon.bmm.backend.exception.SeasonStageException;
-import de.tonypsilon.bmm.backend.matchday.data.CreateMatchdayData;
-import de.tonypsilon.bmm.backend.matchday.data.Matchday;
-import de.tonypsilon.bmm.backend.matchday.data.MatchdayData;
-import de.tonypsilon.bmm.backend.matchday.data.MatchdayRepository;
+import de.tonypsilon.bmm.backend.exception.*;
+import de.tonypsilon.bmm.backend.matchday.data.*;
 import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.validation.service.ValidationService;
@@ -19,7 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 class MatchdayServiceTest {

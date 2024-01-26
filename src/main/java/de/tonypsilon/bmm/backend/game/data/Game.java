@@ -1,8 +1,8 @@
 package de.tonypsilon.bmm.backend.game.data;
 
 import de.tonypsilon.bmm.backend.game.service.Result;
-import javax.persistence.*;
 
+import javax.persistence.*;
 import java.util.Optional;
 
 @Entity

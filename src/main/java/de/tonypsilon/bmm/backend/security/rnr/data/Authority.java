@@ -44,10 +44,9 @@ public class Authority {
         if(this == other) {
             return true;
         }
-        if(!(other instanceof Authority)) {
+        if(!(other instanceof Authority otherAuthority)) {
             return false;
         }
-        Authority otherAuthority = (Authority) other;
         return Objects.equals(this.user.getUsername(), otherAuthority.user.getUsername())
                 && Objects.equals(this.theAuthority, otherAuthority.theAuthority);
     }

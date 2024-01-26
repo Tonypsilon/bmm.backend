@@ -1,8 +1,9 @@
 package de.tonypsilon.bmm.backend.season.data;
 
 import de.tonypsilon.bmm.backend.season.service.SeasonStage;
-import javax.persistence.*;
 import org.springframework.lang.NonNull;
+
+import javax.persistence.*;
 
 @Entity
 public class Season {

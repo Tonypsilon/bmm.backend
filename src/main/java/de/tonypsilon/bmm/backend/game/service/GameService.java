@@ -1,13 +1,7 @@
 package de.tonypsilon.bmm.backend.game.service;
 
-import de.tonypsilon.bmm.backend.exception.AlreadyExistsException;
-import de.tonypsilon.bmm.backend.exception.BadDataException;
-import de.tonypsilon.bmm.backend.exception.NotFoundException;
-import de.tonypsilon.bmm.backend.exception.SeasonStageException;
-import de.tonypsilon.bmm.backend.game.data.Game;
-import de.tonypsilon.bmm.backend.game.data.GameCreationData;
-import de.tonypsilon.bmm.backend.game.data.GameData;
-import de.tonypsilon.bmm.backend.game.data.GameRepository;
+import de.tonypsilon.bmm.backend.exception.*;
+import de.tonypsilon.bmm.backend.game.data.*;
 import de.tonypsilon.bmm.backend.match.data.MatchData;
 import de.tonypsilon.bmm.backend.match.service.MatchService;
 import de.tonypsilon.bmm.backend.matchday.service.MatchdayService;
