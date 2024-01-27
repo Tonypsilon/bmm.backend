@@ -112,13 +112,21 @@ public class RichMatchInformationAssemblyService {
                 participantDataToParticipantDataForClient(
                         participantService.getParticipantById(gameData.awayParticipantId())),
                 new ResultDataForClient(resultFromGameData(gameData),
-                gameData.playedResultHome().map(Result::getDoubledValue).orElse(null),
-                gameData.playedResultAway().map(Result::getDoubledValue).orElse(null)));
+                gameData.overruledResultHome().map(Result::getDoubledValue)
+                        .or(() -> gameData.playedResultHome().map(Result::getDoubledValue))
+                        .orElse(null),
+                gameData.overruledResultAway().map(Result::getDoubledValue)
+                        .or(() -> gameData.playedResultAway().map(Result::getDoubledValue))
+                        .orElse(null)));
     }
 
     private String resultFromGameData(GameData gameData) {
-        String home = gameData.playedResultHome().map(Result::getLabel).orElse("?");
-        String away = gameData.playedResultAway().map(Result::getLabel).orElse("?");
+        String home = gameData.overruledResultHome().map(Result::getLabel)
+                .or(() -> gameData.playedResultHome().map(Result::getLabel))
+                .orElse("?");
+        String away = gameData.overruledResultAway().map(Result::getLabel)
+                .or(() -> gameData.playedResultAway().map(Result::getLabel))
+                .orElse("?");
         return home + " : " + away;
     }
 
