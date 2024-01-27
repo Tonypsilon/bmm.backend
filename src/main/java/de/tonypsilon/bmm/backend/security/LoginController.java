@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 public class LoginController {
@@ -114,6 +116,8 @@ public class LoginController {
                                         .map(TeamData::id)
                                         .map(matchService::getMatchInfosOfOpenMatchesForTeam)
                                         .flatMap(List::stream)
+                                        .collect(Collectors.toSet()).stream()
+                                        .sorted(Comparator.comparing(IdAndLabel::label))
                                         .toList()
                                 : List.of()
                 )
