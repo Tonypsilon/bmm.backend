@@ -132,6 +132,13 @@ public class GameService {
     }
 
     @NonNull
+    public List<GameData> findByParticipantId(@NonNull Long participantId) {
+        return gameRepository.findByParticipantId(participantId).stream()
+                .map(this::gameToGameData)
+                .toList();
+    }
+
+    @NonNull
     private GameData gameToGameData(Game game) {
         return new GameData(game.getId(),
                 game.getMatchId(),
