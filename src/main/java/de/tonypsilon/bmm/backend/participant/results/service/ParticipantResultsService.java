@@ -14,6 +14,7 @@ import de.tonypsilon.bmm.backend.participant.results.data.ParticipantResultsData
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
 import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationEligibilityService;
+import de.tonypsilon.bmm.backend.season.service.SeasonService;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 import org.springframework.stereotype.Service;
@@ -31,18 +32,22 @@ public class ParticipantResultsService {
     private final MatchService matchService;
     private final MatchdayService matchdayService;
 
+    private final SeasonService seasonService;
+
     public ParticipantResultsService(GameService gameService,
                                      ParticipantService participantService,
                                      ParticipationEligibilityService participationEligibilityService,
                                      TeamService teamService,
                                      MatchService matchService,
-                                     MatchdayService matchdayService) {
+                                     MatchdayService matchdayService,
+                                     SeasonService seasonService) {
         this.gameService = gameService;
         this.participantService = participantService;
         this.participationEligibilityService = participationEligibilityService;
         this.teamService = teamService;
         this.matchService = matchService;
         this.matchdayService = matchdayService;
+        this.seasonService = seasonService;
     }
 
     public ParticipantResultsData getResultsForParticipant(Long id) {
@@ -63,9 +68,9 @@ public class ParticipantResultsService {
                                         .round()))
                         .map(gameData -> gameDataToParticipantResultData(gameData, id))
                         .toList(),
-                "",
-                "",
-                participationEligibility.seasonId()
+                "-",
+                "-",
+                seasonService.getSeasonById(participationEligibility.seasonId()).name()
         );
     }
 

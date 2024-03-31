@@ -906,3 +906,5 @@ INSERT INTO teamdivisionlink (team_id, division_id, number) VALUES (531, 54, 1);
 INSERT INTO teamdivisionlink (team_id, division_id, number) VALUES (532, 53, 2);
 INSERT INTO teamdivisionlink (team_id, division_id, number) VALUES (533, 52, 2);
 INSERT INTO teamdivisionlink (team_id, division_id, number) VALUES (534, 54, 2);
+
+insert into current_season(id, season_id) values (1, 1);

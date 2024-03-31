@@ -15,6 +15,9 @@ import de.tonypsilon.bmm.backend.participant.results.data.ParticipantResultsData
 import de.tonypsilon.bmm.backend.participant.service.ParticipantService;
 import de.tonypsilon.bmm.backend.participationeligibility.data.ParticipationEligibilityData;
 import de.tonypsilon.bmm.backend.participationeligibility.service.ParticipationEligibilityService;
+import de.tonypsilon.bmm.backend.season.data.SeasonData;
+import de.tonypsilon.bmm.backend.season.service.SeasonService;
+import de.tonypsilon.bmm.backend.season.service.SeasonStage;
 import de.tonypsilon.bmm.backend.team.data.TeamData;
 import de.tonypsilon.bmm.backend.team.service.TeamService;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +39,7 @@ class ParticipantResultsServiceTest {
     private final TeamService teamService = mock(TeamService.class);
     private final MatchService matchService = mock(MatchService.class);
     private final MatchdayService matchdayService = mock(MatchdayService.class);
+    private final SeasonService seasonService = mock(SeasonService.class);
     private ParticipantResultsService participantResultsService;
 
     private final long theParticipantId = 1L;
@@ -126,7 +130,8 @@ class ParticipantResultsServiceTest {
                 participationEligibilityService,
                 teamService,
                 matchService,
-                matchdayService);
+                matchdayService,
+                seasonService);
     }
     @Test
     void testGetResultsForParticipantNoGames() {
@@ -144,6 +149,8 @@ class ParticipantResultsServiceTest {
         when(teamService.getTeamDataById(opponent2.teamId()))
                 .thenReturn(new TeamData(opponent2.teamId(),3L, 1, 3L, "Opponent Team 2", "captain"));
         when(gameService.findByParticipantId(theParticipantId)).thenReturn(List.of(game1,game2));
+        when(seasonService.getSeasonById(7L))
+                .thenReturn(new SeasonData(7L, "the season", SeasonStage.RUNNING));
         when(matchService.getMatchDataById(match1Id))
                 .thenReturn(new MatchData(
                         match1Id,
@@ -204,7 +211,7 @@ class ParticipantResultsServiceTest {
                 ),
                 "",
                 "",
-                7L
+                "the season"
         ));
     }
 

@@ -11,6 +11,6 @@ public record ParticipantResultsData(
         List<ParticipantResultData> results,
         String performance,
         String ratingChange,
-        Long seasonId
+        String seasonName
 ) {
 }
