@@ -209,8 +209,8 @@ class ParticipantResultsServiceTest {
                                 "1"
                         )
                 ),
-                "",
-                "",
+                "-",
+                "-",
                 "the season"
         ));
     }
