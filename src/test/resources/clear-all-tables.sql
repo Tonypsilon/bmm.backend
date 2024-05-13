@@ -2,6 +2,7 @@ delete from game;
 delete from venue;
 delete from playingdate;
 delete from teamdivisionlink;
+delete from current_season;
 
 delete from participant;
 delete from match_;
