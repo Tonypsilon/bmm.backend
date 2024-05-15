@@ -22,10 +22,7 @@ import de.tonypsilon.bmm.backend.team.service.TeamDivisionLinkService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -73,7 +70,7 @@ public class DwzAssembler {
     public String assembleDwz(@NonNull String seasonName, @NonNull String divisionName) {
         DivisionData divisionData = divisionService.getDivisionDataBySeasonNameAndDivisionName(seasonName, divisionName);
         SeasonData seasonData = seasonService.getSeasonByName(seasonName);
-        Set<ParticipantData> participants =  teamDivisionLinkService.getByDivisionId(divisionData.id()).stream()
+        Set<ParticipantData> participants = new HashSet<>(teamDivisionLinkService.getByDivisionId(divisionData.id()).stream()
                 .map(teamDivisionLinkData -> participantService.getParticipantsEligibleForTeam(teamDivisionLinkData.teamId()))
                 .flatMap(Collection::stream)
                 .filter(participant -> gameService.findByParticipantId(participant.id()).stream()
@@ -82,7 +79,8 @@ public class DwzAssembler {
                             MatchdayData matchdayData = matchdayService.getMatchdayDataById(matchData.matchdayId());
                             return matchdayData.divisionId().equals(divisionData.id());
                         }))
-                .collect(toSet());
+                .collect(toMap(ParticipantData::id, Function.identity(), (p1, p2) -> p1))
+                .values());
         Map<ParticipantData, ParticipationEligibilityData> participationEligibilities = participants.stream()
                 .collect(toMap(Function.identity(), this::getParticipationEligibilityData));
         List<ParticipantData> participantsSorted = participants.stream()
