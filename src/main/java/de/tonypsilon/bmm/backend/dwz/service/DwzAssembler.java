@@ -109,7 +109,7 @@ public class DwzAssembler {
             result.append(surname).append(',').append(forename)
                     .append(" ".repeat(32 - forename.length() - surname.length()));
             ClubData club = clubService.getClubById(participationEligibilities.get(participant).clubId());
-            result.append(club.name(), 0, Math.min(club.name().length(), 33)).append(" ".repeat(Math.max(0, 33 - club.name().length())))
+            result.append(club.name(), 0, Math.min(club.name().length(), 32)).append(" ".repeat(Math.max(1, 33 - club.name().length())))
                     .append(" ".repeat(46))
                     .append(club.zps()).append(" ".repeat(7))
                     .append(context.getGamesByParticipant(participant.id())).append('\n');
